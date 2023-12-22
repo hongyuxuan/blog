@@ -1,0 +1,1728 @@
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="keywords" content="go-zero+opentelemetry+jaeger云原生链路跟踪实践, 洪宇轩的博客">
+    <meta name="description" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+
+    <title>go-zero+opentelemetry+jaeger云原生链路跟踪实践 | 洪宇轩的博客</title>
+    <link rel="icon" type="image/png" href="/blog/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="/blog/libs/awesome/css/all.css">
+    <link rel="stylesheet" type="text/css" href="/blog/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/blog/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/blog/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/blog/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/blog/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/blog/css/my.css">
+
+    <script src="/blog/libs/jquery/jquery.min.js"></script>
+
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper container">
+            <div class="brand-logo">
+                <a href="/blog/" class="waves-effect waves-light">
+                    
+                    <img src="/blog/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">洪宇轩的博客</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/blog/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>首页</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/blog/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>标签</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/blog/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>分类</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/blog/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>归档</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/blog/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>关于</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/blog/contact" class="waves-effect waves-light">
+      
+      <i class="fas fa-comments" style="zoom: 0.6;"></i>
+      
+      <span>留言板</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/blog/friends" class="waves-effect waves-light">
+      
+      <i class="fas fa-address-book" style="zoom: 0.6;"></i>
+      
+      <span>友情链接</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/blog/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">洪宇轩的博客</div>
+        <div class="logo-desc">
+            
+            Never really desperate, only the lost of the soul.
+            
+        </div>
+    </div>
+
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/blog/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			首页
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/blog/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			标签
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/blog/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			分类
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/blog/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			归档
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/blog/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			关于
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/blog/contact" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-comments"></i>
+			
+			留言板
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/blog/friends" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-address-book"></i>
+			
+			友情链接
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/blinkfox/hexo-theme-matery" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
+</div>
+
+
+        </div>
+
+        
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/blinkfox/hexo-theme-matery" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
+        
+    </nav>
+
+</header>
+
+    
+
+
+
+<div class="bg-cover pd-header post-cover" style="background-image: url('https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger_banner.png')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">go-zero+opentelemetry+jaeger云原生链路跟踪实践</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<main class="post-container content">
+
+    
+    <link rel="stylesheet" href="/blog/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        width: 345px;
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        padding: 35px 0 15px 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content {
+        padding-bottom: 30px;
+        overflow: auto;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+
+        position: absolute;
+        right: 23.5vw;
+        display: block;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/blog/tags/cloud-native/">
+                                <span class="chip bg-color">cloud native</span>
+                            </a>
+                        
+                            <a href="/blog/tags/observability/">
+                                <span class="chip bg-color">observability</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/blog/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/" class="post-category">
+                                云原生
+                            </a>
+                        
+                            <a href="/blog/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7/" class="post-category">
+                                可观测性
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
+                    2023-05-05
+                </div>
+                
+
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    3.9k
+                </div>
+                
+
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    17 分
+                </div>
+                
+
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
+        </div>
+        <hr class="clearfix">
+
+        
+        <!-- 是否加载使用自带的 prismjs. -->
+        <link rel="stylesheet" href="/blog/libs/prism/prism.css">
+        
+
+        
+
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <p>本文示例程序用到的组件和框架如下：</p>
+<ul>
+<li>jaeger：云原生可观测链路跟踪工具。关于jaeger部署详见链路跟踪工具Jaeger+OpenTelemetry Collector部署详解</li>
+<li>go-zero：一个go语言版的集成了各种工程实践的api和rpc微服务框架，本文将使用go-zero的api框架</li>
+<li>imroc&#x2F;req：一个开源的go语言轻量级HTTP客户端库</li>
+<li>opentelemetry：提供了一组API和SDK来标准化遥测数据的采集和传输，相对于skywalking等字节码实现的非侵入式链路跟踪工具来说，opentelemetry是一组可观测领域的标准和规范，基于这个标准提供的各种语言的SDK，通过在代码中打埋点的方式（侵入式），可实现市面上绝大多数语言的链路跟踪功能（比如skywalking、听云等对ktor都不支持，但opentelemetry支持）</li>
+</ul>
+<h2 id="go-zero示例程序"><a href="#go-zero示例程序" class="headerlink" title="go-zero示例程序"></a>go-zero示例程序</h2><p>以一个封装了蓝鲸CMDB接口的示例工程为例（api工程），工程名叫bkcmdb，目录结构如下：<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2F1.png"></p>
+<p>蓝鲸CMDB提供了HTTP接口，示例工程通过imroc&#x2F;req库封装了蓝鲸CMDB接口，通过在调用蓝鲸接口的前后打入埋点，实现一次调用的链路跟踪功能。</p>
+<p>如下的一次调用，将会在一个链路（即trace）上产生两个节点（即span）：<br>postman –&gt; bkcmdb(go-zero) –&gt; 蓝鲸接口</p>
+<p>该链路第一个节点是bkcmdb，第二个节点是蓝鲸接口。默认go-zero是没有开启链路跟踪功能的，下文将说明如何启用。</p>
+<h2 id="go-zero启动链路跟踪功能"><a href="#go-zero启动链路跟踪功能" class="headerlink" title="go-zero启动链路跟踪功能"></a>go-zero启动链路跟踪功能</h2><p>在正式介绍opentrace基本概念之前，先通过简单的配置启动go-zero的链路跟踪功能看一看效果。go-zero自带了基于opentelemetry的链路追踪功能，默认未开启，在工程的配置文件etc&#x2F;bkcmdb.yaml中增加如下配置：</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">Telemetry</span><span class="token punctuation">:</span>
+  <span class="token key atrule">Name</span><span class="token punctuation">:</span> fiops<span class="token punctuation">-</span>bkcmdb
+  <span class="token key atrule">Endpoint</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//jaeger<span class="token punctuation">-</span>collector.xxx.io/api/traces
+  <span class="token key atrule">Sampler</span><span class="token punctuation">:</span> <span class="token number">1.0</span>
+  <span class="token key atrule">Batcher</span><span class="token punctuation">:</span> jaeger<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>只需在配置文件中增加<code>Telemetry</code>配置块即可，无需修改任何代码。其中<code>Name</code>是该链路上的ServiceName，将会在jaeger（或zipkin）上显示为Service。Endpoint是链路跟踪工具（jaeger或zipkin）的collector地址。<code>Batcher</code>这里指定链路跟踪工具为jaeger。</p>
+<blockquote><p>注意：默认配置了Telemetry后，只能在链路中采集到客户端（比如postman）访问bkcmdb服务端这前半条链路，bkcmdb通过imroc&#x2F;req访问蓝鲸CMDB的后半条链路现在还采集不到。</p>
+</blockquote>
+
+<p>现在用postman访问bkcmdb</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">curl</span> <span class="token parameter variable">--location</span> <span class="token string">'http://&lt;bkcmdb-url>/v1/project/search'</span> <span class="token punctuation">\</span>
+<span class="token parameter variable">--header</span> <span class="token string">'Content-Type: application/json'</span> <span class="token punctuation">\</span>
+<span class="token parameter variable">--data</span> <span class="token string">'&#123;
+    "condition": &#123;
+        "project": [ ]
+    &#125;,
+    "page": &#123;
+        "limit": 100,
+        "sort": "-bk_inst_id",
+        "start": 0
+    &#125;
+&#125;'</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>打开jaeger前端页面，Service搜索fiops-bkcmdb，可以看到出现了一条链路，且链路中只有一个span，这个span就是客户端访问bkcmdb服务端的链路。<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2F2.png"></p>
+<p>点击这条链路进入详情页，展开trace，地址栏url红框内是traceId，右下角红框是spanId<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2F3.png"></p>
+<p>到此示例工程就算成功开启了链路跟踪功能，但这样还不能满足我们的需求，我们还需要bkcmdb访问蓝鲸CMDB的链路。在继续修改代码之前，我们先来了解一下opentracing、opentelemetry的基本概念。</p>
+<h2 id="OpenTracing"><a href="#OpenTracing" class="headerlink" title="OpenTracing"></a>OpenTracing</h2><blockquote>
+<p><a target="_blank" rel="noopener" href="https://opentracing.io/">https://opentracing.io/</a></p>
+</blockquote>
+<p>分布式追踪为描述和分析跨进程事务、甚至是跨网络调用提供了一种解决方案。早在 2005 年，Google 就在内部部署了一套分布式追踪系统 Dapper，并发表了一篇论文《Dapper, a Large-Scale Distributed Systems Tracing Infrastructure》，阐述了该分布式追踪系统的设计和实现，可以视为分布式追踪领域的鼻祖。后来各家厂商公司受此启发，纷纷开源了自家的链路跟踪产品，如zipkin、Uber的jaeger等。但各家的分布式追踪方案互不兼容，于是就诞生了<strong>OpenTracing</strong>。OpenTracing 是一个 Library，定义了一套通用的数据上报接口，要求各个分布式追踪系统都来实现这套接口。</p>
+<h3 id="数据模型"><a href="#数据模型" class="headerlink" title="数据模型"></a>数据模型</h3><p>OpenTracing规范中定义了数据模型，可参考原始文档The OpenTracing Semantic Specification</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">Causal relationships between Spans <span class="token keyword">in</span> a single Trace
+ 
+         <span class="token punctuation">[</span>Span A<span class="token punctuation">]</span>  ←←←<span class="token punctuation">(</span>the root span<span class="token punctuation">)</span>
+             <span class="token operator">|</span>
+      +------+------+
+      <span class="token operator">|</span>             <span class="token operator">|</span>
+  <span class="token punctuation">[</span>Span B<span class="token punctuation">]</span>      <span class="token punctuation">[</span>Span C<span class="token punctuation">]</span> ←←←<span class="token punctuation">(</span>Span C is a <span class="token variable"><span class="token variable">`</span>ChildOf<span class="token variable">`</span></span> Span A<span class="token punctuation">)</span>
+      <span class="token operator">|</span>             <span class="token operator">|</span>
+  <span class="token punctuation">[</span>Span D<span class="token punctuation">]</span>      +---+-------+
+               <span class="token operator">|</span>           <span class="token operator">|</span>
+           <span class="token punctuation">[</span>Span E<span class="token punctuation">]</span>    <span class="token punctuation">[</span>Span F<span class="token punctuation">]</span> <span class="token operator">>></span><span class="token operator">></span> <span class="token punctuation">[</span>Span G<span class="token punctuation">]</span> <span class="token operator">>></span><span class="token operator">></span> <span class="token punctuation">[</span>Span H<span class="token punctuation">]</span>
+                                       ↑
+                                       ↑
+                                       ↑
+                         <span class="token punctuation">(</span>Span G <span class="token variable"><span class="token variable">`</span>FollowsFrom<span class="token variable">`</span></span> Span F<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>在OpenTracing模型中有三个基本概念：</p>
+<ul>
+<li>Trace：调用链，一次HTTP调用或者一次RPC调用（从起始到最后终止），一个调用链会分配一个全局唯一的TraceID</li>
+<li>Span：每个调用链由多个Span组成。Span的含义是范围，可以理解为一个处理阶段（例如一次HTTP调用、一次数据库访问）。Span是一个分布式追踪的最小单位。Span和Span的关系称为Reference。下面是一个Span的结构。<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> Span <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+  ctx           spanContext
+  serviceName   <span class="token builtin">string</span>
+  operationName <span class="token builtin">string</span>
+  startTime     time<span class="token punctuation">.</span>Time
+  flag          <span class="token builtin">string</span>
+  children      <span class="token builtin">int</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+Span会封装一组零个或多个key:value的Tags，用于标识一些想在链路中展示的数据</li>
+<li>SpanContext：保存链路的上下文信息[TraceID,SpanID,或者是其它想要传递的内容]实现了tracer接口<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> spanContext <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+  traceId <span class="token builtin">string</span>
+  spanId  <span class="token builtin">string</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></li>
+</ul>
+<h3 id="Span之间的关系"><a href="#Span之间的关系" class="headerlink" title="Span之间的关系"></a>Span之间的关系</h3><ul>
+<li><p>ChildOf：两个Span可以组成父子关系</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>-Parent Span---------<span class="token punctuation">]</span>
+         <span class="token punctuation">[</span>-Child Span----<span class="token punctuation">]</span>
+
+    <span class="token punctuation">[</span>-Parent Span--------------<span class="token punctuation">]</span>
+         <span class="token punctuation">[</span>-Child Span A----<span class="token punctuation">]</span>
+          <span class="token punctuation">[</span>-Child Span B----<span class="token punctuation">]</span>
+        <span class="token punctuation">[</span>-Child Span C----<span class="token punctuation">]</span>
+         <span class="token punctuation">[</span>-Child Span D---------------<span class="token punctuation">]</span>
+         <span class="token punctuation">[</span>-Child Span E----<span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</li>
+<li><p>FollowsFrom：某些父Span在任何方面都不依赖子Span的结果</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>-Parent Span-<span class="token punctuation">]</span>  <span class="token punctuation">[</span>-Child Span-<span class="token punctuation">]</span>
+
+
+    <span class="token punctuation">[</span>-Parent Span--<span class="token punctuation">]</span>
+     <span class="token punctuation">[</span>-Child Span-<span class="token punctuation">]</span>
+
+
+    <span class="token punctuation">[</span>-Parent Span-<span class="token punctuation">]</span>
+                <span class="token punctuation">[</span>-Child Span-<span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></li>
+</ul>
+<h3 id="OpenCensus"><a href="#OpenCensus" class="headerlink" title="OpenCensus"></a>OpenCensus</h3><blockquote>
+<p><a target="_blank" rel="noopener" href="https://opencensus.io/">https://opencensus.io/</a></p>
+</blockquote>
+<p>OpenCensus是Google开源的，作为最早提出Tracing概念的公司，OpenCensus也是Google Dapper的社区版本。相对于OpenTracing只支持tracing，OpenCensus不仅支持tracing还支持metrics。OpenTracing只制定规范，OpenCensus不仅制定规范，还包含了Agent和Collector。</p>
+<h2 id="OpenTelemetry"><a href="#OpenTelemetry" class="headerlink" title="OpenTelemetry"></a>OpenTelemetry</h2><blockquote>
+<p><a target="_blank" rel="noopener" href="https://opentelemetry.io/">https://opentelemetry.io/</a></p>
+</blockquote>
+<p>为了更好的将Tracing、Metrics、Logging融合在一起，OpenTelemetry 诞生了。作为 CNCF 的孵化项目，OpenTelemetry 由 OpenTracing 和 OpenCensus 项目合并而成，是一组规范、API 接口、SDK、工具和集成。为众多开发人员带来 Metrics、Tracing、Loging 的统一标准，三者都有相同的元数据结构，可以轻松实现互相关联。</p>
+<p>OpenTelemetry 与厂商、平台无关，不提供与可观测性相关的后端服务。可根据用户需求将可观测类数据导出到存储、查询、可视化等不同后端，如 Prometheus、Jaeger 、云厂商服务中。</p>
+<p>有了基本概念以后，下来看看如何使用imroc&#x2F;req在发送HTTP的时候加入tracing。</p>
+<h3 id="自定义imroc-req中间件实现发送HTTP的trace跟踪"><a href="#自定义imroc-req中间件实现发送HTTP的trace跟踪" class="headerlink" title="自定义imroc&#x2F;req中间件实现发送HTTP的trace跟踪"></a>自定义imroc&#x2F;req中间件实现发送HTTP的trace跟踪</h3><p>这里我们建一个HttpClient封装一下req。在svc目录下新建httpclient.go，并在里面新建一个结构体：</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> HttpClient <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+    <span class="token operator">*</span>req<span class="token punctuation">.</span>Client
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>定义NewHttpClient函数用于返回一个实例化的HttpClient，在OnBeforeRequest里定义请求发送前的动作，在OnAfterResponse里定义请求返回后的动作。到此为止都是常规操作，还没涉及到任何tracing动作。</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// 需要传入go-zero的Config对象</span>
+<span class="token keyword">func</span> <span class="token function">NewHttpClient</span><span class="token punctuation">(</span>conf config<span class="token punctuation">.</span>Config<span class="token punctuation">)</span> <span class="token operator">*</span>HttpClient <span class="token punctuation">&#123;</span>
+  headers <span class="token operator">:=</span> <span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">string</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">&#123;</span>
+    <span class="token string">"BK_USER"</span><span class="token punctuation">:</span>                   <span class="token string">"admin"</span><span class="token punctuation">,</span>
+    <span class="token string">"HTTP_BLUEKING_SUPPLIER_ID"</span><span class="token punctuation">:</span> <span class="token string">"0"</span><span class="token punctuation">,</span>
+  <span class="token punctuation">&#125;</span>
+  c <span class="token operator">:=</span> req<span class="token punctuation">.</span><span class="token function">C</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>
+    <span class="token function">SetCommonHeaders</span><span class="token punctuation">(</span>headers<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">SetBaseURL</span><span class="token punctuation">(</span>fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"http://%s"</span><span class="token punctuation">,</span> conf<span class="token punctuation">.</span>BkcmdbUrl<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span>
+    <span class="token function">OnBeforeRequest</span><span class="token punctuation">(</span><span class="token keyword">func</span><span class="token punctuation">(</span>client <span class="token operator">*</span>req<span class="token punctuation">.</span>Client<span class="token punctuation">,</span> req <span class="token operator">*</span>req<span class="token punctuation">.</span>Request<span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">if</span> req<span class="token punctuation">.</span>RetryAttempt <span class="token operator">></span> <span class="token number">0</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token boolean">nil</span>
+      <span class="token punctuation">&#125;</span>
+      req<span class="token punctuation">.</span><span class="token function">EnableDump</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token keyword">return</span> <span class="token boolean">nil</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">.</span>
+    <span class="token function">OnAfterResponse</span><span class="token punctuation">(</span><span class="token keyword">func</span><span class="token punctuation">(</span>client <span class="token operator">*</span>req<span class="token punctuation">.</span>Client<span class="token punctuation">,</span> res <span class="token operator">*</span>req<span class="token punctuation">.</span>Response<span class="token punctuation">)</span> <span class="token punctuation">(</span>err <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      responseCode <span class="token operator">:=</span> strconv<span class="token punctuation">.</span><span class="token function">Itoa</span><span class="token punctuation">(</span>res<span class="token punctuation">.</span>StatusCode<span class="token punctuation">)</span>
+      <span class="token keyword">if</span> <span class="token operator">!</span>strings<span class="token punctuation">.</span><span class="token function">HasPrefix</span><span class="token punctuation">(</span>responseCode<span class="token punctuation">,</span> <span class="token string">"2"</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>strings<span class="token punctuation">.</span><span class="token function">HasPrefix</span><span class="token punctuation">(</span>responseCode<span class="token punctuation">,</span> <span class="token string">"3"</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">defer</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+          <span class="token keyword">if</span> e <span class="token operator">:=</span> <span class="token function">recover</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> e <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+            err <span class="token operator">=</span> errorx<span class="token punctuation">.</span><span class="token function">NewError</span><span class="token punctuation">(</span>res<span class="token punctuation">.</span>StatusCode<span class="token punctuation">,</span> res<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token boolean">nil</span><span class="token punctuation">)</span>
+          <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        ress <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">string</span><span class="token punctuation">]</span><span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+        res<span class="token punctuation">.</span><span class="token function">UnmarshalJson</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>ress<span class="token punctuation">)</span>
+        err <span class="token operator">=</span> errorx<span class="token punctuation">.</span><span class="token function">NewError</span><span class="token punctuation">(</span>res<span class="token punctuation">.</span>StatusCode<span class="token punctuation">,</span> ress<span class="token punctuation">[</span><span class="token string">"message"</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token builtin">string</span><span class="token punctuation">)</span><span class="token punctuation">,</span> ress<span class="token punctuation">[</span><span class="token string">"data"</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span>
+      <span class="token keyword">if</span> res<span class="token punctuation">.</span>Err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+        err <span class="token operator">=</span> errorx<span class="token punctuation">.</span><span class="token function">NewError</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>StatusInternalServerError<span class="token punctuation">,</span> res<span class="token punctuation">.</span>Err<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token boolean">nil</span><span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span>
+      <span class="token keyword">return</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+  logx<span class="token punctuation">.</span><span class="token function">Infof</span><span class="token punctuation">(</span><span class="token string">"init req client %s success"</span><span class="token punctuation">,</span> c<span class="token punctuation">.</span>BaseURL<span class="token punctuation">)</span>
+  <span class="token keyword">return</span> <span class="token operator">&amp;</span>HttpClient<span class="token punctuation">&#123;</span>
+    Client<span class="token punctuation">:</span> c<span class="token punctuation">,</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>接下来给结构体定义一个<code>SetTracer</code>方法用于设置tracing，这里用到了req的<code>WrapRoundTripFunc</code>用来给req自定义一个中间件，该中间件类似一个拦截器，可在请求发送前和响应后做一些集中处理的工作。</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>c <span class="token operator">*</span>HttpClient<span class="token punctuation">)</span> <span class="token function">SetTracer</span><span class="token punctuation">(</span>tracer trace<span class="token punctuation">.</span>Tracer<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  c<span class="token punctuation">.</span><span class="token function">WrapRoundTripFunc</span><span class="token punctuation">(</span><span class="token keyword">func</span><span class="token punctuation">(</span>rt req<span class="token punctuation">.</span>RoundTripper<span class="token punctuation">)</span> req<span class="token punctuation">.</span>RoundTripFunc <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token keyword">func</span><span class="token punctuation">(</span>req <span class="token operator">*</span>req<span class="token punctuation">.</span>Request<span class="token punctuation">)</span> <span class="token punctuation">(</span>resp <span class="token operator">*</span>req<span class="token punctuation">.</span>Response<span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token comment">// Context().Value(key)可以从context中提取预先设定的值</span>
+      spanName<span class="token punctuation">,</span> ok <span class="token operator">:=</span> req<span class="token punctuation">.</span><span class="token function">Context</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Value</span><span class="token punctuation">(</span><span class="token string">"SpanName"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token builtin">string</span><span class="token punctuation">)</span>
+      <span class="token keyword">if</span> <span class="token operator">!</span>ok <span class="token punctuation">&#123;</span>
+        spanName <span class="token operator">=</span> req<span class="token punctuation">.</span>URL<span class="token punctuation">.</span>Path <span class="token comment">// 如果没有预先设定SpanName，就以请求url作为SpanName</span>
+      <span class="token punctuation">&#125;</span>
+      <span class="token comment">// 最关键的一步，启动span，并传入上下文context(来自于*req.Request)，会返回一个加入了span的context和一个span对象</span>
+      <span class="token boolean">_</span><span class="token punctuation">,</span> span <span class="token operator">:=</span> tracer<span class="token punctuation">.</span><span class="token function">Start</span><span class="token punctuation">(</span>req<span class="token punctuation">.</span><span class="token function">Context</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> spanName<span class="token punctuation">)</span> 
+      <span class="token keyword">defer</span> span<span class="token punctuation">.</span><span class="token function">End</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// 无论成功与否这里需要用End将span发射出去(发射到jaeger或zipkin)</span>
+      <span class="token comment">// 下面给span添加一些tags</span>
+      span<span class="token punctuation">.</span><span class="token function">SetAttributes</span><span class="token punctuation">(</span>
+        attribute<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token string">"http.url"</span><span class="token punctuation">,</span> req<span class="token punctuation">.</span>URL<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        attribute<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token string">"http.method"</span><span class="token punctuation">,</span> req<span class="token punctuation">.</span>Method<span class="token punctuation">)</span><span class="token punctuation">,</span>
+        attribute<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token string">"http.request.header"</span><span class="token punctuation">,</span> req<span class="token punctuation">.</span><span class="token function">HeaderToString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      <span class="token punctuation">)</span>
+      <span class="token keyword">if</span> <span class="token function">len</span><span class="token punctuation">(</span>req<span class="token punctuation">.</span>Body<span class="token punctuation">)</span> <span class="token operator">></span> <span class="token number">0</span> <span class="token punctuation">&#123;</span>
+        span<span class="token punctuation">.</span><span class="token function">SetAttributes</span><span class="token punctuation">(</span>
+          attribute<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token string">"http.request.body"</span><span class="token punctuation">,</span> <span class="token function">string</span><span class="token punctuation">(</span>req<span class="token punctuation">.</span>Body<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span>
+      <span class="token comment">// 下面这句话将流程交还给req去执行发送请求动作</span>
+      resp<span class="token punctuation">,</span> err <span class="token operator">=</span> rt<span class="token punctuation">.</span><span class="token function">RoundTrip</span><span class="token punctuation">(</span>req<span class="token punctuation">)</span>
+      <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span> <span class="token comment">// 失败了记录在span里</span>
+        span<span class="token punctuation">.</span><span class="token function">RecordError</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+        span<span class="token punctuation">.</span><span class="token function">SetStatus</span><span class="token punctuation">(</span>codes<span class="token punctuation">.</span>Error<span class="token punctuation">,</span> err<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span>
+      <span class="token punctuation">&#125;</span>
+      <span class="token comment">// 添加一些响应tags</span>
+      span<span class="token punctuation">.</span><span class="token function">SetAttributes</span><span class="token punctuation">(</span>
+        attribute<span class="token punctuation">.</span><span class="token function">Int</span><span class="token punctuation">(</span><span class="token string">"http.status_code"</span><span class="token punctuation">,</span> resp<span class="token punctuation">.</span>StatusCode<span class="token punctuation">)</span><span class="token punctuation">,</span>
+        attribute<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token string">"http.response.header"</span><span class="token punctuation">,</span> resp<span class="token punctuation">.</span><span class="token function">HeaderToString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        attribute<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token string">"http.response.body"</span><span class="token punctuation">,</span> resp<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      <span class="token punctuation">)</span>
+      <span class="token keyword">return</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>封装好了HttpClient，接下来把它放入servicecontext方便被调用，并在servicecontext中实例化它</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> ServiceContext <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+  Config        config<span class="token punctuation">.</span>Config
+  Client_bkcmdb <span class="token operator">*</span>HttpClient
+<span class="token punctuation">&#125;</span>
+ 
+<span class="token keyword">func</span> <span class="token function">NewServiceContext</span><span class="token punctuation">(</span>c config<span class="token punctuation">.</span>Config<span class="token punctuation">)</span> <span class="token operator">*</span>ServiceContext <span class="token punctuation">&#123;</span>
+  client <span class="token operator">:=</span> <span class="token function">NewHttpClient</span><span class="token punctuation">(</span>c<span class="token punctuation">)</span> <span class="token comment">// 实例化HttpClient</span>
+  client<span class="token punctuation">.</span><span class="token function">SetTracer</span><span class="token punctuation">(</span>otel<span class="token punctuation">.</span><span class="token function">Tracer</span><span class="token punctuation">(</span><span class="token string">"imroc/req"</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// 设置开启Trace，并用otel.Tracer("imroc/req")设置otel.library</span>
+  <span class="token keyword">return</span> <span class="token operator">&amp;</span>ServiceContext<span class="token punctuation">&#123;</span>
+    Config<span class="token punctuation">:</span>        c<span class="token punctuation">,</span>
+    Client_bkcmdb<span class="token punctuation">:</span> client<span class="token punctuation">,</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>接下来封装一个蓝鲸CMDB接口的结构体</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> BkcmdbUtil <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+  logx<span class="token punctuation">.</span>Logger
+  ctx    context<span class="token punctuation">.</span>Context
+  svcCtx <span class="token operator">*</span>ServiceContext
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">GetBkcmdbUtil</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">,</span> svcCtx <span class="token operator">*</span>ServiceContext<span class="token punctuation">)</span> <span class="token operator">*</span>BkcmdbUtil <span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> <span class="token operator">&amp;</span>BkcmdbUtil<span class="token punctuation">&#123;</span>
+    Logger<span class="token punctuation">:</span> logx<span class="token punctuation">.</span><span class="token function">WithContext</span><span class="token punctuation">(</span>ctx<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    ctx<span class="token punctuation">:</span>    ctx<span class="token punctuation">,</span>
+    svcCtx<span class="token punctuation">:</span> svcCtx<span class="token punctuation">,</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>然后以一个蓝鲸添加模型实例的接口为例</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>b <span class="token operator">*</span>BkcmdbUtil<span class="token punctuation">)</span> <span class="token function">AddInstance</span><span class="token punctuation">(</span>tablename <span class="token builtin">string</span><span class="token punctuation">,</span> v <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>resp <span class="token operator">*</span>types<span class="token punctuation">.</span>BkcmdbRes<span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// 下面这句话的核心是.Do(context.WithValue(b.ctx, "SpanName", "AddInstance"))</span>
+  <span class="token comment">// 通过调用context.WithValue给ctx设置SpanName，然后就可以在前文定义的中间件中用req.Context().Value("SpanName").(string)把SpanName取出来了</span>
+  err <span class="token operator">=</span> b<span class="token punctuation">.</span>svcCtx<span class="token punctuation">.</span>Client_bkcmdb<span class="token punctuation">.</span><span class="token function">Post</span><span class="token punctuation">(</span>fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"/api/v3/create/instance/object/%s"</span><span class="token punctuation">,</span> tablename<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">SetBody</span><span class="token punctuation">(</span>v<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">SetResult</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>resp<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Do</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">WithValue</span><span class="token punctuation">(</span>b<span class="token punctuation">.</span>ctx<span class="token punctuation">,</span> <span class="token string">"SpanName"</span><span class="token punctuation">,</span> <span class="token string">"AddInstance"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span>Err
+  <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+    b<span class="token punctuation">.</span>Logger<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+    <span class="token keyword">return</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">if</span> resp<span class="token punctuation">.</span>Code <span class="token operator">!=</span> <span class="token number">0</span> <span class="token punctuation">&#123;</span>
+    b<span class="token punctuation">.</span>Logger<span class="token punctuation">.</span><span class="token function">Errorf</span><span class="token punctuation">(</span><span class="token string">"add %s instance failed: %v"</span><span class="token punctuation">,</span> tablename<span class="token punctuation">,</span> resp<span class="token punctuation">.</span>Message<span class="token punctuation">)</span>
+    <span class="token comment">// errorx是自定义的错误处理类</span>
+    err <span class="token operator">=</span> errorx<span class="token punctuation">.</span><span class="token function">NewDefaultError</span><span class="token punctuation">(</span>fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"add %s instance failed: %v"</span><span class="token punctuation">,</span> tablename<span class="token punctuation">,</span> resp<span class="token punctuation">.</span>Message<span class="token punctuation">)</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">return</span> <span class="token comment">// 返回值types.BkcmdbRes是自定义的返回结构体</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>示例代码写到这就可以了，接下来再用postman发起一次调用，打开jaeger页面，会发现一个链路里现在出现了两个span，其中一个是postman访问go-zero接口的span，第二个就是go-zero通过req访问蓝鲸CMDB的span。<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2F4.png"><br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2F5.png"></p>
+<h3 id="其它通用操作的trace跟踪"><a href="#其它通用操作的trace跟踪" class="headerlink" title="其它通用操作的trace跟踪"></a>其它通用操作的trace跟踪</h3><p>有了如上示例，我们其实可以在任意操作前后打埋点（开启一个span），比如访问数据库、MongoDB、Redis、Elasticsearch、调用其它平台SDK（比如kubernetes client-go）等等，下来以Elasticsearch为例说明。</p>
+<p>封装一个<code>EsUtil</code>用来操作elasticsearch</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> EsUtil <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+  logx<span class="token punctuation">.</span>Logger
+  ctx    context<span class="token punctuation">.</span>Context
+  svcCtx <span class="token operator">*</span>ServiceContext
+  tracer trace<span class="token punctuation">.</span>Tracer
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token function">GetEsUtil</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">,</span> svcCtx <span class="token operator">*</span>ServiceContext<span class="token punctuation">)</span> <span class="token operator">*</span>EsUtil <span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> <span class="token operator">&amp;</span>EsUtil<span class="token punctuation">&#123;</span>
+    Logger<span class="token punctuation">:</span> logx<span class="token punctuation">.</span><span class="token function">WithContext</span><span class="token punctuation">(</span>ctx<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    ctx<span class="token punctuation">:</span>    ctx<span class="token punctuation">,</span>
+    svcCtx<span class="token punctuation">:</span> svcCtx<span class="token punctuation">,</span>
+    tracer<span class="token punctuation">:</span> otel<span class="token punctuation">.</span><span class="token function">Tracer</span><span class="token punctuation">(</span><span class="token string">"go-elasticsearch"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>在发起一个ES操作（例如插入一个文档）的前后打入埋点<code>startTracer</code>、<code>endTracer</code></p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>es <span class="token operator">*</span>EsUtil<span class="token punctuation">)</span> <span class="token function">EsIndex</span><span class="token punctuation">(</span>index <span class="token builtin">string</span><span class="token punctuation">,</span> body <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> id <span class="token builtin">string</span><span class="token punctuation">,</span> ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token operator">*</span>types<span class="token punctuation">.</span>EsAddResponse<span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  b<span class="token punctuation">,</span> <span class="token boolean">_</span> <span class="token operator">:=</span> json<span class="token punctuation">.</span><span class="token function">Marshal</span><span class="token punctuation">(</span>body<span class="token punctuation">)</span>
+  es<span class="token punctuation">.</span>Logger<span class="token punctuation">.</span><span class="token function">Debugf</span><span class="token punctuation">(</span><span class="token string">"es index request=%v"</span><span class="token punctuation">,</span> <span class="token function">string</span><span class="token punctuation">(</span>b<span class="token punctuation">)</span><span class="token punctuation">)</span>
+  span <span class="token operator">:=</span> es<span class="token punctuation">.</span><span class="token function">newSpan</span><span class="token punctuation">(</span>ctx<span class="token punctuation">,</span> index<span class="token punctuation">)</span> <span class="token comment">// 创建一个span</span>
+  <span class="token keyword">defer</span> span<span class="token punctuation">.</span><span class="token function">End</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// 用End把span发射出去</span>
+  es<span class="token punctuation">.</span><span class="token function">startTracer</span><span class="token punctuation">(</span>index<span class="token punctuation">,</span> id<span class="token punctuation">,</span> <span class="token string">"index"</span><span class="token punctuation">,</span> b<span class="token punctuation">,</span> span<span class="token punctuation">,</span> ctx<span class="token punctuation">)</span> <span class="token comment">// 请求前开启span</span>
+  res<span class="token punctuation">,</span> err <span class="token operator">:=</span> es<span class="token punctuation">.</span>svcCtx<span class="token punctuation">.</span>Esclient<span class="token punctuation">.</span><span class="token function">Index</span><span class="token punctuation">(</span>
+    index<span class="token punctuation">,</span>
+    bytes<span class="token punctuation">.</span><span class="token function">NewReader</span><span class="token punctuation">(</span>b<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    es<span class="token punctuation">.</span>svcCtx<span class="token punctuation">.</span>Esclient<span class="token punctuation">.</span>Index<span class="token punctuation">.</span><span class="token function">WithDocumentID</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    es<span class="token punctuation">.</span>svcCtx<span class="token punctuation">.</span>Esclient<span class="token punctuation">.</span>Index<span class="token punctuation">.</span><span class="token function">WithContext</span><span class="token punctuation">(</span>ctx<span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token punctuation">)</span>
+  <span class="token keyword">defer</span> res<span class="token punctuation">.</span>Body<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token boolean">nil</span><span class="token punctuation">,</span> err
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">if</span> res<span class="token punctuation">.</span><span class="token function">IsError</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    err <span class="token operator">=</span> errorx<span class="token punctuation">.</span><span class="token function">NewDefaultError</span><span class="token punctuation">(</span>fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"[%s] error indexing document ID=%v"</span><span class="token punctuation">,</span> res<span class="token punctuation">.</span><span class="token function">Status</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> id<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    es<span class="token punctuation">.</span><span class="token function">endTracer</span><span class="token punctuation">(</span>err<span class="token punctuation">,</span> res<span class="token punctuation">.</span>StatusCode<span class="token punctuation">,</span> <span class="token boolean">nil</span><span class="token punctuation">,</span> span<span class="token punctuation">)</span> <span class="token comment">// 出错后结束span并写入错误信息</span>
+    <span class="token keyword">return</span> <span class="token boolean">nil</span><span class="token punctuation">,</span> err
+  <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">var</span> r types<span class="token punctuation">.</span>EsAddResponse <span class="token comment">// 自定义了es返回结构体</span>
+    json<span class="token punctuation">.</span><span class="token function">NewDecoder</span><span class="token punctuation">(</span>res<span class="token punctuation">.</span>Body<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Decode</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>r<span class="token punctuation">)</span>
+    b<span class="token punctuation">,</span> <span class="token boolean">_</span> <span class="token operator">=</span> json<span class="token punctuation">.</span><span class="token function">Marshal</span><span class="token punctuation">(</span>r<span class="token punctuation">)</span>
+    es<span class="token punctuation">.</span>Logger<span class="token punctuation">.</span><span class="token function">Debugf</span><span class="token punctuation">(</span><span class="token string">"es index response=%v"</span><span class="token punctuation">,</span> <span class="token function">string</span><span class="token punctuation">(</span>b<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    es<span class="token punctuation">.</span><span class="token function">endTracer</span><span class="token punctuation">(</span><span class="token boolean">nil</span><span class="token punctuation">,</span> res<span class="token punctuation">.</span>StatusCode<span class="token punctuation">,</span> b<span class="token punctuation">,</span> span<span class="token punctuation">)</span> <span class="token comment">// 正常返回结束span并写入返回值</span>
+    <span class="token keyword">return</span> <span class="token operator">&amp;</span>r<span class="token punctuation">,</span> <span class="token boolean">nil</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token punctuation">(</span>es <span class="token operator">*</span>EsUtil<span class="token punctuation">)</span> <span class="token function">newSpan</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">,</span> name <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>span trace<span class="token punctuation">.</span>Span<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  spanName<span class="token punctuation">,</span> ok <span class="token operator">:=</span> ctx<span class="token punctuation">.</span><span class="token function">Value</span><span class="token punctuation">(</span><span class="token string">"SpanName"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token builtin">string</span><span class="token punctuation">)</span>
+  <span class="token keyword">if</span> <span class="token operator">!</span>ok <span class="token punctuation">&#123;</span>
+      spanName <span class="token operator">=</span> name
+  <span class="token punctuation">&#125;</span>
+  <span class="token boolean">_</span><span class="token punctuation">,</span> span <span class="token operator">=</span> es<span class="token punctuation">.</span>tracer<span class="token punctuation">.</span><span class="token function">Start</span><span class="token punctuation">(</span>ctx<span class="token punctuation">,</span> spanName<span class="token punctuation">)</span>
+  <span class="token keyword">return</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token punctuation">(</span>es <span class="token operator">*</span>EsUtil<span class="token punctuation">)</span> <span class="token function">startTracer</span><span class="token punctuation">(</span>index<span class="token punctuation">,</span> id<span class="token punctuation">,</span> action <span class="token builtin">string</span><span class="token punctuation">,</span> body <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span> span trace<span class="token punctuation">.</span>Span<span class="token punctuation">,</span> ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  span<span class="token punctuation">.</span><span class="token function">SetAttributes</span><span class="token punctuation">(</span>
+    attribute<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token string">"elastic._index"</span><span class="token punctuation">,</span> index<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    attribute<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token string">"elastic._id"</span><span class="token punctuation">,</span> id<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    attribute<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token string">"elastic.action"</span><span class="token punctuation">,</span> action<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    attribute<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token string">"elastic.client.version"</span><span class="token punctuation">,</span> elasticsearch<span class="token punctuation">.</span>Version<span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token punctuation">)</span>
+  <span class="token keyword">if</span> <span class="token function">len</span><span class="token punctuation">(</span>body<span class="token punctuation">)</span> <span class="token operator">></span> <span class="token number">0</span> <span class="token punctuation">&#123;</span>
+    span<span class="token punctuation">.</span><span class="token function">SetAttributes</span><span class="token punctuation">(</span>
+        attribute<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token string">"elastic.request.body"</span><span class="token punctuation">,</span> <span class="token function">string</span><span class="token punctuation">(</span>body<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">func</span> <span class="token punctuation">(</span>es <span class="token operator">*</span>EsUtil<span class="token punctuation">)</span> <span class="token function">endTracer</span><span class="token punctuation">(</span>err <span class="token builtin">error</span><span class="token punctuation">,</span> status_code <span class="token builtin">int</span><span class="token punctuation">,</span> body <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span> span trace<span class="token punctuation">.</span>Span<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+    span<span class="token punctuation">.</span><span class="token function">RecordError</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+    span<span class="token punctuation">.</span><span class="token function">SetStatus</span><span class="token punctuation">(</span>codes<span class="token punctuation">.</span>Error<span class="token punctuation">,</span> err<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span>
+  <span class="token punctuation">&#125;</span>
+  span<span class="token punctuation">.</span><span class="token function">SetAttributes</span><span class="token punctuation">(</span>
+    attribute<span class="token punctuation">.</span><span class="token function">Int</span><span class="token punctuation">(</span><span class="token string">"elastic.status"</span><span class="token punctuation">,</span> status_code<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    attribute<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token string">"elastic.response.body"</span><span class="token punctuation">,</span> <span class="token function">string</span><span class="token punctuation">(</span>body<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>到此，从go-zero的服务A接收到一个请求，到由当前服务A发送出去的第一跳操作（HTTP、Elasticsearch、数据库等）都可以在jaerger里看到trace了，大概长这样：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">microserviceA
+  <span class="token operator">|</span>
+  <span class="token operator">|</span>--<span class="token operator">></span> HTTP<span class="token punctuation">(</span>蓝鲸CMDB<span class="token punctuation">)</span>
+  <span class="token operator">|</span>--<span class="token operator">></span> Elasticsearch
+  <span class="token operator">|</span>--<span class="token operator">></span> PostgreSQL
+  <span class="token operator">|</span>--<span class="token operator">></span> HTTP<span class="token punctuation">(</span>蓝鲸CMDB<span class="token punctuation">)</span>
+  <span class="token operator">|</span>--<span class="token operator">></span> HTTP<span class="token punctuation">(</span>蓝鲸CMDB<span class="token punctuation">)</span>
+  <span class="token operator">|</span> ……<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>此时我们发现，跨服务（A服务调用B服务）现在还是没有链路，单独看服务A的链路也有，服务B的链路也有，但AB没连起来。原因在于我们在链路传递参数的过程中，并没有把traceId、spanId传递到下一跳。自然下一跳和上一跳就没法连接起来了。</p>
+<p>改造代码之前还是先看原理。</p>
+<h3 id="Opentelemetry链路传递核心原理"><a href="#Opentelemetry链路传递核心原理" class="headerlink" title="Opentelemetry链路传递核心原理"></a>Opentelemetry链路传递核心原理</h3><p>先看一张在HTTP通信下，trace如何进行链路传递参数<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2F6.jpg"></p>
+<p>链路传递数据时用到一个载体叫做propagators，什么是 Propagator？OpenTelemetry 是这样定义的</p>
+<blockquote><p>Cross-cutting concerns send their state to the next process using Propagators, which are defined as objects used to read and write context data to and from messages exchanged by the applications.</p>
+</blockquote>
+
+<p>大概意思就是：从系统的横向切入面看，通过定义一个可读可写的context对象，在应用间进行状态的传递。<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2Fopentelemetry.png"></p>
+<p>这里还有一个Baggage的概念，但是本文暂未涉及到，因此不再赘述，示例代码只需要propagator就可以满足需求了</p>
+<h3 id="Propagator注入trace实现链路信息传递"><a href="#Propagator注入trace实现链路信息传递" class="headerlink" title="Propagator注入trace实现链路信息传递"></a>Propagator注入trace实现链路信息传递</h3><p>服务A通过imroc&#x2F;req调用服务B（HTTP调用），需要在服务A端HTTP发起之前给propagator注入载体(carrier)，并写入HTTP headers，如下代码</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>c <span class="token operator">*</span>HttpClient<span class="token punctuation">)</span> <span class="token function">roundTripFunc</span><span class="token punctuation">(</span>rt req<span class="token punctuation">.</span>RoundTripper<span class="token punctuation">)</span> req<span class="token punctuation">.</span>RoundTripFunc <span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> <span class="token keyword">func</span><span class="token punctuation">(</span>req <span class="token operator">*</span>req<span class="token punctuation">.</span>Request<span class="token punctuation">)</span> <span class="token punctuation">(</span>resp <span class="token operator">*</span>req<span class="token punctuation">.</span>Response<span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// 省略……</span>
+    spanCtx<span class="token punctuation">,</span> span <span class="token operator">:=</span> c<span class="token punctuation">.</span>Tracer<span class="token punctuation">.</span><span class="token function">Start</span><span class="token punctuation">(</span>req<span class="token punctuation">.</span><span class="token function">Context</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> spanName<span class="token punctuation">)</span> <span class="token comment">// 拿到关键的spanCtx</span>
+    <span class="token keyword">defer</span> span<span class="token punctuation">.</span><span class="token function">End</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token comment">// 最关键的一句话，把spanCtx里的trace信息inject到载体propagation.HeaderCarrier里，并通过HTTP headers传输</span>
+    otel<span class="token punctuation">.</span><span class="token function">GetTextMapPropagator</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Inject</span><span class="token punctuation">(</span>spanCtx<span class="token punctuation">,</span> propagation<span class="token punctuation">.</span><span class="token function">HeaderCarrier</span><span class="token punctuation">(</span>req<span class="token punctuation">.</span>Headers<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    span<span class="token punctuation">.</span><span class="token function">SetAttributes</span><span class="token punctuation">(</span>
+      <span class="token comment">// 省略……</span>
+    <span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>然后在服务B端，从HTTP headers中提取trace信息到载体(<code>carrier</code>)，并放入<code>context</code>里，这样就完成了应用之间的链路传递。这部分功能go-zero已经默认实现了，当开启了<code>Telemetry</code>后，go-zero会通过内置的trace中间件从载体中提取trace信息，这部分源码如下（<a target="_blank" rel="noopener" href="https://github.com/zeromicro/go-zero/blob/v1.5.2/rest/handler/tracehandler.go%EF%BC%89%EF%BC%9A">https://github.com/zeromicro/go-zero/blob/v1.5.2/rest/handler/tracehandler.go）：</a></p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// TraceHandler return a middleware that process the opentelemetry.</span>
+<span class="token keyword">func</span> <span class="token function">TraceHandler</span><span class="token punctuation">(</span>serviceName<span class="token punctuation">,</span> path <span class="token builtin">string</span><span class="token punctuation">,</span> opts <span class="token operator">...</span>TraceOption<span class="token punctuation">)</span> <span class="token keyword">func</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>Handler<span class="token punctuation">)</span> http<span class="token punctuation">.</span>Handler <span class="token punctuation">&#123;</span>
+  <span class="token keyword">var</span> options traceOptions
+  <span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span> opt <span class="token operator">:=</span> <span class="token keyword">range</span> opts <span class="token punctuation">&#123;</span>
+    <span class="token function">opt</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>options<span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+
+  ignorePaths <span class="token operator">:=</span> collection<span class="token punctuation">.</span><span class="token function">NewSet</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  ignorePaths<span class="token punctuation">.</span><span class="token function">AddStr</span><span class="token punctuation">(</span>options<span class="token punctuation">.</span>traceIgnorePaths<span class="token operator">...</span><span class="token punctuation">)</span>
+
+  <span class="token keyword">return</span> <span class="token keyword">func</span><span class="token punctuation">(</span>next http<span class="token punctuation">.</span>Handler<span class="token punctuation">)</span> http<span class="token punctuation">.</span>Handler <span class="token punctuation">&#123;</span>
+    tracer <span class="token operator">:=</span> otel<span class="token punctuation">.</span><span class="token function">Tracer</span><span class="token punctuation">(</span>trace<span class="token punctuation">.</span>TraceName<span class="token punctuation">)</span>
+    propagator <span class="token operator">:=</span> otel<span class="token punctuation">.</span><span class="token function">GetTextMapPropagator</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">return</span> http<span class="token punctuation">.</span><span class="token function">HandlerFunc</span><span class="token punctuation">(</span><span class="token keyword">func</span><span class="token punctuation">(</span>w http<span class="token punctuation">.</span>ResponseWriter<span class="token punctuation">,</span> r <span class="token operator">*</span>http<span class="token punctuation">.</span>Request<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      spanName <span class="token operator">:=</span> path
+      <span class="token keyword">if</span> <span class="token function">len</span><span class="token punctuation">(</span>spanName<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span> <span class="token punctuation">&#123;</span>
+        spanName <span class="token operator">=</span> r<span class="token punctuation">.</span>URL<span class="token punctuation">.</span>Path
+      <span class="token punctuation">&#125;</span>
+
+      <span class="token keyword">if</span> ignorePaths<span class="token punctuation">.</span><span class="token function">Contains</span><span class="token punctuation">(</span>spanName<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        next<span class="token punctuation">.</span><span class="token function">ServeHTTP</span><span class="token punctuation">(</span>w<span class="token punctuation">,</span> r<span class="token punctuation">)</span>
+        <span class="token keyword">return</span>
+      <span class="token punctuation">&#125;</span>
+
+      ctx <span class="token operator">:=</span> propagator<span class="token punctuation">.</span><span class="token function">Extract</span><span class="token punctuation">(</span>r<span class="token punctuation">.</span><span class="token function">Context</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> propagation<span class="token punctuation">.</span><span class="token function">HeaderCarrier</span><span class="token punctuation">(</span>r<span class="token punctuation">.</span>Header<span class="token punctuation">)</span><span class="token punctuation">)</span>
+      spanCtx<span class="token punctuation">,</span> span <span class="token operator">:=</span> tracer<span class="token punctuation">.</span><span class="token function">Start</span><span class="token punctuation">(</span>
+        ctx<span class="token punctuation">,</span>
+        spanName<span class="token punctuation">,</span>
+        oteltrace<span class="token punctuation">.</span><span class="token function">WithSpanKind</span><span class="token punctuation">(</span>oteltrace<span class="token punctuation">.</span>SpanKindServer<span class="token punctuation">)</span><span class="token punctuation">,</span>
+        oteltrace<span class="token punctuation">.</span><span class="token function">WithAttributes</span><span class="token punctuation">(</span>semconv<span class="token punctuation">.</span><span class="token function">HTTPServerAttributesFromHTTPRequest</span><span class="token punctuation">(</span>
+            serviceName<span class="token punctuation">,</span> spanName<span class="token punctuation">,</span> r<span class="token punctuation">)</span><span class="token operator">...</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+      <span class="token punctuation">)</span>
+      <span class="token keyword">defer</span> span<span class="token punctuation">.</span><span class="token function">End</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+      <span class="token comment">// convenient for tracking error messages</span>
+      propagator<span class="token punctuation">.</span><span class="token function">Inject</span><span class="token punctuation">(</span>spanCtx<span class="token punctuation">,</span> propagation<span class="token punctuation">.</span><span class="token function">HeaderCarrier</span><span class="token punctuation">(</span>w<span class="token punctuation">.</span><span class="token function">Header</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+      trw <span class="token operator">:=</span> <span class="token operator">&amp;</span>response<span class="token punctuation">.</span>WithCodeResponseWriter<span class="token punctuation">&#123;</span>Writer<span class="token punctuation">:</span> w<span class="token punctuation">,</span> Code<span class="token punctuation">:</span> http<span class="token punctuation">.</span>StatusOK<span class="token punctuation">&#125;</span>
+      next<span class="token punctuation">.</span><span class="token function">ServeHTTP</span><span class="token punctuation">(</span>trw<span class="token punctuation">,</span> r<span class="token punctuation">.</span><span class="token function">WithContext</span><span class="token punctuation">(</span>spanCtx<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+      span<span class="token punctuation">.</span><span class="token function">SetAttributes</span><span class="token punctuation">(</span>semconv<span class="token punctuation">.</span><span class="token function">HTTPAttributesFromHTTPStatusCode</span><span class="token punctuation">(</span>trw<span class="token punctuation">.</span>Code<span class="token punctuation">)</span><span class="token operator">...</span><span class="token punctuation">)</span>
+      span<span class="token punctuation">.</span><span class="token function">SetStatus</span><span class="token punctuation">(</span>semconv<span class="token punctuation">.</span><span class="token function">SpanStatusFromHTTPStatusCodeAndSpanKind</span><span class="token punctuation">(</span>
+        trw<span class="token punctuation">.</span>Code<span class="token punctuation">,</span> oteltrace<span class="token punctuation">.</span>SpanKindServer<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>现在打开jaeger页面，可以看到两个服务之间的链路已经连起来了<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2F7.jpg"></p>
+<p>展开GetProjects，可以看到注入的header长这样<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2F8.png"></p>
+
+                
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        文章作者:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="/blog/about" rel="external nofollow noreferrer">洪宇轩</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        文章链接:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="https://hongyuxuan2138.gitee.io/blog/blog/posts/2938485576/">https://hongyuxuan2138.gitee.io/blog/blog/posts/2938485576/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        版权声明:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    本博客所有文章除特別声明外，均采用
+                    <a href="https://creativecommons.org/licenses/by/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY 4.0</a>
+                    许可协议。转载请注明来源
+                    <a href="/blog/about" target="_blank">洪宇轩</a>
+                    !
+                </span>
+            </div>
+        
+    </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/blog/tags/cloud-native/">
+                                    <span class="chip bg-color">cloud native</span>
+                                </a>
+                            
+                                <a href="/blog/tags/observability/">
+                                    <span class="chip bg-color">observability</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/blog/libs/share/css/share.min.css">
+<div id="article-share">
+
+    
+    <div class="social-share" data-sites="twitter,facebook,google,qq,qzone,wechat,weibo,douban,linkedin" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/blog/libs/share/js/social-share.min.js"></script>
+    
+
+    
+
+</div>
+
+                </div>
+            </div>
+            
+                <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
+
+    #reward .reward-link {
+        font-size: 1.4rem;
+        line-height: 38px;
+    }
+
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2F%E6%89%93%E8%B5%8F%2Falipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2F%E6%89%93%E8%B5%8F%2Fweixin.jpg" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
+
+            
+        </div>
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+            <div class="card">
+                <a href="/blog/posts/2417358707/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/blog/medias/featureimages/8.jpg" class="responsive-img" alt="K8S二次开发系列之一：进阶玩家该如何扩展自己的K8S">
+                        
+                        <span class="card-title">K8S二次开发系列之一：进阶玩家该如何扩展自己的K8S</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            本文介绍了K8S进阶玩家可以从哪些地方入手去扩展自己的K8S集群。
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2023-07-06
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/blog/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/" class="post-category">
+                                    云原生
+                                </a>
+                            
+                            <a href="/blog/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/kubernetes/" class="post-category">
+                                    kubernetes
+                                </a>
+                            
+                            <a href="/blog/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/kubernetes/K8S%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97/" class="post-category">
+                                    K8S二次开发系列
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/blog/tags/cloud-native/">
+                        <span class="chip bg-color">cloud native</span>
+                    </a>
+                    
+                    <a href="/blog/tags/kubernetes/">
+                        <span class="chip bg-color">kubernetes</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/blog/posts/2128614243/">
+                    <div class="card-image">
+                        
+                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fjaeger_banner.png" class="responsive-img" alt="云原生链路跟踪工具Jaeger+OpenTelemetry Collector部署详解">
+                        
+                        <span class="card-title">云原生链路跟踪工具Jaeger+OpenTelemetry Collector部署详解</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            提到链路跟踪，或者叫全链路监控，或者叫APM(Application Performance Management)，具体含义和原理不赘述，开源方案有skywalking、zipkin、elasticapm等工具，商业产品有基调听云等等，但在云原生领域，也有一个CNCF已毕业项目jaeger同样发展迅速。
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-04-04
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/blog/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/" class="post-category">
+                                    云原生
+                                </a>
+                            
+                            <a href="/blog/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7/" class="post-category">
+                                    可观测性
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/blog/tags/cloud-native/">
+                        <span class="chip bg-color">cloud native</span>
+                    </a>
+                    
+                    <a href="/blog/tags/observability/">
+                        <span class="chip bg-color">observability</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
+
+</div>
+
+
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/blog/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/blog/libs/codeBlock/codeLang.js"></script>
+
+
+<!-- 代码块复制 -->
+
+<script type="text/javascript" src="/blog/libs/codeBlock/codeCopy.js"></script>
+
+
+<!-- 代码块收缩 -->
+
+<script type="text/javascript" src="/blog/libs/codeBlock/codeShrink.js"></script>
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/blog/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
+
+    
+
+</main>
+
+
+
+
+    <footer class="page-footer bg-color">
+    
+        <link rel="stylesheet" href="/blog/libs/aplayer/APlayer.min.css">
+<style>
+    .aplayer .aplayer-lrc p {
+        
+        display: none;
+        
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 16px !important;
+    }
+
+    .aplayer .aplayer-lrc p.aplayer-lrc-current {
+        
+        display: none;
+        
+        font-size: 15px;
+        color: #42b983;
+    }
+
+    
+    .aplayer.aplayer-fixed.aplayer-narrow .aplayer-body {
+        left: -66px !important;
+    }
+
+    .aplayer.aplayer-fixed.aplayer-narrow .aplayer-body:hover {
+        left: 0px !important;
+    }
+
+    
+</style>
+<div class="">
+    
+    <div class="row">
+        <meting-js class="col l8 offset-l2 m10 offset-m1 s12"
+                   server="netease"
+                   type="playlist"
+                   id="503838841"
+                   fixed='true'
+                   autoplay='false'
+                   theme='#42b983'
+                   loop='all'
+                   order='random'
+                   preload='auto'
+                   volume='0.7'
+                   list-folded='true'
+        >
+        </meting-js>
+    </div>
+</div>
+
+<script src="/blog/libs/aplayer/APlayer.min.js"></script>
+<script src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/resources%2Fjs%2FMeting.min.js"></script>
+
+    
+    <div class="container row center-align" style="margin-bottom: 15px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            
+                <span id="year">2021-2023</span>
+            
+            <span id="year">2021</span>
+            <a href="/blog/about" target="_blank">洪宇轩</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            <br>
+            
+            &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                class="white-color">44.4k</span>&nbsp;字
+            
+            
+            
+            
+            
+            
+            <span id="busuanzi_container_site_pv">
+                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
+                    class="white-color"></span>&nbsp;次
+            </span>
+            
+            
+            <span id="busuanzi_container_site_uv">
+                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
+                    class="white-color"></span>&nbsp;人
+            </span>
+            
+            <br>
+            
+            <span id="sitetime">载入运行时间...</span>
+            <script>
+                function siteTime() {
+                    var seconds = 1000;
+                    var minutes = seconds * 60;
+                    var hours = minutes * 60;
+                    var days = hours * 24;
+                    var years = days * 365;
+                    var today = new Date();
+                    var startYear = "2021";
+                    var startMonth = "6";
+                    var startDate = "28";
+                    var startHour = "0";
+                    var startMinute = "0";
+                    var startSecond = "0";
+                    var todayYear = today.getFullYear();
+                    var todayMonth = today.getMonth() + 1;
+                    var todayDate = today.getDate();
+                    var todayHour = today.getHours();
+                    var todayMinute = today.getMinutes();
+                    var todaySecond = today.getSeconds();
+                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
+                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
+                    var diff = t2 - t1;
+                    var diffYears = Math.floor(diff / years);
+                    var diffDays = Math.floor((diff / days) - diffYears * 365);
+                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
+                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
+                        minutes);
+                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
+                        diffMinutes * minutes) / seconds);
+                    if (startYear == todayYear) {
+                        document.getElementById("year").innerHTML = todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffDays + " 天 " + diffHours +
+                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    } else {
+                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffYears + " 年 " + diffDays +
+                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    }
+                }
+                setInterval(siteTime, 1000);
+            </script>
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://gitee.com/hongyuxuan2138" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:hongyx2014@126.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=392951721" class="tooltipped" target="_blank" data-tooltip="QQ联系我: 392951721" data-position="top" data-delay="50">
+        <i class="fab fa-qq"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="/blog/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    var searchFunc = function (path, search_id, content_id) {
+        'use strict';
+        $.ajax({
+            url: path,
+            dataType: "xml",
+            success: function (xmlResponse) {
+                // get the contents from search data
+                var datas = $("entry", xmlResponse).map(function () {
+                    return {
+                        title: $("title", this).text(),
+                        content: $("content", this).text(),
+                        url: $("url", this).text()
+                    };
+                }).get();
+                var $input = document.getElementById(search_id);
+                var $resultContent = document.getElementById(content_id);
+                $input.addEventListener('input', function () {
+                    var str = '<ul class=\"search-result-list\">';
+                    var keywords = this.value.trim().toLowerCase().split(/[\s\-]+/);
+                    $resultContent.innerHTML = "";
+                    if (this.value.trim().length <= 0) {
+                        return;
+                    }
+                    // perform local searching
+                    datas.forEach(function (data) {
+                        var isMatch = true;
+                        var data_title = data.title.trim().toLowerCase();
+                        var data_content = data.content.trim().replace(/<[^>]+>/g, "").toLowerCase();
+                        var data_url = data.url;
+                        data_url = data_url.indexOf('/') === 0 ? data.url : '/' + data_url;
+                        var index_title = -1;
+                        var index_content = -1;
+                        var first_occur = -1;
+                        // only match artiles with not empty titles and contents
+                        if (data_title !== '' && data_content !== '') {
+                            keywords.forEach(function (keyword, i) {
+                                index_title = data_title.indexOf(keyword);
+                                index_content = data_content.indexOf(keyword);
+                                if (index_title < 0 && index_content < 0) {
+                                    isMatch = false;
+                                } else {
+                                    if (index_content < 0) {
+                                        index_content = 0;
+                                    }
+                                    if (i === 0) {
+                                        first_occur = index_content;
+                                    }
+                                }
+                            });
+                        }
+                        // show search results
+                        if (isMatch) {
+                            str += "<li><a href='" + data_url + "' class='search-result-title'>" + data_title + "</a>";
+                            var content = data.content.trim().replace(/<[^>]+>/g, "");
+                            if (first_occur >= 0) {
+                                // cut out 100 characters
+                                var start = first_occur - 20;
+                                var end = first_occur + 80;
+                                if (start < 0) {
+                                    start = 0;
+                                }
+                                if (start === 0) {
+                                    end = 100;
+                                }
+                                if (end > content.length) {
+                                    end = content.length;
+                                }
+                                var match_content = content.substr(start, end);
+                                // highlight all keywords
+                                keywords.forEach(function (keyword) {
+                                    var regS = new RegExp(keyword, "gi");
+                                    match_content = match_content.replace(regS, "<em class=\"search-keyword\">" + keyword + "</em>");
+                                });
+
+                                str += "<p class=\"search-result\">" + match_content + "...</p>"
+                            }
+                            str += "</li>";
+                        }
+                    });
+                    str += "</ul>";
+                    $resultContent.innerHTML = str;
+                });
+            }
+        });
+    };
+
+    searchFunc('/blog/search.xml', 'searchInput', 'searchResult');
+});
+</script>
+
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/blog/libs/materialize/materialize.min.js"></script>
+    <script src="/blog/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/blog/libs/aos/aos.js"></script>
+    <script src="/blog/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/blog/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/blog/js/matery.js"></script>
+
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
+
+    
+    <script src="/blog/libs/others/clicklove.js" async="async"></script>
+    
+    
+    <script async src="/blog/libs/others/busuanzi.pure.mini.js"></script>
+    
+
+    
+
+    
+
+	
+    
+
+    
+
+    
+
+    
+    <script src="/blog/libs/instantpage/instantpage.js" type="module"></script>
+    
+
+</body>
+
+</html>
