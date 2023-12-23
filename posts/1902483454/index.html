@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="keywords" content="K8S二次开发系列之三：自定义开发Admission Webhook, 洪宇轩的博客">
-    <meta name="description" content="">
+    <meta name="description" content="本文教你如何自定义开发自己的admission webook，包括验证型准入控制器（validating admission webhook）和变更型准入控制器（mutating admission webhook）。">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -13,25 +13,46 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
     <title>K8S二次开发系列之三：自定义开发Admission Webhook | 洪宇轩的博客</title>
     <link rel="icon" type="image/png" href="/blog/favicon.png">
+    
 
-    <link rel="stylesheet" type="text/css" href="/blog/libs/awesome/css/all.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/materialize/materialize.min.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/aos/aos.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/animate/animate.min.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/lightGallery/css/lightgallery.min.css">
-    <link rel="stylesheet" type="text/css" href="/blog/css/matery.css">
-    <link rel="stylesheet" type="text/css" href="/blog/css/my.css">
 
-    <script src="/blog/libs/jquery/jquery.min.js"></script>
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/blog/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/blog/css/my.css">
+<link rel="stylesheet" type="text/css" href="/blog/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/blog/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/blog/css/post.css">
+
+
+
+
+    
+        <link rel="stylesheet" type="text/css" href="/blog/css/reward.css">
+    
+
+
+
+    <script src="/blog/libs/jquery/jquery-3.6.0.min.js"></script>
 
 <meta name="generator" content="Hexo 6.3.0"></head>
-
-
 
 
 <body>
@@ -133,6 +154,11 @@
       <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
     </a>
   </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
 </ul>
 
 
@@ -149,8 +175,6 @@
             
         </div>
     </div>
-
-    
 
     <ul class="menu-list mobile-menu-list">
         
@@ -328,99 +352,7 @@
 <main class="post-container content">
 
     
-    <link rel="stylesheet" href="/blog/libs/tocbot/tocbot.css">
-<style>
-    #articleContent h1::before,
-    #articleContent h2::before,
-    #articleContent h3::before,
-    #articleContent h4::before,
-    #articleContent h5::before,
-    #articleContent h6::before {
-        display: block;
-        content: " ";
-        height: 100px;
-        margin-top: -100px;
-        visibility: hidden;
-    }
-
-    #articleContent :focus {
-        outline: none;
-    }
-
-    .toc-fixed {
-        position: fixed;
-        top: 64px;
-    }
-
-    .toc-widget {
-        width: 345px;
-        padding-left: 20px;
-    }
-
-    .toc-widget .toc-title {
-        padding: 35px 0 15px 17px;
-        font-size: 1.5rem;
-        font-weight: bold;
-        line-height: 1.5rem;
-    }
-
-    .toc-widget ol {
-        padding: 0;
-        list-style: none;
-    }
-
-    #toc-content {
-        padding-bottom: 30px;
-        overflow: auto;
-    }
-
-    #toc-content ol {
-        padding-left: 10px;
-    }
-
-    #toc-content ol li {
-        padding-left: 10px;
-    }
-
-    #toc-content .toc-link:hover {
-        color: #42b983;
-        font-weight: 700;
-        text-decoration: underline;
-    }
-
-    #toc-content .toc-link::before {
-        background-color: transparent;
-        max-height: 25px;
-
-        position: absolute;
-        right: 23.5vw;
-        display: block;
-    }
-
-    #toc-content .is-active-link {
-        color: #42b983;
-    }
-
-    #floating-toc-btn {
-        position: fixed;
-        right: 15px;
-        bottom: 76px;
-        padding-top: 15px;
-        margin-bottom: 0;
-        z-index: 998;
-    }
-
-    #floating-toc-btn .btn-floating {
-        width: 48px;
-        height: 48px;
-    }
-
-    #floating-toc-btn .btn-floating i {
-        line-height: 48px;
-        font-size: 1.4rem;
-    }
-</style>
-<div class="row">
+    <div class="row">
     <div id="main-content" class="col s12 m12 l9">
         <!-- 文章内容详情 -->
 <div id="artDetail">
@@ -500,7 +432,7 @@
 
         
         <!-- 是否加载使用自带的 prismjs. -->
-        <link rel="stylesheet" href="/blog/libs/prism/prism.css">
+        <link rel="stylesheet" href="/blog/libs/prism/prism.min.css">
         
 
         
@@ -508,21 +440,27 @@
         <div class="card-content article-card-content">
             <div id="articleContent">
                 <p>Kubernetes默认提供了一些内置的准入控制器（Admission Webhook），它们负责管理集群中资源对象的创建、更新和删除。准入控制器可以调用Webhook服务，在创建Pod时更改配置（例如注入标签），或者在准入过程中验证Pod的配置，并给出<code>放行</code>或<code>拒绝</code>的响应。这种机制允许我们根据自定义逻辑在资源创建或更新的时候动态地修改其行为，从而为Kubernetes集群提供更灵活、更个性化的管理。</p>
-<p>准入控制器的工作流程如下图所示：<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fcustom%2F3.png"></p>
+<p>准入控制器的工作流程如下图所示：<br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fcustom%2F3.png" alt=""></p>
 <p>从上图中可知，Admission Webhooks有两种类型:</p>
 <ul>
 <li>Mutating Admission Webhooks：变更型准入控制器，用于在资源存储到etcd之前通过Mutating Webhooks对资源进行修改。例如注入一个sidecar、挂载一个volumeMounts等。</li>
 <li>Validating Admission Webhooks：验证型准入控制器，用于在资源存储到etcd之前通过Validating Webhooks对资源进行自定义策略验证。并返回<code>放行</code>或<code>拒绝</code>。</li>
 </ul>
 <p>本文将讲解这两种准入控制器的实现方式。</p>
-<h2 id="Webhook工作方式"><a href="#Webhook工作方式" class="headerlink" title="Webhook工作方式"></a>Webhook工作方式</h2><p>Admission Webhook和其它我们所熟知的webhook一样，说白了就是一个HTTP回调接口，Apiserver在收到一个资源的增删改查请求以后，会先去调用一下webhook，并附带上一个<code>AdmissionReview</code>类型的请求参数，然后我们自己实现这个webhook逻辑，再返回一个<code>AdmissionResponse</code>类型的返回值给Apiserver，Apiserver据此返回值来决定该资源是否要进行以及如何进行下一步操作。</p>
+<h2 id="Webhook工作方式">Webhook工作方式</h2>
+<p>Admission Webhook和其它我们所熟知的webhook一样，说白了就是一个HTTP回调接口，Apiserver在收到一个资源的增删改查请求以后，会先去调用一下webhook，并附带上一个<code>AdmissionReview</code>类型的请求参数，然后我们自己实现这个webhook逻辑，再返回一个<code>AdmissionResponse</code>类型的返回值给Apiserver，Apiserver据此返回值来决定该资源是否要进行以及如何进行下一步操作。</p>
 <p>既然是一个HTTP回调接口，我们就可以用任意语言（但仍然首选client-go框架）、任意Web框架来实现。</p>
 <p>另外，Apiserver规定了webhook接口必须是https的，Apiserver会以https的方式发送给webhook，因此http不能被接受。</p>
 <p>根据上述要求，我们最终选择go-gin框架来实现一个https接口。</p>
-<h2 id="生成自签CA证书和服务端证书"><a href="#生成自签CA证书和服务端证书" class="headerlink" title="生成自签CA证书和服务端证书"></a>生成自签CA证书和服务端证书</h2><p>有两种方式可以方便的生成自签CA证书和服务端证书：cfssl工具和openssl工具。</p>
-<h3 id="cfssl"><a href="#cfssl" class="headerlink" title="cfssl"></a>cfssl</h3><p><a target="_blank" rel="noopener" href="https://github.com/cloudflare/cfssl/releases/download/v1.6.1/cfssl_1.6.1_linux_amd64">点我下载cfssl</a><br><a target="_blank" rel="noopener" href="https://github.com/cloudflare/cfssl/releases/download/v1.6.1/cfssljson_1.6.1_linux_amd64">点我下载cfssljson</a></p>
+<h2 id="生成自签CA证书和服务端证书">生成自签CA证书和服务端证书</h2>
+<p>有两种方式可以方便的生成自签CA证书和服务端证书：cfssl工具和openssl工具。</p>
+<h3 id="cfssl">cfssl</h3>
+<p><a target="_blank" rel="noopener" href="https://github.com/cloudflare/cfssl/releases/download/v1.6.1/cfssl_1.6.1_linux_amd64">点我下载cfssl</a><br>
+<a target="_blank" rel="noopener" href="https://github.com/cloudflare/cfssl/releases/download/v1.6.1/cfssljson_1.6.1_linux_amd64">点我下载cfssljson</a></p>
 <ol>
-<li><p>创建CA证书机构配置文件ca-config.json</p>
+<li>创建CA证书机构配置文件ca-config.json</li>
+</ol>
 <pre class="line-numbers language-json" data-language="json"><div class="caption"><span>ca-config.json</span></div><code class="language-json"><span class="token punctuation">&#123;</span>
   <span class="token property">"signing"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
     <span class="token property">"default"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
@@ -536,8 +474,9 @@
     <span class="token punctuation">&#125;</span>
   <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-</li>
-<li><p>创建CA证书请求配置文件ca-csr.json</p>
+<ol start="2">
+<li>创建CA证书请求配置文件ca-csr.json</li>
+</ol>
 <pre class="line-numbers language-json" data-language="json"><div class="caption"><span>ca-csr.json</span></div><code class="language-json"><span class="token punctuation">&#123;</span>
     <span class="token property">"CA"</span><span class="token operator">:</span><span class="token punctuation">&#123;</span><span class="token property">"expiry"</span><span class="token operator">:</span><span class="token string">"876000h"</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
     <span class="token property">"CN"</span><span class="token operator">:</span> <span class="token string">"kubernetes"</span><span class="token punctuation">,</span>
@@ -555,8 +494,9 @@
         <span class="token punctuation">&#125;</span>
     <span class="token punctuation">]</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-</li>
-<li><p>生成CA证书和私钥</p>
+<ol start="3">
+<li>生成CA证书和私钥</li>
+</ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## cfssl gencert -initca ca-csr.json | cfssljson -bare ca</span>
 <span class="token number">2023</span>/12/13 <span class="token number">15</span>:18:40 <span class="token punctuation">[</span>INFO<span class="token punctuation">]</span> generating a new CA key and certificate from CSR
 <span class="token number">2023</span>/12/13 <span class="token number">15</span>:18:40 <span class="token punctuation">[</span>INFO<span class="token punctuation">]</span> generate received request
@@ -565,8 +505,9 @@
 <span class="token number">2023</span>/12/13 <span class="token number">15</span>:18:40 <span class="token punctuation">[</span>INFO<span class="token punctuation">]</span> encoded CSR
 <span class="token number">2023</span>/12/13 <span class="token number">15</span>:18:40 <span class="token punctuation">[</span>INFO<span class="token punctuation">]</span> signed certificate with serial number <span class="token number">237767326485485052000983960416676961846303085620</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>执行完后生成<code>ca.pem</code>和<code>ca-key.pem</code></p>
-</li>
-<li><p>创建服务端证书请求配置文件tls-csr.json</p>
+<ol start="4">
+<li>创建服务端证书请求配置文件tls-csr.json</li>
+</ol>
 <pre class="line-numbers language-json" data-language="json"><div class="caption"><span>tls-csr.json</span></div><code class="language-json"><span class="token punctuation">&#123;</span>
   <span class="token property">"CN"</span><span class="token operator">:</span> <span class="token string">"admission"</span><span class="token punctuation">,</span>
   <span class="token property">"key"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
@@ -589,9 +530,10 @@
     <span class="token string">"192.168.126.100"</span>
   <span class="token punctuation">]</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>最重要的就是hosts字段，webhook要部署到哪个域名&#x2F;IP下，就得把对应的域名&#x2F;IP写进csr。</p>
-</li>
-<li><p>用前一步生成的CA证书签发服务端证书和私钥</p>
+<p>最重要的就是hosts字段，webhook要部署到哪个域名/IP下，就得把对应的域名/IP写进csr。</p>
+<ol start="5">
+<li>用前一步生成的CA证书签发服务端证书和私钥</li>
+</ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## cfssl gencert -ca ca.pem -ca-key ca-key.pem -config ca-config.json -profile server tls-csr.json | cfssljson -bare tls</span>
 <span class="token number">2023</span>/12/13 <span class="token number">15</span>:24:01 <span class="token punctuation">[</span>INFO<span class="token punctuation">]</span> generate received request
 <span class="token number">2023</span>/12/13 <span class="token number">15</span>:24:01 <span class="token punctuation">[</span>INFO<span class="token punctuation">]</span> received CSR
@@ -599,16 +541,16 @@
 <span class="token number">2023</span>/12/13 <span class="token number">15</span>:24:02 <span class="token punctuation">[</span>INFO<span class="token punctuation">]</span> encoded CSR
 <span class="token number">2023</span>/12/13 <span class="token number">15</span>:24:02 <span class="token punctuation">[</span>INFO<span class="token punctuation">]</span> signed certificate with serial number <span class="token number">724880176019206124126086747821903513868891190856</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>执行完以后生成<code>tls.pem</code>和<code>tls-key.pem</code>，这两个就是我们需要的服务端证书和私钥文件。</p>
-</li>
-</ol>
 <p>如果webhook是单独部署，只要启动的时候能找到这两个文件就行。如果webhook以deployment形式部署到K8S，可以再用secret对象来存放这两个文件，然后再挂载进deployment：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl create secret tls admission-certs <span class="token parameter variable">--key</span><span class="token operator">=</span>tls-key.pem <span class="token parameter variable">--cert</span><span class="token operator">=</span>tls.pem<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<h3 id="openssl"><a href="#openssl" class="headerlink" title="openssl"></a>openssl</h3><ol>
-<li><p>生成CA私钥</p>
+<h3 id="openssl">openssl</h3>
+<ol>
+<li>生成CA私钥</li>
+</ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">openssl genrsa <span class="token parameter variable">-out</span> ca.key <span class="token number">4096</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-</li>
-<li><p>准备CA证书配置文件ca.conf</p>
+<ol start="2">
+<li>准备CA证书配置文件ca.conf</li>
+</ol>
 <pre class="line-numbers language-conf" data-language="conf"><div class="caption"><span>ca.conf</span></div><code class="language-conf">[ req ]
 default_bits       &#x3D; 4096
 distinguished_name &#x3D; req_distinguished_name
@@ -625,17 +567,21 @@ organizationName_default    &#x3D; Kubernetes
 commonName                  &#x3D; Common Name (e.g. server FQDN or YOUR name)
 commonName_max              &#x3D; 64
 commonName_default          &#x3D; podaffinity-webhook-server.kube-system<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-</li>
-<li><p>生成CA证书请求文件</p>
+<ol start="3">
+<li>生成CA证书请求文件</li>
+</ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">openssl req <span class="token parameter variable">-new</span> <span class="token parameter variable">-sha256</span> <span class="token parameter variable">-out</span> ca.csr <span class="token parameter variable">-key</span> ca.key <span class="token parameter variable">-config</span> ca.conf<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-</li>
-<li><p>生成CA证书</p>
+<ol start="4">
+<li>生成CA证书</li>
+</ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">openssl x509 <span class="token parameter variable">-req</span> <span class="token parameter variable">-days</span> <span class="token number">3650</span> <span class="token parameter variable">-in</span> ca.csr <span class="token parameter variable">-signkey</span> ca.key <span class="token parameter variable">-out</span> ca.crt<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-</li>
-<li><p>生成服务端私钥</p>
+<ol start="5">
+<li>生成服务端私钥</li>
+</ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">openssl genrsa <span class="token parameter variable">-out</span> tls.key <span class="token number">2048</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-</li>
-<li><p>准备服务端证书配置文件tls.conf</p>
+<ol start="6">
+<li>准备服务端证书配置文件tls.conf</li>
+</ol>
 <pre class="line-numbers language-conf" data-language="conf"><div class="caption"><span>tls.conf</span></div><code class="language-conf">[ req ]
 default_bits       &#x3D; 2048
 distinguished_name &#x3D; req_distinguished_name
@@ -661,23 +607,27 @@ subjectAltName &#x3D; @alt_names
 DNS.1   &#x3D; podaffinity-webhook-server
 DNS.2   &#x3D; podaffinity-webhook-server.kube-system
 DNS.3   &#x3D; podaffinity-webhook-server.kube-system.svc<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>alt_names和上面cfssl的hosts是一样的，webhook要部署到哪个域名&#x2F;IP下，就得把对应的域名&#x2F;IP写进去</p>
-</li>
-<li><p>生成服务端证书请求文件</p>
+<p>alt_names和上面cfssl的hosts是一样的，webhook要部署到哪个域名/IP下，就得把对应的域名/IP写进去</p>
+<ol start="7">
+<li>生成服务端证书请求文件</li>
+</ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">openssl req <span class="token parameter variable">-new</span> <span class="token parameter variable">-sha256</span> <span class="token parameter variable">-out</span> tls.csr <span class="token parameter variable">-key</span> tls.key <span class="token parameter variable">-config</span> tls.conf<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-</li>
-<li><p>用前一步生成的CA证书签发服务端证书</p>
+<ol start="8">
+<li>用前一步生成的CA证书签发服务端证书</li>
+</ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">openssl x509 <span class="token parameter variable">-req</span> <span class="token parameter variable">-days</span> <span class="token number">3650</span> <span class="token parameter variable">-CA</span> ca.crt <span class="token parameter variable">-CAkey</span> ca.key <span class="token parameter variable">-CAcreateserial</span> <span class="token parameter variable">-in</span> tls.csr <span class="token parameter variable">-out</span> tls.crt <span class="token parameter variable">-extensions</span> req_ext <span class="token parameter variable">-extfile</span> tls.conf<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>执行完以后生成<code>tls.crt</code>和<code>tls.key</code>两个文件即服务端证书和私钥。</p>
-</li>
-</ol>
 <p>现在服务端证书和私钥都准备好了，开始编写webhook逻辑。</p>
-<h2 id="Mutating-Admission-Webhook"><a href="#Mutating-Admission-Webhook" class="headerlink" title="Mutating Admission Webhook"></a>Mutating Admission Webhook</h2><p>本节将实现一个注入逻辑，给提交上来的Pod自动添加反亲和性配置<code>podAntiAffinity</code></p>
-<h3 id="编写代码逻辑"><a href="#编写代码逻辑" class="headerlink" title="编写代码逻辑"></a>编写代码逻辑</h3><ol>
-<li><p>新建一个工程目录podaffinity-webhook-server并初始化mod</p>
+<h2 id="Mutating-Admission-Webhook">Mutating Admission Webhook</h2>
+<p>本节将实现一个注入逻辑，给提交上来的Pod自动添加反亲和性配置<code>podAntiAffinity</code></p>
+<h3 id="编写代码逻辑">编写代码逻辑</h3>
+<ol>
+<li>新建一个工程目录podaffinity-webhook-server并初始化mod</li>
+</ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">mkdir</span> podaffinity-webhook-server <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">cd</span> podaffinity-webhook-server <span class="token operator">&amp;&amp;</span> go mod init podaffinity<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-</li>
-<li><p>按以下目录组织</p>
+<ol start="2">
+<li>按以下目录组织</li>
+</ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## tree -L 1 podaffinity-webhook-server</span>
 podaffinity-webhook-server
 ├── bin
@@ -689,8 +639,6 @@ podaffinity-webhook-server
 ├── manifest
 └── types<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>certs目录里面放前面生成好的服务端证书和私钥。manifest目录放置一会要用到的yaml文件。因为逻辑比较简单，所有代码都写在main.go里。</p>
-</li>
-</ol>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">var</span> <span class="token punctuation">(</span>
 	certFile         <span class="token operator">=</span> kingpin<span class="token punctuation">.</span><span class="token function">Flag</span><span class="token punctuation">(</span><span class="token string">"certFile"</span><span class="token punctuation">,</span> <span class="token string">"SSL certificate file."</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Short</span><span class="token punctuation">(</span><span class="token char">'c'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Required</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 	keyFile          <span class="token operator">=</span> kingpin<span class="token punctuation">.</span><span class="token function">Flag</span><span class="token punctuation">(</span><span class="token string">"keyFile"</span><span class="token punctuation">,</span> <span class="token string">"SSL certificate key file."</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Short</span><span class="token punctuation">(</span><span class="token char">'k'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Required</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
@@ -752,7 +700,7 @@ podaffinity-webhook-server
 	server <span class="token operator">:=</span> <span class="token operator">&amp;</span>http<span class="token punctuation">.</span>Server<span class="token punctuation">&#123;</span>Addr<span class="token punctuation">:</span> <span class="token operator">*</span>listeningAddress<span class="token punctuation">,</span> Handler<span class="token punctuation">:</span> router<span class="token punctuation">&#125;</span>
 	server<span class="token punctuation">.</span><span class="token function">ListenAndServeTLS</span><span class="token punctuation">(</span><span class="token operator">*</span>certFile<span class="token punctuation">,</span> <span class="token operator">*</span>keyFile<span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>使用gin框架，注册了一个handler叫&#x2F;mutate，收到的请求参数是一个json，将其作为参数传递给主要函数逻辑mutate。下来看一下这个mutate函数：</p>
+<p>使用gin框架，注册了一个handler叫/mutate，收到的请求参数是一个json，将其作为参数传递给主要函数逻辑mutate。下来看一下这个mutate函数：</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">mutate</span><span class="token punctuation">(</span>body <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
 	admReview <span class="token operator">:=</span> admissionv1<span class="token punctuation">.</span>AdmissionReview<span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
 	<span class="token keyword">if</span> err <span class="token operator">:=</span> json<span class="token punctuation">.</span><span class="token function">Unmarshal</span><span class="token punctuation">(</span>body<span class="token punctuation">,</span> <span class="token operator">&amp;</span>admReview<span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
@@ -836,14 +784,14 @@ podaffinity-webhook-server
 	Path  <span class="token builtin">string</span>      <span class="token string">`json:"path"`</span>
 	Value <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span> <span class="token string">`json:"value,omitempty"`</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>本例就注入了一个反亲和性配置。当然我们可以在mutate逻辑里随意注入其它属性字段，比如注入sidecar等。</p>
 <p>接口最终需要返回一个<code>AdmissionResponse</code>类型的返回值，该类型指定了几个必要的属性：<code>UID</code>、<code>Allowed</code>、<code>Result</code>，最终将<code>AdmissionResponse</code>封装到<code>admReview.Response</code>里返回给Apiserver。</p>
-<h3 id="部署webhook"><a href="#部署webhook" class="headerlink" title="部署webhook"></a>部署webhook</h3><p>podaffinity-webhook-server写好以后可以独立于集群之外运行（也可以deployment形式部署于集群内运行），编译及启动方式：</p>
+<h3 id="部署webhook">部署webhook</h3>
+<p>podaffinity-webhook-server写好以后可以独立于集群之外运行（也可以deployment形式部署于集群内运行），编译及启动方式：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">go build <span class="token parameter variable">-o</span> bin/podaffinity-webhook-server
 ./bin/podaffinity-webhook-server <span class="token parameter variable">-c</span> certs/tls.pem <span class="token parameter variable">-k</span> certs/tls-key.pem<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<h3 id="注册Mutating-Webhook到集群"><a href="#注册Mutating-Webhook到集群" class="headerlink" title="注册Mutating Webhook到集群"></a>注册Mutating Webhook到集群</h3><p>在manifest目录下创建文件mutatingwebhookconfig.yaml</p>
+<h3 id="注册Mutating-Webhook到集群">注册Mutating Webhook到集群</h3>
+<p>在manifest目录下创建文件mutatingwebhookconfig.yaml</p>
 <pre class="line-numbers language-yaml" data-language="yaml"><div class="caption"><span>manifest/mutatingwebhookconfig.yaml</span></div><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> admissionregistration.k8s.io/v1
 <span class="token key atrule">kind</span><span class="token punctuation">:</span> MutatingWebhookConfiguration
 <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
@@ -879,9 +827,10 @@ podaffinity-webhook-server
 <p>把这个文件提交到K8S，然后给某ns打上label</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl apply <span class="token parameter variable">-f</span> manifest/mutatingwebhookconfig.yaml
 kubectl label ns default podaffinity-webhook-admission-injection<span class="token operator">=</span>enabled<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><p>在default下面随便提交一个deployment，看Pod是否自动补充了两个volumes。</p>
-<h3 id="可能遇到的问题"><a href="#可能遇到的问题" class="headerlink" title="可能遇到的问题"></a>可能遇到的问题</h3><p>如果Pod没建出来的话，一定要describe replicasets看看event：</p>
+<h3 id="测试">测试</h3>
+<p>在default下面随便提交一个deployment，看Pod是否自动补充了两个volumes。</p>
+<h3 id="可能遇到的问题">可能遇到的问题</h3>
+<p>如果Pod没建出来的话，一定要describe replicasets看看event：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## kubectl describe replicasets.apps nginx-5776d4fd9d -n default</span>
 ……
 Events:
@@ -892,15 +841,16 @@ Events:
   Warning  FailedCreate  9m28s <span class="token punctuation">(</span>x2 over 26m<span class="token punctuation">)</span>  replicaset-controller  Error creating: Internal error occurred: failed calling webhook <span class="token string">"podaffinity-webhook-server.kube-system.svc"</span><span class="token builtin class-name">:</span> failed to call webhook: Post <span class="token string">"https://podaffinity-webhook-server.kube-system.svc:443/mutate?timeout=10s"</span><span class="token builtin class-name">:</span> x509: certificate signed by unknown authority<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>原因：</p>
 <ul>
-<li>在创建服务端证书请求文件的时候，hosts里没有加入对应的域名&#x2F;IP，重新生成证书请求文件、证书即可。</li>
+<li>在创建服务端证书请求文件的时候，hosts里没有加入对应的域名/IP，重新生成证书请求文件、证书即可。</li>
 <li>没有找到service，创建service即可。</li>
 <li>caBundle的内容和服务端证书不匹配，按照前面的步骤重新生成。</li>
 </ul>
 <blockquote><p>本例完整代码参见：<a target="_blank" rel="noopener" href="https://gitee.com/hongyuxuan2138/podaffinity-webhook-server">https://gitee.com/hongyuxuan2138/podaffinity-webhook-server</a></p>
 </blockquote>
-
-<h2 id="Validating-Admission-Webhook"><a href="#Validating-Admission-Webhook" class="headerlink" title="Validating Admission Webhook"></a>Validating Admission Webhook</h2><p>本节将实现一个验证型准入控制器逻辑，判断提交上来的Pod的image是否含有nginx子串，如果有则拒绝这个资源请求。</p>
-<h3 id="编写代码逻辑-1"><a href="#编写代码逻辑-1" class="headerlink" title="编写代码逻辑"></a>编写代码逻辑</h3><p>main函数和mutating adminission webhook基本一样，只不过<code>/mutate</code>换成了<code>/validate</code></p>
+<h2 id="Validating-Admission-Webhook">Validating Admission Webhook</h2>
+<p>本节将实现一个验证型准入控制器逻辑，判断提交上来的Pod的image是否含有nginx子串，如果有则拒绝这个资源请求。</p>
+<h3 id="编写代码逻辑-2">编写代码逻辑</h3>
+<p>main函数和mutating adminission webhook基本一样，只不过<code>/mutate</code>换成了<code>/validate</code></p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">var</span> <span class="token punctuation">(</span>
 	certFile         <span class="token operator">=</span> kingpin<span class="token punctuation">.</span><span class="token function">Flag</span><span class="token punctuation">(</span><span class="token string">"certFile"</span><span class="token punctuation">,</span> <span class="token string">"SSL certificate file."</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Short</span><span class="token punctuation">(</span><span class="token char">'c'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Required</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 	keyFile          <span class="token operator">=</span> kingpin<span class="token punctuation">.</span><span class="token function">Flag</span><span class="token punctuation">(</span><span class="token string">"keyFile"</span><span class="token punctuation">,</span> <span class="token string">"SSL certificate key file."</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Short</span><span class="token punctuation">(</span><span class="token char">'k'</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Required</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
@@ -962,7 +912,6 @@ Events:
 	server <span class="token operator">:=</span> <span class="token operator">&amp;</span>http<span class="token punctuation">.</span>Server<span class="token punctuation">&#123;</span>Addr<span class="token punctuation">:</span> <span class="token operator">*</span>listeningAddress<span class="token punctuation">,</span> Handler<span class="token punctuation">:</span> router<span class="token punctuation">&#125;</span>
 	server<span class="token punctuation">.</span><span class="token function">ListenAndServeTLS</span><span class="token punctuation">(</span><span class="token operator">*</span>certFile<span class="token punctuation">,</span> <span class="token operator">*</span>keyFile<span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>validate函数如下：</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">validate</span><span class="token punctuation">(</span>body <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
 	admReview <span class="token operator">:=</span> admissionv1<span class="token punctuation">.</span>AdmissionReview<span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
@@ -1017,9 +966,10 @@ Events:
 	<span class="token punctuation">&#125;</span>
 	<span class="token keyword">return</span> responseBody<span class="token punctuation">,</span> <span class="token boolean">nil</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h3 id="部署webhook-1"><a href="#部署webhook-1" class="headerlink" title="部署webhook"></a>部署webhook</h3><p>略</p>
-<h3 id="注册Validate-Webhook到集群"><a href="#注册Validate-Webhook到集群" class="headerlink" title="注册Validate Webhook到集群"></a>注册Validate Webhook到集群</h3><p>在manifest目录下创建文件validatingwebhookconfig.yaml</p>
+<h3 id="部署webhook-2">部署webhook</h3>
+<p>略</p>
+<h3 id="注册Validate-Webhook到集群">注册Validate Webhook到集群</h3>
+<p>在manifest目录下创建文件validatingwebhookconfig.yaml</p>
 <pre class="line-numbers language-yaml" data-language="yaml"><div class="caption"><span>manifest/validatingwebhookconfig.yaml</span></div><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> admissionregistration.k8s.io/v1
 <span class="token key atrule">kind</span><span class="token punctuation">:</span> ValidatingWebhookConfiguration
 <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
@@ -1040,15 +990,14 @@ Events:
   <span class="token key atrule">namespaceSelector</span><span class="token punctuation">:</span>
     <span class="token key atrule">matchLabels</span><span class="token punctuation">:</span>
       <span class="token key atrule">podaffinity-webhook-admission-injection</span><span class="token punctuation">:</span> enabled<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>提交这个yaml文件到集群，即完成注册。</p>
-<h3 id="测试-1"><a href="#测试-1" class="headerlink" title="测试"></a>测试</h3><p>在default下面提交一个deployment，image设置成nginx:1.21.4，看该请求是否被拒绝。</p>
+<h3 id="测试-2">测试</h3>
+<p>在default下面提交一个deployment，image设置成nginx:1.21.4，看该请求是否被拒绝。</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## kubectl describe replicasets.apps nginx-5776d4fd9d -n default</span>
 Events:
   Type     Reason        Age                From                   Message
   ----     ------        ----               ----                   -------
   Warning  FailedCreate  2s <span class="token punctuation">(</span>x14 over 43s<span class="token punctuation">)</span>  replicaset-controller  Error creating: admission webhook <span class="token string">"image-webhook-server.kube-system.svc"</span> denied the request: Image<span class="token punctuation">[</span>nginx:1.21.4<span class="token punctuation">]</span> <span class="token function">which</span> has <span class="token string">'nginx'</span> str is not allowed<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <blockquote><p>本例完整代码参见：<a target="_blank" rel="noopener" href="https://gitee.com/hongyuxuan2138/image-webhook-server">https://gitee.com/hongyuxuan2138/image-webhook-server</a></p>
 </blockquote>
                 
@@ -1141,100 +1090,7 @@ Events:
                 </div>
             </div>
             
-                <style>
-    #reward {
-        margin: 40px 0;
-        text-align: center;
-    }
-
-    #reward .reward-link {
-        font-size: 1.4rem;
-        line-height: 38px;
-    }
-
-    #reward .btn-floating:hover {
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    #rewardModal {
-        width: 320px;
-        height: 350px;
-    }
-
-    #rewardModal .reward-title {
-        margin: 15px auto;
-        padding-bottom: 5px;
-    }
-
-    #rewardModal .modal-content {
-        padding: 10px;
-    }
-
-    #rewardModal .close {
-        position: absolute;
-        right: 15px;
-        top: 15px;
-        color: rgba(0, 0, 0, 0.5);
-        font-size: 1.3rem;
-        line-height: 20px;
-        cursor: pointer;
-    }
-
-    #rewardModal .close:hover {
-        color: #ef5350;
-        transform: scale(1.3);
-        -moz-transform:scale(1.3);
-        -webkit-transform:scale(1.3);
-        -o-transform:scale(1.3);
-    }
-
-    #rewardModal .reward-tabs {
-        margin: 0 auto;
-        width: 210px;
-    }
-
-    .reward-tabs .tabs {
-        height: 38px;
-        margin: 10px auto;
-        padding-left: 0;
-    }
-
-    .reward-content ul {
-        padding-left: 0 !important;
-    }
-
-    .reward-tabs .tabs .tab {
-        height: 38px;
-        line-height: 38px;
-    }
-
-    .reward-tabs .tab a {
-        color: #fff;
-        background-color: #ccc;
-    }
-
-    .reward-tabs .tab a:hover {
-        background-color: #ccc;
-        color: #fff;
-    }
-
-    .reward-tabs .wechat-tab .active {
-        color: #fff !important;
-        background-color: #22AB38 !important;
-    }
-
-    .reward-tabs .alipay-tab .active {
-        color: #fff !important;
-        background-color: #019FE8 !important;
-    }
-
-    .reward-tabs .reward-img {
-        width: 210px;
-        height: 210px;
-    }
-</style>
-
-<div id="reward">
+                <div id="reward">
     <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
 
     <!-- Modal Structure -->
@@ -1249,10 +1105,10 @@ Events:
                         <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
                     </ul>
                     <div id="alipay">
-                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2F%E6%89%93%E8%B5%8F%2Falipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                        <img src="/blog/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
                     </div>
                     <div id="wechat">
-                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2F%E6%89%93%E8%B5%8F%2Fweixin.jpg" class="reward-img" alt="微信打赏二维码">
+                        <img src="/blog/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
                     </div>
                 </div>
             </div>
@@ -1269,6 +1125,8 @@ Events:
             
         </div>
     </div>
+
+    
 
     
 
@@ -1413,6 +1271,11 @@ Events:
 <!-- 代码块功能依赖 -->
 <script type="text/javascript" src="/blog/libs/codeBlock/codeBlockFuction.js"></script>
 
+
+  <!-- 是否加载使用自带的 prismjs. -->
+  <script type="text/javascript" src="/blog/libs/prism/prism.min.js"></script>
+
+
 <!-- 代码语言 -->
 
 <script type="text/javascript" src="/blog/libs/codeBlock/codeLang.js"></script>
@@ -1426,6 +1289,7 @@ Events:
 <!-- 代码块收缩 -->
 
 <script type="text/javascript" src="/blog/libs/codeBlock/codeShrink.js"></script>
+
 
 
     </div>
@@ -1455,19 +1319,6 @@ Events:
             headingsOffset: -($(window).height() * 0.4 - 45),
             collapseDepth: Number('0'),
             headingSelector: 'h2, h3, h4'
-        });
-
-        // modify the toc link href to support Chinese.
-        let i = 0;
-        let tocHeading = 'toc-heading-';
-        $('#toc-content a').each(function () {
-            $(this).attr('href', '#' + tocHeading + (++i));
-        });
-
-        // modify the heading title id to support Chinese.
-        i = 0;
-        $('#articleContent').children('h2, h3, h4').each(function () {
-            $(this).attr('id', tocHeading + (++i));
         });
 
         // Set scroll toc fixed.
@@ -1582,85 +1433,45 @@ Events:
 </div>
 
 <script src="/blog/libs/aplayer/APlayer.min.js"></script>
-<script src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/resources%2Fjs%2FMeting.min.js"></script>
+<script src="/blog/libs/aplayer/Meting.min.js"></script>
 
     
-    <div class="container row center-align" style="margin-bottom: 15px !important;">
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
         <div class="col s12 m8 l8 copy-right">
             Copyright&nbsp;&copy;
             
                 <span id="year">2021-2023</span>
             
-            <span id="year">2021</span>
             <a href="/blog/about" target="_blank">洪宇轩</a>
             |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
             |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
-            <br>
-            
-            &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">44.4k</span>&nbsp;字
-            
-            
-            
-            
-            
-            
-            <span id="busuanzi_container_site_pv">
-                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
-                    class="white-color"></span>&nbsp;次
-            </span>
-            
-            
-            <span id="busuanzi_container_site_uv">
-                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
-                    class="white-color"></span>&nbsp;人
-            </span>
             
             <br>
             
-            <span id="sitetime">载入运行时间...</span>
-            <script>
-                function siteTime() {
-                    var seconds = 1000;
-                    var minutes = seconds * 60;
-                    var hours = minutes * 60;
-                    var days = hours * 24;
-                    var years = days * 365;
-                    var today = new Date();
-                    var startYear = "2021";
-                    var startMonth = "6";
-                    var startDate = "28";
-                    var startHour = "0";
-                    var startMinute = "0";
-                    var startSecond = "0";
-                    var todayYear = today.getFullYear();
-                    var todayMonth = today.getMonth() + 1;
-                    var todayDate = today.getDate();
-                    var todayHour = today.getHours();
-                    var todayMinute = today.getMinutes();
-                    var todaySecond = today.getSeconds();
-                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
-                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
-                    var diff = t2 - t1;
-                    var diffYears = Math.floor(diff / years);
-                    var diffDays = Math.floor((diff / days) - diffYears * 365);
-                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
-                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
-                        minutes);
-                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
-                        diffMinutes * minutes) / seconds);
-                    if (startYear == todayYear) {
-                        document.getElementById("year").innerHTML = todayYear;
-                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffDays + " 天 " + diffHours +
-                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
-                    } else {
-                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
-                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffYears + " 年 " + diffDays +
-                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
-                    }
-                }
-                setInterval(siteTime, 1000);
-            </script>
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">44.4k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
             
             <br>
             
@@ -1807,6 +1618,30 @@ $(function () {
 });
 </script>
 
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
     <!-- 回到顶部按钮 -->
 <div id="backTop" class="top-scroll">
     <a class="btn-floating btn-large waves-effect waves-light" href="#!">
@@ -1821,6 +1656,32 @@ $(function () {
     <script src="/blog/libs/scrollprogress/scrollProgress.min.js"></script>
     <script src="/blog/libs/lightGallery/js/lightgallery-all.min.js"></script>
     <script src="/blog/js/matery.js"></script>
+
+    
+        <!-- <script src='https://unpkg.com/mermaid@latest/dist/mermaid.min.js'></script> -->
+        <script src='/blog/libs/mermaid/mermaid.min.js'></script>
+        <script>
+          if (window.mermaid) {
+            mermaid.initialize({theme: 'forest'});
+          }
+        </script>
+    
+
+    
+    
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+     
+        <script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
+        <script src="/blog/libs/others/TencentCaptcha.js"></script>
+        <button id="TencentCaptcha" data-appid="xxxxxxxxxx" data-cbfn="callback" type="button" hidden></button>
+    
 
     <!-- Baidu Analytics -->
 
@@ -1851,7 +1712,8 @@ $(function () {
 
     
 
-	
+    <!--腾讯兔小巢-->
+    
     
 
     

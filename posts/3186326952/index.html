@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="keywords" content="Istio系列文章之（一）基本原理介绍, 洪宇轩的博客">
-    <meta name="description" content="">
+    <meta name="description" content="Servicemesh即服务网格，是微服务发展到一定阶段后产生的新的架构，微服务之间互联互通形成了网状结构。Istio是CNCF的孵化项目，是Servicemesh架构的一种实现。">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -13,25 +13,46 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
     <title>Istio系列文章之（一）基本原理介绍 | 洪宇轩的博客</title>
     <link rel="icon" type="image/png" href="/blog/favicon.png">
+    
 
-    <link rel="stylesheet" type="text/css" href="/blog/libs/awesome/css/all.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/materialize/materialize.min.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/aos/aos.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/animate/animate.min.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/lightGallery/css/lightgallery.min.css">
-    <link rel="stylesheet" type="text/css" href="/blog/css/matery.css">
-    <link rel="stylesheet" type="text/css" href="/blog/css/my.css">
 
-    <script src="/blog/libs/jquery/jquery.min.js"></script>
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/blog/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/blog/css/my.css">
+<link rel="stylesheet" type="text/css" href="/blog/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/blog/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/blog/css/post.css">
+
+
+
+
+    
+        <link rel="stylesheet" type="text/css" href="/blog/css/reward.css">
+    
+
+
+
+    <script src="/blog/libs/jquery/jquery-3.6.0.min.js"></script>
 
 <meta name="generator" content="Hexo 6.3.0"></head>
-
-
 
 
 <body>
@@ -133,6 +154,11 @@
       <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
     </a>
   </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
 </ul>
 
 
@@ -149,8 +175,6 @@
             
         </div>
     </div>
-
-    
 
     <ul class="menu-list mobile-menu-list">
         
@@ -328,99 +352,7 @@
 <main class="post-container content">
 
     
-    <link rel="stylesheet" href="/blog/libs/tocbot/tocbot.css">
-<style>
-    #articleContent h1::before,
-    #articleContent h2::before,
-    #articleContent h3::before,
-    #articleContent h4::before,
-    #articleContent h5::before,
-    #articleContent h6::before {
-        display: block;
-        content: " ";
-        height: 100px;
-        margin-top: -100px;
-        visibility: hidden;
-    }
-
-    #articleContent :focus {
-        outline: none;
-    }
-
-    .toc-fixed {
-        position: fixed;
-        top: 64px;
-    }
-
-    .toc-widget {
-        width: 345px;
-        padding-left: 20px;
-    }
-
-    .toc-widget .toc-title {
-        padding: 35px 0 15px 17px;
-        font-size: 1.5rem;
-        font-weight: bold;
-        line-height: 1.5rem;
-    }
-
-    .toc-widget ol {
-        padding: 0;
-        list-style: none;
-    }
-
-    #toc-content {
-        padding-bottom: 30px;
-        overflow: auto;
-    }
-
-    #toc-content ol {
-        padding-left: 10px;
-    }
-
-    #toc-content ol li {
-        padding-left: 10px;
-    }
-
-    #toc-content .toc-link:hover {
-        color: #42b983;
-        font-weight: 700;
-        text-decoration: underline;
-    }
-
-    #toc-content .toc-link::before {
-        background-color: transparent;
-        max-height: 25px;
-
-        position: absolute;
-        right: 23.5vw;
-        display: block;
-    }
-
-    #toc-content .is-active-link {
-        color: #42b983;
-    }
-
-    #floating-toc-btn {
-        position: fixed;
-        right: 15px;
-        bottom: 76px;
-        padding-top: 15px;
-        margin-bottom: 0;
-        z-index: 998;
-    }
-
-    #floating-toc-btn .btn-floating {
-        width: 48px;
-        height: 48px;
-    }
-
-    #floating-toc-btn .btn-floating i {
-        line-height: 48px;
-        font-size: 1.4rem;
-    }
-</style>
-<div class="row">
+    <div class="row">
     <div id="main-content" class="col s12 m12 l9">
         <!-- 文章内容详情 -->
 <div id="artDetail">
@@ -496,7 +428,7 @@
 
         
         <!-- 是否加载使用自带的 prismjs. -->
-        <link rel="stylesheet" href="/blog/libs/prism/prism.css">
+        <link rel="stylesheet" href="/blog/libs/prism/prism.min.css">
         
 
         
@@ -505,16 +437,19 @@
             <div id="articleContent">
                 <blockquote><p>Istio: An open platform to connect, secure, control and observe services.</p>
 </blockquote>
-
-<h2 id="什么是-service-mesh"><a href="#什么是-service-mesh" class="headerlink" title="什么是 service mesh"></a>什么是 service mesh</h2><p>在业务规模化和研发效能提升等因素的驱动下，从单块应用向微服务架构的转型已经成为很多企业(尤其是互联网企业)数字化转型的趋势。</p>
+<h2 id="什么是-service-mesh">什么是 service mesh</h2>
+<p>在业务规模化和研发效能提升等因素的驱动下，从单块应用向微服务架构的转型已经成为很多企业(尤其是互联网企业)数字化转型的趋势。</p>
 <p>在微服务模式下，企业内部服务少则几个到几十个，多则上百个，每个服务一般都以集群方式部署，这时自然产生两个问题(如下图所示)：</p>
 <p>一、服务发现：服务的消费方(Consumer)如何发现服务的提供方(Provider)？</p>
 <p>二、负载均衡：服务的消费方如何以某种负载均衡策略访问集群中的服务提供方实例？</p>
 <p>服务发现和负载均衡并不是新问题，业界其实已经探索和总结出一些常用的模式，这些模式的核心其实是代理(Proxy)，以及代理在架构中所处的位置。在服务消费方和服务提供方之间增加一层代理，由代理负责服务发现和负载均衡功能，消费方通过代理间接访问目标服务。</p>
 <p>所谓的ServiceMesh，也被形象称为边车(Sidecar)模式。早期有一些摩托车，除了主驾驶位，还带一个边车位，可以额外坐一个人。在Sidecar模式中，业务代码进程(相当于主驾驶)共享一个代理(相当于边车)，代理除了负责服务发现和负载均衡，还负责动态路由、容错限流、监控度量和安全日志等功能，这些功能是具体业务无关的，属于跨横切面关注点(Cross-Cutting Concerns)范畴。</p>
-<p>在新一代的ServiceMesh架构中(下图上方)，服务的消费方和提供方主机(或者容器)两边都会部署代理SideCar。ServiceMesh比较正式的术语也叫数据面板(DataPlane)，与数据面板对应的还有一个独立部署的控制面板(ControlPlane)，用来集中配置和管理数据面板，也可以对接各种服务发现机制(如K8S服务发现)。<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmicroservice%2Fistio%2Fservicemesh.png"></p>
-<h2 id="istio介绍"><a href="#istio介绍" class="headerlink" title="istio介绍"></a>istio介绍</h2><p>首先来看 istio 官方给出的架构图<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmicroservice%2Fistio%2Fistio_arch.png"></p>
-<p>可以看到，istio 就是我们上述提到的 service mesh 架构的一种实现，服务之间的通信（比如这里的 Service A 访问 Service B）会通过代理（默认是 envoy）来进行，而且中间的网络协议支持 HTTP&#x2F;1.1，HTTP&#x2F;2，gRPC 或者 TCP，可以说覆盖了主流的通信协议。</p>
+<p>在新一代的ServiceMesh架构中(下图上方)，服务的消费方和提供方主机(或者容器)两边都会部署代理SideCar。ServiceMesh比较正式的术语也叫数据面板(DataPlane)，与数据面板对应的还有一个独立部署的控制面板(ControlPlane)，用来集中配置和管理数据面板，也可以对接各种服务发现机制(如K8S服务发现)。<br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmicroservice%2Fistio%2Fservicemesh.png" alt=""></p>
+<h2 id="istio介绍">istio介绍</h2>
+<p>首先来看 istio 官方给出的架构图<br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmicroservice%2Fistio%2Fistio_arch.png" alt=""></p>
+<p>可以看到，istio 就是我们上述提到的 service mesh 架构的一种实现，服务之间的通信（比如这里的 Service A 访问 Service B）会通过代理（默认是 envoy）来进行，而且中间的网络协议支持 HTTP/1.1，HTTP/2，gRPC 或者 TCP，可以说覆盖了主流的通信协议。</p>
 <p>istio核心组件整体分为数据面(data plane)和控制面(control plane)，其中控制面做了进一步的细分，分成了 Pilot、Mixer、和 Citadel，它们的各自功能如下：</p>
 <ul>
 <li>Pilot：为 envoy 提供了服务发现，流量管理和智能路由（AB测试、金丝雀发布等），以及错误处理（超时、重试、熔断）功能。用户通过 pilot 的 API 管理网络相关的资源对象，pilot 会根据用户的配置和服务的信息把网络流量管理变成 envoy 能识别的格式分发到各个 sidecar 代理中。</li>
@@ -529,19 +464,26 @@
 <p>istio在安装过程中会进行CRD的初始化，在Kubernetes集群中注册一系列的CRD。CRD在注册成功之后，会建立一些基础对象，完成istio的初始设置。</p>
 <p>用户利用istio控制微服务通信，是通过向Kubernetes提交CRD资源的方式完成的。istio中的资源分为三组进行管理，分别是</p>
 <ul>
-<li>networking.istio.io</li>
-<li>config.istio.io</li>
-<li>authentication.istio.io</li>
+<li><a target="_blank" rel="noopener" href="http://networking.istio.io">networking.istio.io</a></li>
+<li><a target="_blank" rel="noopener" href="http://config.istio.io">config.istio.io</a></li>
+<li><a target="_blank" rel="noopener" href="http://authentication.istio.io">authentication.istio.io</a></li>
 </ul>
-<h3 id="networking-istio-io"><a href="#networking-istio-io" class="headerlink" title="networking.istio.io"></a>networking.istio.io</h3><p>istio使用频率最高的核心资源，主要包括以下五种类型：</p>
+<h3 id="networking-istio-io"><a target="_blank" rel="noopener" href="http://networking.istio.io">networking.istio.io</a></h3>
+<p>istio使用频率最高的核心资源，主要包括以下五种类型：</p>
 <p>Gateway：网格内部服务互访或者网格外部流量进入网格，都要首先经过Gateway</p>
-<p>VirtualService：主要由以下部分组成：<br>（1）Host：该对象所负责的主机名称，如果在Kubernetes内部，则这个主机名可以是服务名。<br>（2）Gateway：流量的来源网关，如果这一字段被省略，则代表使用的网关名为“mesh”，也就是默认的网格内部服务互联所用的网关。<br>（3）路由对象：网格中的流量，如果符合前面的Host和Gateway的条件，就需要根据实际协议对流量的处理方式进行甄别。</p>
-<p>TCP&#x2F;TLS&#x2F;HTTP Route：路由对象</p>
+<p>VirtualService：主要由以下部分组成：<br>
+（1）Host：该对象所负责的主机名称，如果在Kubernetes内部，则这个主机名可以是服务名。<br>
+（2）Gateway：流量的来源网关，如果这一字段被省略，则代表使用的网关名为“mesh”，也就是默认的网格内部服务互联所用的网关。<br>
+（3）路由对象：网格中的流量，如果符合前面的Host和Gateway的条件，就需要根据实际协议对流量的处理方式进行甄别。</p>
+<p>TCP/TLS/HTTP Route：路由对象</p>
 <p>DestinationWeight：流量权重（金丝雀发布会用到）</p>
 <p>Destination：由Subset和Port两个元素组成</p>
-<h3 id="config-istio-io"><a href="#config-istio-io" class="headerlink" title="config.istio.io"></a>config.istio.io</h3><p>config.istio.io中的对象用于为Mixer组件提供配置，包含以下组件：Rule、Action、Instance、Adaptor、Template、Handler</p>
-<h3 id="authentication-istio-io"><a href="#authentication-istio-io" class="headerlink" title="authentication.istio.io"></a>authentication.istio.io</h3><p>这一组API用于定义认证策略</p>
-<h3 id="rbac-istio-io"><a href="#rbac-istio-io" class="headerlink" title="rbac.istio.io"></a>rbac.istio.io</h3><p>在istio中实现了一个和Kubernetes颇为相似的RBAC访问控制系统</p>
+<h3 id="config-istio-io"><a target="_blank" rel="noopener" href="http://config.istio.io">config.istio.io</a></h3>
+<p>config.istio.io中的对象用于为Mixer组件提供配置，包含以下组件：Rule、Action、Instance、Adaptor、Template、Handler</p>
+<h3 id="authentication-istio-io"><a target="_blank" rel="noopener" href="http://authentication.istio.io">authentication.istio.io</a></h3>
+<p>这一组API用于定义认证策略</p>
+<h3 id="rbac-istio-io"><a target="_blank" rel="noopener" href="http://rbac.istio.io">rbac.istio.io</a></h3>
+<p>在istio中实现了一个和Kubernetes颇为相似的RBAC访问控制系统</p>
 
                 
             </div>
@@ -633,100 +575,7 @@
                 </div>
             </div>
             
-                <style>
-    #reward {
-        margin: 40px 0;
-        text-align: center;
-    }
-
-    #reward .reward-link {
-        font-size: 1.4rem;
-        line-height: 38px;
-    }
-
-    #reward .btn-floating:hover {
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    #rewardModal {
-        width: 320px;
-        height: 350px;
-    }
-
-    #rewardModal .reward-title {
-        margin: 15px auto;
-        padding-bottom: 5px;
-    }
-
-    #rewardModal .modal-content {
-        padding: 10px;
-    }
-
-    #rewardModal .close {
-        position: absolute;
-        right: 15px;
-        top: 15px;
-        color: rgba(0, 0, 0, 0.5);
-        font-size: 1.3rem;
-        line-height: 20px;
-        cursor: pointer;
-    }
-
-    #rewardModal .close:hover {
-        color: #ef5350;
-        transform: scale(1.3);
-        -moz-transform:scale(1.3);
-        -webkit-transform:scale(1.3);
-        -o-transform:scale(1.3);
-    }
-
-    #rewardModal .reward-tabs {
-        margin: 0 auto;
-        width: 210px;
-    }
-
-    .reward-tabs .tabs {
-        height: 38px;
-        margin: 10px auto;
-        padding-left: 0;
-    }
-
-    .reward-content ul {
-        padding-left: 0 !important;
-    }
-
-    .reward-tabs .tabs .tab {
-        height: 38px;
-        line-height: 38px;
-    }
-
-    .reward-tabs .tab a {
-        color: #fff;
-        background-color: #ccc;
-    }
-
-    .reward-tabs .tab a:hover {
-        background-color: #ccc;
-        color: #fff;
-    }
-
-    .reward-tabs .wechat-tab .active {
-        color: #fff !important;
-        background-color: #22AB38 !important;
-    }
-
-    .reward-tabs .alipay-tab .active {
-        color: #fff !important;
-        background-color: #019FE8 !important;
-    }
-
-    .reward-tabs .reward-img {
-        width: 210px;
-        height: 210px;
-    }
-</style>
-
-<div id="reward">
+                <div id="reward">
     <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
 
     <!-- Modal Structure -->
@@ -741,10 +590,10 @@
                         <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
                     </ul>
                     <div id="alipay">
-                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2F%E6%89%93%E8%B5%8F%2Falipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                        <img src="/blog/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
                     </div>
                     <div id="wechat">
-                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2F%E6%89%93%E8%B5%8F%2Fweixin.jpg" class="reward-img" alt="微信打赏二维码">
+                        <img src="/blog/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
                     </div>
                 </div>
             </div>
@@ -761,6 +610,8 @@
             
         </div>
     </div>
+
+    
 
     
 
@@ -902,6 +753,11 @@
 <!-- 代码块功能依赖 -->
 <script type="text/javascript" src="/blog/libs/codeBlock/codeBlockFuction.js"></script>
 
+
+  <!-- 是否加载使用自带的 prismjs. -->
+  <script type="text/javascript" src="/blog/libs/prism/prism.min.js"></script>
+
+
 <!-- 代码语言 -->
 
 <script type="text/javascript" src="/blog/libs/codeBlock/codeLang.js"></script>
@@ -915,6 +771,7 @@
 <!-- 代码块收缩 -->
 
 <script type="text/javascript" src="/blog/libs/codeBlock/codeShrink.js"></script>
+
 
 
     </div>
@@ -944,19 +801,6 @@
             headingsOffset: -($(window).height() * 0.4 - 45),
             collapseDepth: Number('0'),
             headingSelector: 'h2, h3, h4'
-        });
-
-        // modify the toc link href to support Chinese.
-        let i = 0;
-        let tocHeading = 'toc-heading-';
-        $('#toc-content a').each(function () {
-            $(this).attr('href', '#' + tocHeading + (++i));
-        });
-
-        // modify the heading title id to support Chinese.
-        i = 0;
-        $('#articleContent').children('h2, h3, h4').each(function () {
-            $(this).attr('id', tocHeading + (++i));
         });
 
         // Set scroll toc fixed.
@@ -1071,85 +915,45 @@
 </div>
 
 <script src="/blog/libs/aplayer/APlayer.min.js"></script>
-<script src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/resources%2Fjs%2FMeting.min.js"></script>
+<script src="/blog/libs/aplayer/Meting.min.js"></script>
 
     
-    <div class="container row center-align" style="margin-bottom: 15px !important;">
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
         <div class="col s12 m8 l8 copy-right">
             Copyright&nbsp;&copy;
             
                 <span id="year">2021-2023</span>
             
-            <span id="year">2021</span>
             <a href="/blog/about" target="_blank">洪宇轩</a>
             |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
             |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
-            <br>
-            
-            &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">44.4k</span>&nbsp;字
-            
-            
-            
-            
-            
-            
-            <span id="busuanzi_container_site_pv">
-                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
-                    class="white-color"></span>&nbsp;次
-            </span>
-            
-            
-            <span id="busuanzi_container_site_uv">
-                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
-                    class="white-color"></span>&nbsp;人
-            </span>
             
             <br>
             
-            <span id="sitetime">载入运行时间...</span>
-            <script>
-                function siteTime() {
-                    var seconds = 1000;
-                    var minutes = seconds * 60;
-                    var hours = minutes * 60;
-                    var days = hours * 24;
-                    var years = days * 365;
-                    var today = new Date();
-                    var startYear = "2021";
-                    var startMonth = "6";
-                    var startDate = "28";
-                    var startHour = "0";
-                    var startMinute = "0";
-                    var startSecond = "0";
-                    var todayYear = today.getFullYear();
-                    var todayMonth = today.getMonth() + 1;
-                    var todayDate = today.getDate();
-                    var todayHour = today.getHours();
-                    var todayMinute = today.getMinutes();
-                    var todaySecond = today.getSeconds();
-                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
-                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
-                    var diff = t2 - t1;
-                    var diffYears = Math.floor(diff / years);
-                    var diffDays = Math.floor((diff / days) - diffYears * 365);
-                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
-                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
-                        minutes);
-                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
-                        diffMinutes * minutes) / seconds);
-                    if (startYear == todayYear) {
-                        document.getElementById("year").innerHTML = todayYear;
-                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffDays + " 天 " + diffHours +
-                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
-                    } else {
-                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
-                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffYears + " 年 " + diffDays +
-                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
-                    }
-                }
-                setInterval(siteTime, 1000);
-            </script>
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">44.4k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
             
             <br>
             
@@ -1296,6 +1100,30 @@ $(function () {
 });
 </script>
 
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
     <!-- 回到顶部按钮 -->
 <div id="backTop" class="top-scroll">
     <a class="btn-floating btn-large waves-effect waves-light" href="#!">
@@ -1310,6 +1138,32 @@ $(function () {
     <script src="/blog/libs/scrollprogress/scrollProgress.min.js"></script>
     <script src="/blog/libs/lightGallery/js/lightgallery-all.min.js"></script>
     <script src="/blog/js/matery.js"></script>
+
+    
+        <!-- <script src='https://unpkg.com/mermaid@latest/dist/mermaid.min.js'></script> -->
+        <script src='/blog/libs/mermaid/mermaid.min.js'></script>
+        <script>
+          if (window.mermaid) {
+            mermaid.initialize({theme: 'forest'});
+          }
+        </script>
+    
+
+    
+    
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+     
+        <script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
+        <script src="/blog/libs/others/TencentCaptcha.js"></script>
+        <button id="TencentCaptcha" data-appid="xxxxxxxxxx" data-cbfn="callback" type="button" hidden></button>
+    
 
     <!-- Baidu Analytics -->
 
@@ -1340,7 +1194,8 @@ $(function () {
 
     
 
-	
+    <!--腾讯兔小巢-->
+    
     
 
     

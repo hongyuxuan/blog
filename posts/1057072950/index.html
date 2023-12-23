@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="keywords" content="K8S系列文章之三：K8S授权与认证, 洪宇轩的博客">
-    <meta name="description" content="">
+    <meta name="description" content="本文讲解K8S的authenticated（授权）和authorized（认证），如何创建一个访问K8S集群的用户并给他赋予相应的rbac权限。">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -13,25 +13,46 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
     <title>K8S系列文章之三：K8S授权与认证 | 洪宇轩的博客</title>
     <link rel="icon" type="image/png" href="/blog/favicon.png">
+    
 
-    <link rel="stylesheet" type="text/css" href="/blog/libs/awesome/css/all.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/materialize/materialize.min.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/aos/aos.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/animate/animate.min.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/lightGallery/css/lightgallery.min.css">
-    <link rel="stylesheet" type="text/css" href="/blog/css/matery.css">
-    <link rel="stylesheet" type="text/css" href="/blog/css/my.css">
 
-    <script src="/blog/libs/jquery/jquery.min.js"></script>
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/blog/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/blog/css/my.css">
+<link rel="stylesheet" type="text/css" href="/blog/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/blog/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/blog/css/post.css">
+
+
+
+
+    
+        <link rel="stylesheet" type="text/css" href="/blog/css/reward.css">
+    
+
+
+
+    <script src="/blog/libs/jquery/jquery-3.6.0.min.js"></script>
 
 <meta name="generator" content="Hexo 6.3.0"></head>
-
-
 
 
 <body>
@@ -133,6 +154,11 @@
       <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
     </a>
   </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
 </ul>
 
 
@@ -149,8 +175,6 @@
             
         </div>
     </div>
-
-    
 
     <ul class="menu-list mobile-menu-list">
         
@@ -328,99 +352,7 @@
 <main class="post-container content">
 
     
-    <link rel="stylesheet" href="/blog/libs/tocbot/tocbot.css">
-<style>
-    #articleContent h1::before,
-    #articleContent h2::before,
-    #articleContent h3::before,
-    #articleContent h4::before,
-    #articleContent h5::before,
-    #articleContent h6::before {
-        display: block;
-        content: " ";
-        height: 100px;
-        margin-top: -100px;
-        visibility: hidden;
-    }
-
-    #articleContent :focus {
-        outline: none;
-    }
-
-    .toc-fixed {
-        position: fixed;
-        top: 64px;
-    }
-
-    .toc-widget {
-        width: 345px;
-        padding-left: 20px;
-    }
-
-    .toc-widget .toc-title {
-        padding: 35px 0 15px 17px;
-        font-size: 1.5rem;
-        font-weight: bold;
-        line-height: 1.5rem;
-    }
-
-    .toc-widget ol {
-        padding: 0;
-        list-style: none;
-    }
-
-    #toc-content {
-        padding-bottom: 30px;
-        overflow: auto;
-    }
-
-    #toc-content ol {
-        padding-left: 10px;
-    }
-
-    #toc-content ol li {
-        padding-left: 10px;
-    }
-
-    #toc-content .toc-link:hover {
-        color: #42b983;
-        font-weight: 700;
-        text-decoration: underline;
-    }
-
-    #toc-content .toc-link::before {
-        background-color: transparent;
-        max-height: 25px;
-
-        position: absolute;
-        right: 23.5vw;
-        display: block;
-    }
-
-    #toc-content .is-active-link {
-        color: #42b983;
-    }
-
-    #floating-toc-btn {
-        position: fixed;
-        right: 15px;
-        bottom: 76px;
-        padding-top: 15px;
-        margin-bottom: 0;
-        z-index: 998;
-    }
-
-    #floating-toc-btn .btn-floating {
-        width: 48px;
-        height: 48px;
-    }
-
-    #floating-toc-btn .btn-floating i {
-        line-height: 48px;
-        font-size: 1.4rem;
-    }
-</style>
-<div class="row">
+    <div class="row">
     <div id="main-content" class="col s12 m12 l9">
         <!-- 文章内容详情 -->
 <div id="artDetail">
@@ -473,7 +405,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    654
+                    648
                 </div>
                 
 
@@ -496,7 +428,7 @@
 
         
         <!-- 是否加载使用自带的 prismjs. -->
-        <link rel="stylesheet" href="/blog/libs/prism/prism.css">
+        <link rel="stylesheet" href="/blog/libs/prism/prism.min.css">
         
 
         
@@ -505,55 +437,65 @@
             <div id="articleContent">
                 <blockquote><p>本篇通过实验，创建一个仅能访问命名空间test的用户，并且只有list pod的权限。另外创建一个集群管理员用户，具有所有权限。</p>
 </blockquote>
-
 <ol>
-<li>新用户本地生成私钥和证书请求文件<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">student@client:~$ kubectl create ns <span class="token builtin class-name">test</span>
+<li>新用户本地生成私钥和证书请求文件</li>
+</ol>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">student@client:~$ kubectl create ns <span class="token builtin class-name">test</span>
 student@client:~$ <span class="token builtin class-name">cd</span> ~/.kube/
 student@client:~/.kube$ openssl genrsa <span class="token parameter variable">-out</span> fox-user.key <span class="token number">2048</span>
 student@client:~/.kube$ openssl rand <span class="token parameter variable">-writerand</span> ~/.rand
-student@client:~/.kube$ openssl req <span class="token parameter variable">-new</span> <span class="token parameter variable">-key</span> fox-user.key <span class="token parameter variable">-out</span> fox-user.csr <span class="token parameter variable">-subj</span> <span class="token string">"/CN=fox-user/O=kubeusers"</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre></li>
-</ol>
-<p>注意上面步骤中的-subj参数，指定了在K8S中要新建的用户名为fox-user，角色类型为kubeusers(一个普通用户)<br>如果要创建<code>集群管理员用户</code>，则应写：”&#x2F;CN&#x3D;XXXXX&#x2F;O&#x3D;system:masters&#x2F;O&#x3D;system:authenticated”</p>
+student@client:~/.kube$ openssl req <span class="token parameter variable">-new</span> <span class="token parameter variable">-key</span> fox-user.key <span class="token parameter variable">-out</span> fox-user.csr <span class="token parameter variable">-subj</span> <span class="token string">"/CN=fox-user/O=kubeusers"</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>注意上面步骤中的-subj参数，指定了在K8S中要新建的用户名为fox-user，角色类型为kubeusers(一个普通用户)<br>
+如果要创建<code>集群管理员用户</code>，则应写：“/CN=XXXXX/O=system:masters/O=system:authenticated”</p>
 <ol start="2">
-<li><p>用户把证书请求文件发送给master节点管理员，私钥自己留存</p>
+<li>用户把证书请求文件发送给master节点管理员，私钥自己留存</li>
+</ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">student@client:~/.kube$ <span class="token function">scp</span> fox-user.csr k8s-master:/tmp<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-</li>
-<li><p>使用master节点的根CA为用户的证书请求文件签发证书</p>
+<ol start="3">
+<li>使用master节点的根CA为用户的证书请求文件签发证书</li>
+</ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">root@k8s-master:~<span class="token comment">## mv /tmp/fox-user.csr /etc/kubernetes/pki/ &amp;&amp; cd /etc/kubernetes/pki</span>
 root@k8s-master:/etc/kubernetes/pki<span class="token comment">## openssl x509 -req -in fox-user.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out fox-user.crt -days 365</span>
 root@k8s-master:/etc/kubernetes/pki<span class="token comment">## openssl x509 -in fox-user.crt -text -noout</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-</li>
-<li><p>把签发完的证书和master根证书发回给用户</p>
+<ol start="4">
+<li>把签发完的证书和master根证书发回给用户</li>
+</ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">root@k8s-master:/etc/kubernetes/pki<span class="token comment">## scp fox-user.crt ca.crt student@client:~/.kube</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-</li>
-<li><p>在客户端设置集群入口</p>
+<ol start="5">
+<li>在客户端设置集群入口</li>
+</ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">student@client:~/.kube$ kubectl config set-cluster mycluster --embed-certs --certificate-authority<span class="token operator">=</span>ca.crt <span class="token parameter variable">--server</span><span class="token operator">=</span><span class="token string">"https://192.168.126.100:6443"</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-</li>
-<li><p>在客户端设置用户credentials</p>
+<ol start="6">
+<li>在客户端设置用户credentials</li>
+</ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">student@client:~/.kube$ kubectl config set-credentials fox-user --embed-certs --client-certificate<span class="token operator">=</span>fox-user.crt --client-key<span class="token operator">=</span>fox-user.key<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-</li>
-<li><p>在客户端设置context</p>
+<ol start="7">
+<li>在客户端设置context</li>
+</ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">student@client:~/.kube$ kubectl config set-context fox-user@mycluster <span class="token parameter variable">--cluster</span><span class="token operator">=</span>mycluster <span class="token parameter variable">--user</span><span class="token operator">=</span>fox-user<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-</li>
-<li><p>在客户端切换上下文并测试</p>
+<ol start="8">
+<li>在客户端切换上下文并测试</li>
+</ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">student@client:~/.kube$ kubectl config use-context fox-user@mycluster
 student@client:~/.kube$ kubectl get nodes
-Error from server <span class="token punctuation">(</span>Forbidden<span class="token punctuation">)</span>: nodes is forbidden: User <span class="token string">"fox-user"</span> cannot list resource <span class="token string">"nodes"</span> <span class="token keyword">in</span> API group <span class="token string">""</span> at the cluster scope<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></li>
-</ol>
+Error from server <span class="token punctuation">(</span>Forbidden<span class="token punctuation">)</span>: nodes is forbidden: User <span class="token string">"fox-user"</span> cannot list resource <span class="token string">"nodes"</span> <span class="token keyword">in</span> API group <span class="token string">""</span> at the cluster scope<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>可以看到一个普通用户并不能执行get nodes这样的操作</p>
 <ol start="9">
-<li><p>创建一个角色仅能在namespace&#x3D;test中执行list pods操作<br>注意要先回到管理员context</p>
+<li>创建一个角色仅能在namespace=test中执行list pods操作<br>
+注意要先回到管理员context</li>
+</ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">student@client:~/.kube$ kubectl config use-context kubernetes-admin@kubernetes
 student@client:~/.kube$ kubectl create role fox-role <span class="token parameter variable">--resource</span><span class="token operator">=</span><span class="token string">"pod"</span> <span class="token parameter variable">--verb</span><span class="token operator">=</span><span class="token string">"list"</span> <span class="token parameter variable">-n</span> <span class="token builtin class-name">test</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-</li>
-<li><p>创建一个rolebinding，将上述role绑定到用户fox-user</p>
+<ol start="10">
+<li>创建一个rolebinding，将上述role绑定到用户fox-user</li>
+</ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">student@client:~/.kube$ kubectl create rolebinding fox-rolebinding <span class="token parameter variable">--role</span><span class="token operator">=</span>fox-role <span class="token parameter variable">--user</span><span class="token operator">=</span>fox-user <span class="token parameter variable">-n</span> <span class="token builtin class-name">test</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-</li>
-<li><p>至此，用户fox-user已绑定到fox-role这个角色，而这个角色的权限仅限于test中list pod，切换上下文，验证</p>
+<ol start="11">
+<li>至此，用户fox-user已绑定到fox-role这个角色，而这个角色的权限仅限于test中list pod，切换上下文，验证</li>
+</ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">student@client:~/.kube$ kubectl config use-context fox-user@mycluster
 student@client:~/.kube$ kubectl get pods <span class="token parameter variable">-n</span> <span class="token builtin class-name">test</span>
-No resources found <span class="token keyword">in</span> <span class="token builtin class-name">test</span> namespace.<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre></li>
-</ol>
+No resources found <span class="token keyword">in</span> <span class="token builtin class-name">test</span> namespace.<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>试一下list services</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">student@client:~/.kube$ kubectl get svc <span class="token parameter variable">-n</span> <span class="token builtin class-name">test</span>
 Error from server <span class="token punctuation">(</span>Forbidden<span class="token punctuation">)</span>: services is forbidden: User <span class="token string">"fox-user"</span> cannot list resource <span class="token string">"services"</span> <span class="token keyword">in</span> API group <span class="token string">""</span> <span class="token keyword">in</span> the namespace <span class="token string">"test"</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
@@ -648,100 +590,7 @@ Error from server <span class="token punctuation">(</span>Forbidden<span class="
                 </div>
             </div>
             
-                <style>
-    #reward {
-        margin: 40px 0;
-        text-align: center;
-    }
-
-    #reward .reward-link {
-        font-size: 1.4rem;
-        line-height: 38px;
-    }
-
-    #reward .btn-floating:hover {
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    #rewardModal {
-        width: 320px;
-        height: 350px;
-    }
-
-    #rewardModal .reward-title {
-        margin: 15px auto;
-        padding-bottom: 5px;
-    }
-
-    #rewardModal .modal-content {
-        padding: 10px;
-    }
-
-    #rewardModal .close {
-        position: absolute;
-        right: 15px;
-        top: 15px;
-        color: rgba(0, 0, 0, 0.5);
-        font-size: 1.3rem;
-        line-height: 20px;
-        cursor: pointer;
-    }
-
-    #rewardModal .close:hover {
-        color: #ef5350;
-        transform: scale(1.3);
-        -moz-transform:scale(1.3);
-        -webkit-transform:scale(1.3);
-        -o-transform:scale(1.3);
-    }
-
-    #rewardModal .reward-tabs {
-        margin: 0 auto;
-        width: 210px;
-    }
-
-    .reward-tabs .tabs {
-        height: 38px;
-        margin: 10px auto;
-        padding-left: 0;
-    }
-
-    .reward-content ul {
-        padding-left: 0 !important;
-    }
-
-    .reward-tabs .tabs .tab {
-        height: 38px;
-        line-height: 38px;
-    }
-
-    .reward-tabs .tab a {
-        color: #fff;
-        background-color: #ccc;
-    }
-
-    .reward-tabs .tab a:hover {
-        background-color: #ccc;
-        color: #fff;
-    }
-
-    .reward-tabs .wechat-tab .active {
-        color: #fff !important;
-        background-color: #22AB38 !important;
-    }
-
-    .reward-tabs .alipay-tab .active {
-        color: #fff !important;
-        background-color: #019FE8 !important;
-    }
-
-    .reward-tabs .reward-img {
-        width: 210px;
-        height: 210px;
-    }
-</style>
-
-<div id="reward">
+                <div id="reward">
     <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
 
     <!-- Modal Structure -->
@@ -756,10 +605,10 @@ Error from server <span class="token punctuation">(</span>Forbidden<span class="
                         <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
                     </ul>
                     <div id="alipay">
-                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2F%E6%89%93%E8%B5%8F%2Falipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                        <img src="/blog/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
                     </div>
                     <div id="wechat">
-                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2F%E6%89%93%E8%B5%8F%2Fweixin.jpg" class="reward-img" alt="微信打赏二维码">
+                        <img src="/blog/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
                     </div>
                 </div>
             </div>
@@ -776,6 +625,8 @@ Error from server <span class="token punctuation">(</span>Forbidden<span class="
             
         </div>
     </div>
+
+    
 
     
 
@@ -920,6 +771,11 @@ Error from server <span class="token punctuation">(</span>Forbidden<span class="
 <!-- 代码块功能依赖 -->
 <script type="text/javascript" src="/blog/libs/codeBlock/codeBlockFuction.js"></script>
 
+
+  <!-- 是否加载使用自带的 prismjs. -->
+  <script type="text/javascript" src="/blog/libs/prism/prism.min.js"></script>
+
+
 <!-- 代码语言 -->
 
 <script type="text/javascript" src="/blog/libs/codeBlock/codeLang.js"></script>
@@ -933,6 +789,7 @@ Error from server <span class="token punctuation">(</span>Forbidden<span class="
 <!-- 代码块收缩 -->
 
 <script type="text/javascript" src="/blog/libs/codeBlock/codeShrink.js"></script>
+
 
 
     </div>
@@ -962,19 +819,6 @@ Error from server <span class="token punctuation">(</span>Forbidden<span class="
             headingsOffset: -($(window).height() * 0.4 - 45),
             collapseDepth: Number('0'),
             headingSelector: 'h2, h3, h4'
-        });
-
-        // modify the toc link href to support Chinese.
-        let i = 0;
-        let tocHeading = 'toc-heading-';
-        $('#toc-content a').each(function () {
-            $(this).attr('href', '#' + tocHeading + (++i));
-        });
-
-        // modify the heading title id to support Chinese.
-        i = 0;
-        $('#articleContent').children('h2, h3, h4').each(function () {
-            $(this).attr('id', tocHeading + (++i));
         });
 
         // Set scroll toc fixed.
@@ -1089,85 +933,45 @@ Error from server <span class="token punctuation">(</span>Forbidden<span class="
 </div>
 
 <script src="/blog/libs/aplayer/APlayer.min.js"></script>
-<script src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/resources%2Fjs%2FMeting.min.js"></script>
+<script src="/blog/libs/aplayer/Meting.min.js"></script>
 
     
-    <div class="container row center-align" style="margin-bottom: 15px !important;">
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
         <div class="col s12 m8 l8 copy-right">
             Copyright&nbsp;&copy;
             
                 <span id="year">2021-2023</span>
             
-            <span id="year">2021</span>
             <a href="/blog/about" target="_blank">洪宇轩</a>
             |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
             |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
-            <br>
-            
-            &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">44.4k</span>&nbsp;字
-            
-            
-            
-            
-            
-            
-            <span id="busuanzi_container_site_pv">
-                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
-                    class="white-color"></span>&nbsp;次
-            </span>
-            
-            
-            <span id="busuanzi_container_site_uv">
-                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
-                    class="white-color"></span>&nbsp;人
-            </span>
             
             <br>
             
-            <span id="sitetime">载入运行时间...</span>
-            <script>
-                function siteTime() {
-                    var seconds = 1000;
-                    var minutes = seconds * 60;
-                    var hours = minutes * 60;
-                    var days = hours * 24;
-                    var years = days * 365;
-                    var today = new Date();
-                    var startYear = "2021";
-                    var startMonth = "6";
-                    var startDate = "28";
-                    var startHour = "0";
-                    var startMinute = "0";
-                    var startSecond = "0";
-                    var todayYear = today.getFullYear();
-                    var todayMonth = today.getMonth() + 1;
-                    var todayDate = today.getDate();
-                    var todayHour = today.getHours();
-                    var todayMinute = today.getMinutes();
-                    var todaySecond = today.getSeconds();
-                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
-                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
-                    var diff = t2 - t1;
-                    var diffYears = Math.floor(diff / years);
-                    var diffDays = Math.floor((diff / days) - diffYears * 365);
-                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
-                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
-                        minutes);
-                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
-                        diffMinutes * minutes) / seconds);
-                    if (startYear == todayYear) {
-                        document.getElementById("year").innerHTML = todayYear;
-                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffDays + " 天 " + diffHours +
-                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
-                    } else {
-                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
-                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffYears + " 年 " + diffDays +
-                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
-                    }
-                }
-                setInterval(siteTime, 1000);
-            </script>
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">44.4k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
             
             <br>
             
@@ -1314,6 +1118,30 @@ $(function () {
 });
 </script>
 
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
     <!-- 回到顶部按钮 -->
 <div id="backTop" class="top-scroll">
     <a class="btn-floating btn-large waves-effect waves-light" href="#!">
@@ -1328,6 +1156,32 @@ $(function () {
     <script src="/blog/libs/scrollprogress/scrollProgress.min.js"></script>
     <script src="/blog/libs/lightGallery/js/lightgallery-all.min.js"></script>
     <script src="/blog/js/matery.js"></script>
+
+    
+        <!-- <script src='https://unpkg.com/mermaid@latest/dist/mermaid.min.js'></script> -->
+        <script src='/blog/libs/mermaid/mermaid.min.js'></script>
+        <script>
+          if (window.mermaid) {
+            mermaid.initialize({theme: 'forest'});
+          }
+        </script>
+    
+
+    
+    
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+     
+        <script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
+        <script src="/blog/libs/others/TencentCaptcha.js"></script>
+        <button id="TencentCaptcha" data-appid="xxxxxxxxxx" data-cbfn="callback" type="button" hidden></button>
+    
 
     <!-- Baidu Analytics -->
 
@@ -1358,7 +1212,8 @@ $(function () {
 
     
 
-	
+    <!--腾讯兔小巢-->
+    
     
 
     

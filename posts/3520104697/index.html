@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="keywords" content="K8S系列文章之一：Kubernetes概览, 洪宇轩的博客">
-    <meta name="description" content="">
+    <meta name="description" content="Kubernetes是一个可移植的、可扩展的容器编排工具与平台，用于管理容器化的工作负载和服务，可促进声明式配置和自动化。">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -13,25 +13,46 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
     <title>K8S系列文章之一：Kubernetes概览 | 洪宇轩的博客</title>
     <link rel="icon" type="image/png" href="/blog/favicon.png">
+    
 
-    <link rel="stylesheet" type="text/css" href="/blog/libs/awesome/css/all.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/materialize/materialize.min.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/aos/aos.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/animate/animate.min.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/lightGallery/css/lightgallery.min.css">
-    <link rel="stylesheet" type="text/css" href="/blog/css/matery.css">
-    <link rel="stylesheet" type="text/css" href="/blog/css/my.css">
 
-    <script src="/blog/libs/jquery/jquery.min.js"></script>
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/blog/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/blog/css/my.css">
+<link rel="stylesheet" type="text/css" href="/blog/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/blog/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/blog/css/post.css">
+
+
+
+
+    
+        <link rel="stylesheet" type="text/css" href="/blog/css/reward.css">
+    
+
+
+
+    <script src="/blog/libs/jquery/jquery-3.6.0.min.js"></script>
 
 <meta name="generator" content="Hexo 6.3.0"></head>
-
-
 
 
 <body>
@@ -133,6 +154,11 @@
       <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
     </a>
   </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
 </ul>
 
 
@@ -149,8 +175,6 @@
             
         </div>
     </div>
-
-    
 
     <ul class="menu-list mobile-menu-list">
         
@@ -328,99 +352,7 @@
 <main class="post-container content">
 
     
-    <link rel="stylesheet" href="/blog/libs/tocbot/tocbot.css">
-<style>
-    #articleContent h1::before,
-    #articleContent h2::before,
-    #articleContent h3::before,
-    #articleContent h4::before,
-    #articleContent h5::before,
-    #articleContent h6::before {
-        display: block;
-        content: " ";
-        height: 100px;
-        margin-top: -100px;
-        visibility: hidden;
-    }
-
-    #articleContent :focus {
-        outline: none;
-    }
-
-    .toc-fixed {
-        position: fixed;
-        top: 64px;
-    }
-
-    .toc-widget {
-        width: 345px;
-        padding-left: 20px;
-    }
-
-    .toc-widget .toc-title {
-        padding: 35px 0 15px 17px;
-        font-size: 1.5rem;
-        font-weight: bold;
-        line-height: 1.5rem;
-    }
-
-    .toc-widget ol {
-        padding: 0;
-        list-style: none;
-    }
-
-    #toc-content {
-        padding-bottom: 30px;
-        overflow: auto;
-    }
-
-    #toc-content ol {
-        padding-left: 10px;
-    }
-
-    #toc-content ol li {
-        padding-left: 10px;
-    }
-
-    #toc-content .toc-link:hover {
-        color: #42b983;
-        font-weight: 700;
-        text-decoration: underline;
-    }
-
-    #toc-content .toc-link::before {
-        background-color: transparent;
-        max-height: 25px;
-
-        position: absolute;
-        right: 23.5vw;
-        display: block;
-    }
-
-    #toc-content .is-active-link {
-        color: #42b983;
-    }
-
-    #floating-toc-btn {
-        position: fixed;
-        right: 15px;
-        bottom: 76px;
-        padding-top: 15px;
-        margin-bottom: 0;
-        z-index: 998;
-    }
-
-    #floating-toc-btn .btn-floating {
-        width: 48px;
-        height: 48px;
-    }
-
-    #floating-toc-btn .btn-floating i {
-        line-height: 48px;
-        font-size: 1.4rem;
-    }
-</style>
-<div class="row">
+    <div class="row">
     <div id="main-content" class="col s12 m12 l9">
         <!-- 文章内容详情 -->
 <div id="artDetail">
@@ -473,7 +405,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    697
+                    698
                 </div>
                 
 
@@ -496,20 +428,28 @@
 
         
         <!-- 是否加载使用自带的 prismjs. -->
-        <link rel="stylesheet" href="/blog/libs/prism/prism.css">
+        <link rel="stylesheet" href="/blog/libs/prism/prism.min.css">
         
 
         
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="VM和容器的区别"><a href="#VM和容器的区别" class="headerlink" title="VM和容器的区别"></a>VM和容器的区别</h2><p><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fsummary%2F1.png"></p>
-<h2 id="什么是云原生"><a href="#什么是云原生" class="headerlink" title="什么是云原生"></a>什么是云原生</h2><p>CNCF——云原生计算基金会<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fsummary%2F2.png"><br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fsummary%2F3.png"></p>
-<h2 id="什么是Kubernetes"><a href="#什么是Kubernetes" class="headerlink" title="什么是Kubernetes"></a>什么是Kubernetes</h2><p>Kubernetes是一个可移植的、可扩展的容器编排工具与平台，用于管理容器化的工作负载和服务，可促进声明式配置和自动化。Kubernetes拥有一个庞大且快速增长的生态系统。Kubernetes的服务、支持和工具广泛可用。</p>
+                <h2 id="VM和容器的区别">VM和容器的区别</h2>
+<p><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fsummary%2F1.png" alt=""></p>
+<h2 id="什么是云原生">什么是云原生</h2>
+<p>CNCF——云原生计算基金会<br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fsummary%2F2.png" alt=""><br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fsummary%2F3.png" alt=""></p>
+<h2 id="什么是Kubernetes">什么是Kubernetes</h2>
+<p>Kubernetes是一个可移植的、可扩展的容器编排工具与平台，用于管理容器化的工作负载和服务，可促进声明式配置和自动化。Kubernetes拥有一个庞大且快速增长的生态系统。Kubernetes的服务、支持和工具广泛可用。</p>
 <p>Kubernetes这个名字源于希腊语，意为“舵手”或“飞行员”。k8s这个缩写是因为k和s之间有8个字母。Google在2014年开源了Kubernetes项目。Kubernetes建立在Google大规模运行生产工作负载方面拥有十几年的经验基础上，结合了社区中最好的想法和实践。</p>
 <p>Kubernetes是用于自动部署，扩展和管理容器化应用程序的开源系统。</p>
-<h2 id="Kubernetes架构"><a href="#Kubernetes架构" class="headerlink" title="Kubernetes架构"></a>Kubernetes架构</h2><h3 id="架构图"><a href="#架构图" class="headerlink" title="架构图"></a>架构图</h3><p><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fk8s_arch.png"></p>
-<h3 id="核心组件"><a href="#核心组件" class="headerlink" title="核心组件"></a>核心组件</h3><p>control-plane 节点核心组件：<a target="_blank" rel="noopener" href="https://kubernetes.io/docs/concepts/overview/components/">https://kubernetes.io/docs/concepts/overview/components/</a></p>
+<h2 id="Kubernetes架构">Kubernetes架构</h2>
+<h3 id="架构图">架构图</h3>
+<p><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fk8s_arch.png" alt=""></p>
+<h3 id="核心组件">核心组件</h3>
+<p>control-plane 节点核心组件：<a target="_blank" rel="noopener" href="https://kubernetes.io/docs/concepts/overview/components/">https://kubernetes.io/docs/concepts/overview/components/</a></p>
 <table>
 <thead>
 <tr>
@@ -517,7 +457,8 @@
 <th>说明</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr>
 <td>kube-apiserver</td>
 <td>提供Restful API接口、集群的统一入口，集群的认证、授权、准入控制及各组件的协调者，所有的对象资源的增删改查和监听操作都交给apiserver处理后再提交给etcd数据库做持久化存储</td>
 </tr>
@@ -533,9 +474,18 @@
 <td>etcd</td>
 <td>高可用的分布式键值数据库，可用于服务发现。etcd采用raft一致性算法，基于Go语言实现。etcd作为一个高可用键值存储系统，天生就是为集群化而设计，用于保存K8s集群状态数据</td>
 </tr>
-</tbody></table>
-<h3 id="Kubernetes工作流程"><a href="#Kubernetes工作流程" class="headerlink" title="Kubernetes工作流程"></a>Kubernetes工作流程</h3><p><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fsummary%2F4.png"><br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fsummary%2F5.png"><br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fsummary%2F6.png"><br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fsummary%2F7.png"><br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fsummary%2F8.png"><br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fsummary%2F9.png"><br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fsummary%2F10.png"></p>
-<h3 id="Container-Runtime-Interface-CRI-架构"><a href="#Container-Runtime-Interface-CRI-架构" class="headerlink" title="Container Runtime Interface(CRI)架构"></a>Container Runtime Interface(CRI)架构</h3><p>容器运行时分为High-level和Low-level</p>
+</tbody>
+</table>
+<h3 id="Kubernetes工作流程">Kubernetes工作流程</h3>
+<p><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fsummary%2F4.png" alt=""><br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fsummary%2F5.png" alt=""><br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fsummary%2F6.png" alt=""><br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fsummary%2F7.png" alt=""><br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fsummary%2F8.png" alt=""><br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fsummary%2F9.png" alt=""><br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fsummary%2F10.png" alt=""></p>
+<h3 id="Container-Runtime-Interface-CRI-架构">Container Runtime Interface(CRI)架构</h3>
+<p>容器运行时分为High-level和Low-level</p>
 <ul>
 <li>High-level：管理，协调，接收外部请求，提供存储、网络</li>
 <li>Low-level：，遵循OCI(Open Container Initiative)开放容器标准，创建cgroups和namespaces进行资源隔离</li>
@@ -543,12 +493,19 @@
 <p><strong>dockershim</strong></p>
 <p>kubelet用于连接容器运行时，容器运行时除了docker外，当时还有一个rkt。</p>
 <p>Google和Docker互相看不顺眼，K8s提出了CRI接口，docker不遵循CRI接口，K8s为了兼容docker，在kubelet上放了一个docker垫片(dockershim)，通过dockershim去连接docker。</p>
-<p>1.24版本以后谷歌去掉了dockershim，docker认怂了，说后面垫片docker来开发，docker把自己代码解耦，其中containerd作为高级容器运行时并交给了CNCF（已毕业）；如果去掉docker，containerd现在仍然是docker公司的。runc是低级容器运行时，也是docker公司的。<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fsummary%2F11.png"></p>
-<h3 id="K8s部署工具及托管平台"><a href="#K8s部署工具及托管平台" class="headerlink" title="K8s部署工具及托管平台"></a>K8s部署工具及托管平台</h3><p><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fsummary%2F12.png"></p>
-<h3 id="K8s高可用架构"><a href="#K8s高可用架构" class="headerlink" title="K8s高可用架构"></a>K8s高可用架构</h3><ul>
-<li><p>etcd和master部署在一起<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fsummary%2F13.png"></p>
+<p>1.24版本以后谷歌去掉了dockershim，docker认怂了，说后面垫片docker来开发，docker把自己代码解耦，其中containerd作为高级容器运行时并交给了CNCF（已毕业）；如果去掉docker，containerd现在仍然是docker公司的。runc是低级容器运行时，也是docker公司的。<br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fsummary%2F11.png" alt=""></p>
+<h3 id="K8s部署工具及托管平台">K8s部署工具及托管平台</h3>
+<p><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fsummary%2F12.png" alt=""></p>
+<h3 id="K8s高可用架构">K8s高可用架构</h3>
+<ul>
+<li>
+<p>etcd和master部署在一起<br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fsummary%2F13.png" alt=""></p>
 </li>
-<li><p>etcd单独部署<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fsummary%2F14.png"></p>
+<li>
+<p>etcd单独部署<br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fsummary%2F14.png" alt=""></p>
 </li>
 </ul>
 
@@ -642,100 +599,7 @@
                 </div>
             </div>
             
-                <style>
-    #reward {
-        margin: 40px 0;
-        text-align: center;
-    }
-
-    #reward .reward-link {
-        font-size: 1.4rem;
-        line-height: 38px;
-    }
-
-    #reward .btn-floating:hover {
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    #rewardModal {
-        width: 320px;
-        height: 350px;
-    }
-
-    #rewardModal .reward-title {
-        margin: 15px auto;
-        padding-bottom: 5px;
-    }
-
-    #rewardModal .modal-content {
-        padding: 10px;
-    }
-
-    #rewardModal .close {
-        position: absolute;
-        right: 15px;
-        top: 15px;
-        color: rgba(0, 0, 0, 0.5);
-        font-size: 1.3rem;
-        line-height: 20px;
-        cursor: pointer;
-    }
-
-    #rewardModal .close:hover {
-        color: #ef5350;
-        transform: scale(1.3);
-        -moz-transform:scale(1.3);
-        -webkit-transform:scale(1.3);
-        -o-transform:scale(1.3);
-    }
-
-    #rewardModal .reward-tabs {
-        margin: 0 auto;
-        width: 210px;
-    }
-
-    .reward-tabs .tabs {
-        height: 38px;
-        margin: 10px auto;
-        padding-left: 0;
-    }
-
-    .reward-content ul {
-        padding-left: 0 !important;
-    }
-
-    .reward-tabs .tabs .tab {
-        height: 38px;
-        line-height: 38px;
-    }
-
-    .reward-tabs .tab a {
-        color: #fff;
-        background-color: #ccc;
-    }
-
-    .reward-tabs .tab a:hover {
-        background-color: #ccc;
-        color: #fff;
-    }
-
-    .reward-tabs .wechat-tab .active {
-        color: #fff !important;
-        background-color: #22AB38 !important;
-    }
-
-    .reward-tabs .alipay-tab .active {
-        color: #fff !important;
-        background-color: #019FE8 !important;
-    }
-
-    .reward-tabs .reward-img {
-        width: 210px;
-        height: 210px;
-    }
-</style>
-
-<div id="reward">
+                <div id="reward">
     <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
 
     <!-- Modal Structure -->
@@ -750,10 +614,10 @@
                         <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
                     </ul>
                     <div id="alipay">
-                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2F%E6%89%93%E8%B5%8F%2Falipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                        <img src="/blog/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
                     </div>
                     <div id="wechat">
-                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2F%E6%89%93%E8%B5%8F%2Fweixin.jpg" class="reward-img" alt="微信打赏二维码">
+                        <img src="/blog/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
                     </div>
                 </div>
             </div>
@@ -770,6 +634,8 @@
             
         </div>
     </div>
+
+    
 
     
 
@@ -910,6 +776,11 @@
 <!-- 代码块功能依赖 -->
 <script type="text/javascript" src="/blog/libs/codeBlock/codeBlockFuction.js"></script>
 
+
+  <!-- 是否加载使用自带的 prismjs. -->
+  <script type="text/javascript" src="/blog/libs/prism/prism.min.js"></script>
+
+
 <!-- 代码语言 -->
 
 <script type="text/javascript" src="/blog/libs/codeBlock/codeLang.js"></script>
@@ -923,6 +794,7 @@
 <!-- 代码块收缩 -->
 
 <script type="text/javascript" src="/blog/libs/codeBlock/codeShrink.js"></script>
+
 
 
     </div>
@@ -952,19 +824,6 @@
             headingsOffset: -($(window).height() * 0.4 - 45),
             collapseDepth: Number('0'),
             headingSelector: 'h2, h3, h4'
-        });
-
-        // modify the toc link href to support Chinese.
-        let i = 0;
-        let tocHeading = 'toc-heading-';
-        $('#toc-content a').each(function () {
-            $(this).attr('href', '#' + tocHeading + (++i));
-        });
-
-        // modify the heading title id to support Chinese.
-        i = 0;
-        $('#articleContent').children('h2, h3, h4').each(function () {
-            $(this).attr('id', tocHeading + (++i));
         });
 
         // Set scroll toc fixed.
@@ -1079,85 +938,45 @@
 </div>
 
 <script src="/blog/libs/aplayer/APlayer.min.js"></script>
-<script src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/resources%2Fjs%2FMeting.min.js"></script>
+<script src="/blog/libs/aplayer/Meting.min.js"></script>
 
     
-    <div class="container row center-align" style="margin-bottom: 15px !important;">
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
         <div class="col s12 m8 l8 copy-right">
             Copyright&nbsp;&copy;
             
                 <span id="year">2021-2023</span>
             
-            <span id="year">2021</span>
             <a href="/blog/about" target="_blank">洪宇轩</a>
             |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
             |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
-            <br>
-            
-            &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">44.4k</span>&nbsp;字
-            
-            
-            
-            
-            
-            
-            <span id="busuanzi_container_site_pv">
-                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
-                    class="white-color"></span>&nbsp;次
-            </span>
-            
-            
-            <span id="busuanzi_container_site_uv">
-                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
-                    class="white-color"></span>&nbsp;人
-            </span>
             
             <br>
             
-            <span id="sitetime">载入运行时间...</span>
-            <script>
-                function siteTime() {
-                    var seconds = 1000;
-                    var minutes = seconds * 60;
-                    var hours = minutes * 60;
-                    var days = hours * 24;
-                    var years = days * 365;
-                    var today = new Date();
-                    var startYear = "2021";
-                    var startMonth = "6";
-                    var startDate = "28";
-                    var startHour = "0";
-                    var startMinute = "0";
-                    var startSecond = "0";
-                    var todayYear = today.getFullYear();
-                    var todayMonth = today.getMonth() + 1;
-                    var todayDate = today.getDate();
-                    var todayHour = today.getHours();
-                    var todayMinute = today.getMinutes();
-                    var todaySecond = today.getSeconds();
-                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
-                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
-                    var diff = t2 - t1;
-                    var diffYears = Math.floor(diff / years);
-                    var diffDays = Math.floor((diff / days) - diffYears * 365);
-                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
-                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
-                        minutes);
-                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
-                        diffMinutes * minutes) / seconds);
-                    if (startYear == todayYear) {
-                        document.getElementById("year").innerHTML = todayYear;
-                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffDays + " 天 " + diffHours +
-                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
-                    } else {
-                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
-                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffYears + " 年 " + diffDays +
-                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
-                    }
-                }
-                setInterval(siteTime, 1000);
-            </script>
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">44.4k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
             
             <br>
             
@@ -1304,6 +1123,30 @@ $(function () {
 });
 </script>
 
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
     <!-- 回到顶部按钮 -->
 <div id="backTop" class="top-scroll">
     <a class="btn-floating btn-large waves-effect waves-light" href="#!">
@@ -1318,6 +1161,32 @@ $(function () {
     <script src="/blog/libs/scrollprogress/scrollProgress.min.js"></script>
     <script src="/blog/libs/lightGallery/js/lightgallery-all.min.js"></script>
     <script src="/blog/js/matery.js"></script>
+
+    
+        <!-- <script src='https://unpkg.com/mermaid@latest/dist/mermaid.min.js'></script> -->
+        <script src='/blog/libs/mermaid/mermaid.min.js'></script>
+        <script>
+          if (window.mermaid) {
+            mermaid.initialize({theme: 'forest'});
+          }
+        </script>
+    
+
+    
+    
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+     
+        <script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
+        <script src="/blog/libs/others/TencentCaptcha.js"></script>
+        <button id="TencentCaptcha" data-appid="xxxxxxxxxx" data-cbfn="callback" type="button" hidden></button>
+    
 
     <!-- Baidu Analytics -->
 
@@ -1348,7 +1217,8 @@ $(function () {
 
     
 
-	
+    <!--腾讯兔小巢-->
+    
     
 
     

@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="keywords" content="Istio系列文章之（三）功能快速入门, 洪宇轩的博客">
-    <meta name="description" content="">
+    <meta name="description" content="本文介绍istio常用的入门功能：目标规则、默认路由、灰度发布等。">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -13,25 +13,46 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
     <title>Istio系列文章之（三）功能快速入门 | 洪宇轩的博客</title>
     <link rel="icon" type="image/png" href="/blog/favicon.png">
+    
 
-    <link rel="stylesheet" type="text/css" href="/blog/libs/awesome/css/all.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/materialize/materialize.min.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/aos/aos.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/animate/animate.min.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/lightGallery/css/lightgallery.min.css">
-    <link rel="stylesheet" type="text/css" href="/blog/css/matery.css">
-    <link rel="stylesheet" type="text/css" href="/blog/css/my.css">
 
-    <script src="/blog/libs/jquery/jquery.min.js"></script>
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/blog/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/blog/css/my.css">
+<link rel="stylesheet" type="text/css" href="/blog/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/blog/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/blog/css/post.css">
+
+
+
+
+    
+        <link rel="stylesheet" type="text/css" href="/blog/css/reward.css">
+    
+
+
+
+    <script src="/blog/libs/jquery/jquery-3.6.0.min.js"></script>
 
 <meta name="generator" content="Hexo 6.3.0"></head>
-
-
 
 
 <body>
@@ -133,6 +154,11 @@
       <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
     </a>
   </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
 </ul>
 
 
@@ -149,8 +175,6 @@
             
         </div>
     </div>
-
-    
 
     <ul class="menu-list mobile-menu-list">
         
@@ -328,99 +352,7 @@
 <main class="post-container content">
 
     
-    <link rel="stylesheet" href="/blog/libs/tocbot/tocbot.css">
-<style>
-    #articleContent h1::before,
-    #articleContent h2::before,
-    #articleContent h3::before,
-    #articleContent h4::before,
-    #articleContent h5::before,
-    #articleContent h6::before {
-        display: block;
-        content: " ";
-        height: 100px;
-        margin-top: -100px;
-        visibility: hidden;
-    }
-
-    #articleContent :focus {
-        outline: none;
-    }
-
-    .toc-fixed {
-        position: fixed;
-        top: 64px;
-    }
-
-    .toc-widget {
-        width: 345px;
-        padding-left: 20px;
-    }
-
-    .toc-widget .toc-title {
-        padding: 35px 0 15px 17px;
-        font-size: 1.5rem;
-        font-weight: bold;
-        line-height: 1.5rem;
-    }
-
-    .toc-widget ol {
-        padding: 0;
-        list-style: none;
-    }
-
-    #toc-content {
-        padding-bottom: 30px;
-        overflow: auto;
-    }
-
-    #toc-content ol {
-        padding-left: 10px;
-    }
-
-    #toc-content ol li {
-        padding-left: 10px;
-    }
-
-    #toc-content .toc-link:hover {
-        color: #42b983;
-        font-weight: 700;
-        text-decoration: underline;
-    }
-
-    #toc-content .toc-link::before {
-        background-color: transparent;
-        max-height: 25px;
-
-        position: absolute;
-        right: 23.5vw;
-        display: block;
-    }
-
-    #toc-content .is-active-link {
-        color: #42b983;
-    }
-
-    #floating-toc-btn {
-        position: fixed;
-        right: 15px;
-        bottom: 76px;
-        padding-top: 15px;
-        margin-bottom: 0;
-        z-index: 998;
-    }
-
-    #floating-toc-btn .btn-floating {
-        width: 48px;
-        height: 48px;
-    }
-
-    #floating-toc-btn .btn-floating i {
-        line-height: 48px;
-        font-size: 1.4rem;
-    }
-</style>
-<div class="row">
+    <div class="row">
     <div id="main-content" class="col s12 m12 l9">
         <!-- 文章内容详情 -->
 <div id="artDetail">
@@ -496,7 +428,7 @@
 
         
         <!-- 是否加载使用自带的 prismjs. -->
-        <link rel="stylesheet" href="/blog/libs/prism/prism.css">
+        <link rel="stylesheet" href="/blog/libs/prism/prism.min.css">
         
 
         
@@ -505,9 +437,11 @@
             <div id="articleContent">
                 <blockquote><p>本文用一个小例子演示如何将一个微服务接入istio，以及使用istio进行流量管理</p>
 </blockquote>
-
-<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><p>本文使用环境为 kubernetes v1.23.0 + istio 1.17.0</p>
-<h2 id="部署简易程序"><a href="#部署简易程序" class="headerlink" title="部署简易程序"></a>部署简易程序</h2><h3 id="部署两个版本的微服务"><a href="#部署两个版本的微服务" class="headerlink" title="部署两个版本的微服务"></a>部署两个版本的微服务</h3><p>本文将在k8s中部署一个Python Flask编写的简易微服务，代码如下：</p>
+<h2 id="环境准备">环境准备</h2>
+<p>本文使用环境为 kubernetes v1.23.0 + istio 1.17.0</p>
+<h2 id="部署简易程序">部署简易程序</h2>
+<h3 id="部署两个版本的微服务">部署两个版本的微服务</h3>
+<p>本文将在k8s中部署一个Python Flask编写的简易微服务，代码如下：</p>
 <pre class="line-numbers language-python" data-language="python"><code class="language-python"><span class="token keyword">from</span> flask <span class="token keyword">import</span> Flask<span class="token punctuation">,</span> request
 <span class="token keyword">import</span> os
 <span class="token keyword">from</span> urllib<span class="token punctuation">.</span>request <span class="token keyword">import</span> Request<span class="token punctuation">,</span> urlopen
@@ -531,7 +465,6 @@ app <span class="token operator">=</span> Flask<span class="token punctuation">(
 
 <span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">"__main__"</span><span class="token punctuation">:</span>
     app<span class="token punctuation">.</span>run<span class="token punctuation">(</span>host<span class="token operator">=</span><span class="token string">"0.0.0.0"</span><span class="token punctuation">,</span> port<span class="token operator">=</span><span class="token number">80</span><span class="token punctuation">,</span> debug<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>代码中的env会在创建Deployment的时候作为环境变量提交上去。</p>
 <p>现在为该服务创建k8s资源：flaskapp.istio.yaml</p>
 <pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
@@ -594,7 +527,6 @@ app <span class="token operator">=</span> Flask<span class="token punctuation">(
         <span class="token key atrule">env</span><span class="token punctuation">:</span>
         <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> version
           <span class="token key atrule">value</span><span class="token punctuation">:</span> v2<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>说明：</p>
 <ul>
 <li>两个版本的Deployment用的是相同的镜像，但使用不同的version标签进行区分，分别是v1和v2</li>
@@ -607,18 +539,16 @@ app <span class="token operator">=</span> Flask<span class="token punctuation">(
 <p>自动注入</p>
 <p>需要为服务所在的命名空间打上标签<code>istio-injection=enabled</code></p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl label namespace default istio-injection<span class="token operator">=</span>enabled<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
 <p>手动注入</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">istioctl kube-inject <span class="token parameter variable">-f</span> flaskapp.istio.yaml <span class="token operator">|</span> kubectl apply <span class="token parameter variable">-f</span> -<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
 <p>过一会查看Pod状态</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl get pods <span class="token parameter variable">-n</span> default
 NAME                           READY   STATUS    RESTARTS   AGE
 flaskapp-v1-6d5d7ffb9f-5q6v8   <span class="token number">2</span>/2     Running   <span class="token number">0</span>          20h
 flaskapp-v2-8647744b6-dlnrb    <span class="token number">2</span>/2     Running   <span class="token number">0</span>          20h<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>每个Pod里有两个容器，这就是istio注入Sidecar的结果，除了一个初始化容器istio-init外，还有两个容器：一个是istio-proxy，另一个是原本的服务</p>
-<h3 id="部署客户端微服务"><a href="#部署客户端微服务" class="headerlink" title="部署客户端微服务"></a>部署客户端微服务</h3><p>客户端服务很简单，只是使用了一个已装好各种测试工具的镜像，具体的测试都可以在这个容器内shell完成。准备好资源文件：sleep.yaml</p>
+<h3 id="部署客户端微服务">部署客户端微服务</h3>
+<p>客户端服务很简单，只是使用了一个已装好各种测试工具的镜像，具体的测试都可以在这个容器内shell完成。准备好资源文件：sleep.yaml</p>
 <pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
 <span class="token key atrule">kind</span><span class="token punctuation">:</span> Service
 <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
@@ -654,17 +584,15 @@ flaskapp-v2-8647744b6-dlnrb    <span class="token number">2</span>/2     Running
       <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> sleep
         <span class="token key atrule">image</span><span class="token punctuation">:</span> dustise/sleep
         <span class="token key atrule">imagePullPolicy</span><span class="token punctuation">:</span> IfNotPresent<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>注意这个客户端应用并没有对外提供服务的能力，但还是需要给他创建一个Service对象，这同样是istio的注入要求：没有Service的Deployment是无法被istio发现并进行操作的。</p>
 <p>同样的对该文件进行注入并提交：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">istioctl kube-inject <span class="token parameter variable">-f</span> sleep.yaml <span class="token operator">|</span> kubectl apply <span class="token parameter variable">-f</span> -<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
 <p>过一会查看Pod状态</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl get pods <span class="token parameter variable">-l</span> <span class="token assign-left variable">app</span><span class="token operator">=</span>sleep <span class="token parameter variable">-n</span> default
 NAME                     READY   STATUS    RESTARTS   AGE
 sleep-6bf6676dcc-6nvnm   <span class="token number">2</span>/2     Running   <span class="token number">0</span>          21h<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
-<h3 id="验证服务"><a href="#验证服务" class="headerlink" title="验证服务"></a>验证服务</h3><p>下来进入sleep容器（如果有kubernetes-dashboard也可以通过界面进入）并进行测试</p>
+<h3 id="验证服务">验证服务</h3>
+<p>下来进入sleep容器（如果有kubernetes-dashboard也可以通过界面进入）并进行测试</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl <span class="token builtin class-name">exec</span> <span class="token parameter variable">-it</span> sleep-6bf6676dcc-6nvnm /bin/bash
 kubectl <span class="token builtin class-name">exec</span> <span class="token punctuation">[</span>POD<span class="token punctuation">]</span> <span class="token punctuation">[</span>COMMAND<span class="token punctuation">]</span> is DEPRECATED and will be removed <span class="token keyword">in</span> a future version. Use kubectl <span class="token builtin class-name">exec</span> <span class="token punctuation">[</span>POD<span class="token punctuation">]</span> -- <span class="token punctuation">[</span>COMMAND<span class="token punctuation">]</span> instead.
 bash-5.0<span class="token comment">## for((i=0; i&lt;100; i++)); do http --body http://flaskapp/env/version; done</span>
@@ -672,9 +600,9 @@ v2
 v1
 v2
 ……<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>从运行结果可以看到v1和v2两个结果随机出现，大约各占一半</p>
-<h3 id="创建目标规则和默认路由"><a href="#创建目标规则和默认路由" class="headerlink" title="创建目标规则和默认路由"></a>创建目标规则和默认路由</h3><p>接下来使用istio来管理这两个服务的流量</p>
+<h3 id="创建目标规则和默认路由">创建目标规则和默认路由</h3>
+<p>接下来使用istio来管理这两个服务的流量</p>
 <p>首先创建flaskapp应用的目标规则：flaskapp-destinationrule.yaml</p>
 <pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> networking.istio.io/v1beta1
 <span class="token key atrule">kind</span><span class="token punctuation">:</span> DestinationRule
@@ -689,11 +617,9 @@ v2
   <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> v2
     <span class="token key atrule">labels</span><span class="token punctuation">:</span>
       <span class="token key atrule">version</span><span class="token punctuation">:</span> v2<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>该DestinationRule通过Pod标签把flaskapp服务分成两个subset，分别命名为v1和v2</p>
 <p>提交该文件：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl apply <span class="token parameter variable">-f</span> flaskapp-destinationrule.yaml<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
 <p>接下来为flaskapp服务创建路由规则：flaskapp-virtualservice-v2.yaml</p>
 <pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> networking.istio.io/v1beta1
 <span class="token key atrule">kind</span><span class="token punctuation">:</span> VirtualService
@@ -707,11 +633,9 @@ v2
     <span class="token punctuation">-</span> <span class="token key atrule">destination</span><span class="token punctuation">:</span>
         <span class="token key atrule">host</span><span class="token punctuation">:</span> flaskapp
         <span class="token key atrule">subset</span><span class="token punctuation">:</span> v2<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>该VirtualService对象负责接管对flaskapp这一主机名的访问，并将所有流量都转发到DestinationRule定义的v2 subset上。</p>
 <p>提交该文件：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl apply <span class="token parameter variable">-f</span> flaskapp-virtualservice-v2.yaml<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
 <p>现在进入sleep测试，看看重新定义的流量管理规则是否生效：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## kubectl exec -it sleep-6bf6676dcc-6nvnm /bin/bash</span>
 <span class="token comment">## kubectl exec [POD] [COMMAND] is DEPRECATED and will be removed in a future version. Use kubectl exec [POD] -- [COMMAND] instead.</span>
@@ -720,9 +644,9 @@ v2
 v2
 v2
 ……<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>可以看到路由规则已经生效，重复多次访问返回的永远是v2</p>
-<h2 id="Istio-Dashboard"><a href="#Istio-Dashboard" class="headerlink" title="Istio Dashboard"></a>Istio Dashboard</h2><p>作为一个云原生的服务网格组件，istio必须提供可观测的相关功能。通过istioctl命令可以看到istio默认提供了以下几种dashboard：</p>
+<h2 id="Istio-Dashboard">Istio Dashboard</h2>
+<p>作为一个云原生的服务网格组件，istio必须提供可观测的相关功能。通过istioctl命令可以看到istio默认提供了以下几种dashboard：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## istioctl dashboard</span>
 Access to Istio web UIs
 
@@ -742,79 +666,80 @@ Available Commands:
   prometheus  Open Prometheus web UI
   skywalking  Open SkyWalking UI
   zipkin      Open Zipkin web UI<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>注意新版的istio已经不再默认安装各类dashboard，必须自己手动部署</p>
-<h3 id="部署Prometheus"><a href="#部署Prometheus" class="headerlink" title="部署Prometheus"></a>部署Prometheus</h3><p>手动提交yaml到kubernetes</p>
+<h3 id="部署Prometheus">部署Prometheus</h3>
+<p>手动提交yaml到kubernetes</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## cd /opt/istio-1.12.1/samples/addons</span>
 <span class="token comment">## kubectl apply -f prometheus.yaml</span>
 <span class="token comment">## kubectl get pods -l app=prometheus -n istio-system</span>
 NAME                          READY   STATUS    RESTARTS   AGE
 prometheus-64fd8ccd65-6n6qt   <span class="token number">2</span>/2     Running   <span class="token number">0</span>          17h<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>启动prometheus dashboard监听</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## istioctl dashboard prometheus --address=192.168.91.10</span>
 http://192.168.91.10:9090<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
 <p>打开prometheus页面的targets发现istiod的15014端口connection refused，编辑deployment istio-operator</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl edit deploy istio-operator <span class="token parameter variable">-n</span> istio-operator<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>找到<code>--monitoring-host=127.0.0.1</code>将其改为<code>--monitoring-host=0.0.0.0</code></p>
 <p>再次打开prometheus页面targets</p>
-<p><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmicroservice%2Fistio%2F2.png"></p>
-<h3 id="部署Grafana"><a href="#部署Grafana" class="headerlink" title="部署Grafana"></a>部署Grafana</h3><p>手动提交yaml到kubernetes</p>
+<p><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmicroservice%2Fistio%2F2.png" alt=""></p>
+<h3 id="部署Grafana">部署Grafana</h3>
+<p>手动提交yaml到kubernetes</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## cd /opt/istio-1.12.1/samples/addons</span>
 <span class="token comment">## kubectl apply -f grafana.yaml</span>
 <span class="token comment">## kubectl get pods -l app=grafana -n istio-system</span>
 NAME                       READY   STATUS    RESTARTS   AGE
 grafana-6ccd56f4b6-vz7k5   <span class="token number">1</span>/1     Running   <span class="token number">0</span>          16h<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>启动grafana dashboard监听</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## istioctl dashboard grafana --address=192.168.91.10</span>
 http://192.168.91.10:3000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmicroservice%2Fistio%2F3.png"></p>
-<h3 id="部署Jaeger"><a href="#部署Jaeger" class="headerlink" title="部署Jaeger"></a>部署Jaeger</h3><p>手动提交yaml到kubernetes</p>
+<p><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmicroservice%2Fistio%2F3.png" alt=""></p>
+<h3 id="部署Jaeger">部署Jaeger</h3>
+<p>手动提交yaml到kubernetes</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## cd /opt/istio-1.12.1/samples/addons</span>
 <span class="token comment">## kubectl apply -f jaeger.yaml</span>
 <span class="token comment">## kubectl get pods -l app=jaeger -n istio-system</span>
 NAME                      READY   STATUS    RESTARTS   AGE
 jaeger-5d44bc5c5d-fqtbr   <span class="token number">1</span>/1     Running   <span class="token number">0</span>          16h<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>启动jaeger dashboard监听</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## istioctl dashboard jaeger --address=192.168.91.10</span>
 http://192.168.91.10:16686<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmicroservice%2Fistio%2F4.png"></p>
-<h3 id="部署Kiali"><a href="#部署Kiali" class="headerlink" title="部署Kiali"></a>部署Kiali</h3><p>手动提交yaml到kubernetes</p>
+<p><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmicroservice%2Fistio%2F4.png" alt=""></p>
+<h3 id="部署Kiali">部署Kiali</h3>
+<p>手动提交yaml到kubernetes</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## cd /opt/istio-1.12.1/samples/addons</span>
 <span class="token comment">## kubectl apply -f kiali.yaml</span>
 <span class="token comment">## kubectl get pods -l app=kiali -n istio-system</span>
 NAME                     READY   STATUS    RESTARTS   AGE
 kiali-79b86ff5bc-skwp8   <span class="token number">1</span>/1     Running   <span class="token number">0</span>          16h<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>启动kiali dashboard监听</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## istioctl dashboard kiali --address=192.168.91.10</span>
 http://192.168.91.10:20001/kiali<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmicroservice%2Fistio%2Fkiali.png"></p>
-<h2 id="部署Bookinfo示例程序"><a href="#部署Bookinfo示例程序" class="headerlink" title="部署Bookinfo示例程序"></a>部署Bookinfo示例程序</h2><ol>
-<li><p>进入istio-1.17.0&#x2F;samples&#x2F;bookinfo&#x2F;目录部署应用</p>
+<p><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmicroservice%2Fistio%2Fkiali.png" alt=""></p>
+<h2 id="部署Bookinfo示例程序">部署Bookinfo示例程序</h2>
+<ol>
+<li>进入istio-1.17.0/samples/bookinfo/目录部署应用</li>
+</ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## cd istio-1.17.0/</span>
 <span class="token comment">## kubectl apply -f samples/bookinfo/platform/kube/bookinfo.yaml</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>等待一段直到所有Pod都running。当每个Pod准备就绪时，Istio sidecar将伴随应用一起部署。</p>
-</li>
-<li><p>确认上面的操作都正确之后，运行下面命令，通过检查返回的页面标题来验证应用是否已在集群中运行，并已提供网页服务：</p>
+<ol start="2">
+<li>确认上面的操作都正确之后，运行下面命令，通过检查返回的页面标题来验证应用是否已在集群中运行，并已提供网页服务：</li>
+</ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## kubectl exec "$(kubectl get pod -l app=ratings -o jsonpath='&#123;.items[0].metadata.name&#125;')" -c ratings -- curl -sS productpage:9080/productpage | grep -o "&lt;title>.*&lt;/title>"</span>
 <span class="token operator">&lt;</span>title<span class="token operator">></span>Simple Bookstore App<span class="token operator">&lt;</span>/title<span class="token operator">></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-</li>
-<li><p>对外开放应用程序<br>此时，BookInfo应用已经部署，但还不能被外界访问。要开放访问，还需要创建Istio入站网关（Ingress Gateway），它会在网格边缘把一个路径映射到路由。</p>
+<ol start="3">
+<li>对外开放应用程序<br>
+此时，BookInfo应用已经部署，但还不能被外界访问。要开放访问，还需要创建Istio入站网关（Ingress Gateway），它会在网格边缘把一个路径映射到路由。</li>
+</ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## kubectl apply -f samples/bookinfo/networking/bookinfo-gateway.yaml</span>
 gateway.networking.istio.io/bookinfo-gateway created
 virtualservice.networking.istio.io/bookinfo created<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>可用下面命令确保配置文件没有问题</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ istioctl analyze
 ✔ No validation issues found when analyzing namespace: default.<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-</li>
-<li><p>确定入站IP和端口。查看service发现，默认ingressgateway使用的是LoadBalancer类型，而我们的集群暂不提供LoadBalancer，此时EXTERNAL-IP的地方显示的是pending，需要把它改成NodePort</p>
+<ol start="4">
+<li>确定入站IP和端口。查看service发现，默认ingressgateway使用的是LoadBalancer类型，而我们的集群暂不提供LoadBalancer，此时EXTERNAL-IP的地方显示的是pending，需要把它改成NodePort</li>
+</ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## kubectl get svc -n istio-system</span>
 NAME                   TYPE           CLUSTER-IP       EXTERNAL-IP   PORT<span class="token punctuation">(</span>S<span class="token punctuation">)</span>                                                                      AGE
 grafana                ClusterIP      <span class="token number">10.97</span>.23.53      <span class="token operator">&lt;</span>none<span class="token operator">></span>        <span class="token number">3000</span>/TCP                                                                     90m
@@ -835,14 +760,19 @@ istio-ingressgateway   NodePort    <span class="token number">10.111</span>.102.
 <p>查看istio-ingressgateway的yaml，名称为http2的端口：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## kubectl get svc istio-ingressgateway -n istio-system -o jsonpath="&#123;.spec.ports[?(@.name=='http2')].nodePort&#125;";echo</span>
 <span class="token number">30464</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-<p>于是gateway的访问地址是：<a target="_blank" rel="noopener" href="http://192.168.126.100:30464/">http://192.168.126.100:30464</a></p>
-</li>
-<li><p>在K8S集群外，访问Bookinfo应用100次：</p>
+<p>于是gateway的访问地址是：<a target="_blank" rel="noopener" href="http://192.168.126.100:30464">http://192.168.126.100:30464</a></p>
+<ol start="5">
+<li>在K8S集群外，访问Bookinfo应用100次：</li>
+</ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## for i in $(seq 1 100); do curl -s -o /dev/null "http://192.168.126.100:30464/productpage"; done</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<ol start="6">
+<li>
+<p>打开kiali，可以看到访问链路图<br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmicroservice%2Fistio%2F5.png" alt=""></p>
 </li>
-<li><p>打开kiali，可以看到访问链路图<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmicroservice%2Fistio%2F5.png"></p>
-</li>
-<li><p>打开浏览器可以看到Bookinfo应用的前端页面<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmicroservice%2Fistio%2F6.png"></p>
+<li>
+<p>打开浏览器可以看到Bookinfo应用的前端页面<br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmicroservice%2Fistio%2F6.png" alt=""></p>
 </li>
 </ol>
 
@@ -936,100 +866,7 @@ istio-ingressgateway   NodePort    <span class="token number">10.111</span>.102.
                 </div>
             </div>
             
-                <style>
-    #reward {
-        margin: 40px 0;
-        text-align: center;
-    }
-
-    #reward .reward-link {
-        font-size: 1.4rem;
-        line-height: 38px;
-    }
-
-    #reward .btn-floating:hover {
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    #rewardModal {
-        width: 320px;
-        height: 350px;
-    }
-
-    #rewardModal .reward-title {
-        margin: 15px auto;
-        padding-bottom: 5px;
-    }
-
-    #rewardModal .modal-content {
-        padding: 10px;
-    }
-
-    #rewardModal .close {
-        position: absolute;
-        right: 15px;
-        top: 15px;
-        color: rgba(0, 0, 0, 0.5);
-        font-size: 1.3rem;
-        line-height: 20px;
-        cursor: pointer;
-    }
-
-    #rewardModal .close:hover {
-        color: #ef5350;
-        transform: scale(1.3);
-        -moz-transform:scale(1.3);
-        -webkit-transform:scale(1.3);
-        -o-transform:scale(1.3);
-    }
-
-    #rewardModal .reward-tabs {
-        margin: 0 auto;
-        width: 210px;
-    }
-
-    .reward-tabs .tabs {
-        height: 38px;
-        margin: 10px auto;
-        padding-left: 0;
-    }
-
-    .reward-content ul {
-        padding-left: 0 !important;
-    }
-
-    .reward-tabs .tabs .tab {
-        height: 38px;
-        line-height: 38px;
-    }
-
-    .reward-tabs .tab a {
-        color: #fff;
-        background-color: #ccc;
-    }
-
-    .reward-tabs .tab a:hover {
-        background-color: #ccc;
-        color: #fff;
-    }
-
-    .reward-tabs .wechat-tab .active {
-        color: #fff !important;
-        background-color: #22AB38 !important;
-    }
-
-    .reward-tabs .alipay-tab .active {
-        color: #fff !important;
-        background-color: #019FE8 !important;
-    }
-
-    .reward-tabs .reward-img {
-        width: 210px;
-        height: 210px;
-    }
-</style>
-
-<div id="reward">
+                <div id="reward">
     <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
 
     <!-- Modal Structure -->
@@ -1044,10 +881,10 @@ istio-ingressgateway   NodePort    <span class="token number">10.111</span>.102.
                         <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
                     </ul>
                     <div id="alipay">
-                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2F%E6%89%93%E8%B5%8F%2Falipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                        <img src="/blog/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
                     </div>
                     <div id="wechat">
-                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2F%E6%89%93%E8%B5%8F%2Fweixin.jpg" class="reward-img" alt="微信打赏二维码">
+                        <img src="/blog/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
                     </div>
                 </div>
             </div>
@@ -1064,6 +901,8 @@ istio-ingressgateway   NodePort    <span class="token number">10.111</span>.102.
             
         </div>
     </div>
+
+    
 
     
 
@@ -1204,6 +1043,11 @@ istio-ingressgateway   NodePort    <span class="token number">10.111</span>.102.
 <!-- 代码块功能依赖 -->
 <script type="text/javascript" src="/blog/libs/codeBlock/codeBlockFuction.js"></script>
 
+
+  <!-- 是否加载使用自带的 prismjs. -->
+  <script type="text/javascript" src="/blog/libs/prism/prism.min.js"></script>
+
+
 <!-- 代码语言 -->
 
 <script type="text/javascript" src="/blog/libs/codeBlock/codeLang.js"></script>
@@ -1217,6 +1061,7 @@ istio-ingressgateway   NodePort    <span class="token number">10.111</span>.102.
 <!-- 代码块收缩 -->
 
 <script type="text/javascript" src="/blog/libs/codeBlock/codeShrink.js"></script>
+
 
 
     </div>
@@ -1246,19 +1091,6 @@ istio-ingressgateway   NodePort    <span class="token number">10.111</span>.102.
             headingsOffset: -($(window).height() * 0.4 - 45),
             collapseDepth: Number('0'),
             headingSelector: 'h2, h3, h4'
-        });
-
-        // modify the toc link href to support Chinese.
-        let i = 0;
-        let tocHeading = 'toc-heading-';
-        $('#toc-content a').each(function () {
-            $(this).attr('href', '#' + tocHeading + (++i));
-        });
-
-        // modify the heading title id to support Chinese.
-        i = 0;
-        $('#articleContent').children('h2, h3, h4').each(function () {
-            $(this).attr('id', tocHeading + (++i));
         });
 
         // Set scroll toc fixed.
@@ -1373,85 +1205,45 @@ istio-ingressgateway   NodePort    <span class="token number">10.111</span>.102.
 </div>
 
 <script src="/blog/libs/aplayer/APlayer.min.js"></script>
-<script src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/resources%2Fjs%2FMeting.min.js"></script>
+<script src="/blog/libs/aplayer/Meting.min.js"></script>
 
     
-    <div class="container row center-align" style="margin-bottom: 15px !important;">
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
         <div class="col s12 m8 l8 copy-right">
             Copyright&nbsp;&copy;
             
                 <span id="year">2021-2023</span>
             
-            <span id="year">2021</span>
             <a href="/blog/about" target="_blank">洪宇轩</a>
             |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
             |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
-            <br>
-            
-            &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">44.4k</span>&nbsp;字
-            
-            
-            
-            
-            
-            
-            <span id="busuanzi_container_site_pv">
-                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
-                    class="white-color"></span>&nbsp;次
-            </span>
-            
-            
-            <span id="busuanzi_container_site_uv">
-                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
-                    class="white-color"></span>&nbsp;人
-            </span>
             
             <br>
             
-            <span id="sitetime">载入运行时间...</span>
-            <script>
-                function siteTime() {
-                    var seconds = 1000;
-                    var minutes = seconds * 60;
-                    var hours = minutes * 60;
-                    var days = hours * 24;
-                    var years = days * 365;
-                    var today = new Date();
-                    var startYear = "2021";
-                    var startMonth = "6";
-                    var startDate = "28";
-                    var startHour = "0";
-                    var startMinute = "0";
-                    var startSecond = "0";
-                    var todayYear = today.getFullYear();
-                    var todayMonth = today.getMonth() + 1;
-                    var todayDate = today.getDate();
-                    var todayHour = today.getHours();
-                    var todayMinute = today.getMinutes();
-                    var todaySecond = today.getSeconds();
-                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
-                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
-                    var diff = t2 - t1;
-                    var diffYears = Math.floor(diff / years);
-                    var diffDays = Math.floor((diff / days) - diffYears * 365);
-                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
-                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
-                        minutes);
-                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
-                        diffMinutes * minutes) / seconds);
-                    if (startYear == todayYear) {
-                        document.getElementById("year").innerHTML = todayYear;
-                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffDays + " 天 " + diffHours +
-                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
-                    } else {
-                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
-                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffYears + " 年 " + diffDays +
-                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
-                    }
-                }
-                setInterval(siteTime, 1000);
-            </script>
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">44.4k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
             
             <br>
             
@@ -1598,6 +1390,30 @@ $(function () {
 });
 </script>
 
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
     <!-- 回到顶部按钮 -->
 <div id="backTop" class="top-scroll">
     <a class="btn-floating btn-large waves-effect waves-light" href="#!">
@@ -1612,6 +1428,32 @@ $(function () {
     <script src="/blog/libs/scrollprogress/scrollProgress.min.js"></script>
     <script src="/blog/libs/lightGallery/js/lightgallery-all.min.js"></script>
     <script src="/blog/js/matery.js"></script>
+
+    
+        <!-- <script src='https://unpkg.com/mermaid@latest/dist/mermaid.min.js'></script> -->
+        <script src='/blog/libs/mermaid/mermaid.min.js'></script>
+        <script>
+          if (window.mermaid) {
+            mermaid.initialize({theme: 'forest'});
+          }
+        </script>
+    
+
+    
+    
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+     
+        <script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
+        <script src="/blog/libs/others/TencentCaptcha.js"></script>
+        <button id="TencentCaptcha" data-appid="xxxxxxxxxx" data-cbfn="callback" type="button" hidden></button>
+    
 
     <!-- Baidu Analytics -->
 
@@ -1642,7 +1484,8 @@ $(function () {
 
     
 
-	
+    <!--腾讯兔小巢-->
+    
     
 
     

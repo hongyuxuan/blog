@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="keywords" content="go-zero+opentelemetry+jaeger云原生链路跟踪实践, 洪宇轩的博客">
-    <meta name="description" content="">
+    <meta name="description" content="opentelemetry是一组可观测领域的标准和规范，基于这个标准提供的各种语言的SDK，通过在代码中打埋点的方式（侵入式），可实现市面上绝大多数语言的链路跟踪功能。">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -13,25 +13,46 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
     <title>go-zero+opentelemetry+jaeger云原生链路跟踪实践 | 洪宇轩的博客</title>
     <link rel="icon" type="image/png" href="/blog/favicon.png">
+    
 
-    <link rel="stylesheet" type="text/css" href="/blog/libs/awesome/css/all.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/materialize/materialize.min.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/aos/aos.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/animate/animate.min.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/lightGallery/css/lightgallery.min.css">
-    <link rel="stylesheet" type="text/css" href="/blog/css/matery.css">
-    <link rel="stylesheet" type="text/css" href="/blog/css/my.css">
 
-    <script src="/blog/libs/jquery/jquery.min.js"></script>
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/blog/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/blog/css/my.css">
+<link rel="stylesheet" type="text/css" href="/blog/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/blog/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/blog/css/post.css">
+
+
+
+
+    
+        <link rel="stylesheet" type="text/css" href="/blog/css/reward.css">
+    
+
+
+
+    <script src="/blog/libs/jquery/jquery-3.6.0.min.js"></script>
 
 <meta name="generator" content="Hexo 6.3.0"></head>
-
-
 
 
 <body>
@@ -133,6 +154,11 @@
       <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
     </a>
   </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
 </ul>
 
 
@@ -149,8 +175,6 @@
             
         </div>
     </div>
-
-    
 
     <ul class="menu-list mobile-menu-list">
         
@@ -328,99 +352,7 @@
 <main class="post-container content">
 
     
-    <link rel="stylesheet" href="/blog/libs/tocbot/tocbot.css">
-<style>
-    #articleContent h1::before,
-    #articleContent h2::before,
-    #articleContent h3::before,
-    #articleContent h4::before,
-    #articleContent h5::before,
-    #articleContent h6::before {
-        display: block;
-        content: " ";
-        height: 100px;
-        margin-top: -100px;
-        visibility: hidden;
-    }
-
-    #articleContent :focus {
-        outline: none;
-    }
-
-    .toc-fixed {
-        position: fixed;
-        top: 64px;
-    }
-
-    .toc-widget {
-        width: 345px;
-        padding-left: 20px;
-    }
-
-    .toc-widget .toc-title {
-        padding: 35px 0 15px 17px;
-        font-size: 1.5rem;
-        font-weight: bold;
-        line-height: 1.5rem;
-    }
-
-    .toc-widget ol {
-        padding: 0;
-        list-style: none;
-    }
-
-    #toc-content {
-        padding-bottom: 30px;
-        overflow: auto;
-    }
-
-    #toc-content ol {
-        padding-left: 10px;
-    }
-
-    #toc-content ol li {
-        padding-left: 10px;
-    }
-
-    #toc-content .toc-link:hover {
-        color: #42b983;
-        font-weight: 700;
-        text-decoration: underline;
-    }
-
-    #toc-content .toc-link::before {
-        background-color: transparent;
-        max-height: 25px;
-
-        position: absolute;
-        right: 23.5vw;
-        display: block;
-    }
-
-    #toc-content .is-active-link {
-        color: #42b983;
-    }
-
-    #floating-toc-btn {
-        position: fixed;
-        right: 15px;
-        bottom: 76px;
-        padding-top: 15px;
-        margin-bottom: 0;
-        z-index: 998;
-    }
-
-    #floating-toc-btn .btn-floating {
-        width: 48px;
-        height: 48px;
-    }
-
-    #floating-toc-btn .btn-floating i {
-        line-height: 48px;
-        font-size: 1.4rem;
-    }
-</style>
-<div class="row">
+    <div class="row">
     <div id="main-content" class="col s12 m12 l9">
         <!-- 文章内容详情 -->
 <div id="artDetail">
@@ -496,7 +428,7 @@
 
         
         <!-- 是否加载使用自带的 prismjs. -->
-        <link rel="stylesheet" href="/blog/libs/prism/prism.css">
+        <link rel="stylesheet" href="/blog/libs/prism/prism.min.css">
         
 
         
@@ -507,23 +439,26 @@
 <ul>
 <li>jaeger：云原生可观测链路跟踪工具。关于jaeger部署详见链路跟踪工具Jaeger+OpenTelemetry Collector部署详解</li>
 <li>go-zero：一个go语言版的集成了各种工程实践的api和rpc微服务框架，本文将使用go-zero的api框架</li>
-<li>imroc&#x2F;req：一个开源的go语言轻量级HTTP客户端库</li>
+<li>imroc/req：一个开源的go语言轻量级HTTP客户端库</li>
 <li>opentelemetry：提供了一组API和SDK来标准化遥测数据的采集和传输，相对于skywalking等字节码实现的非侵入式链路跟踪工具来说，opentelemetry是一组可观测领域的标准和规范，基于这个标准提供的各种语言的SDK，通过在代码中打埋点的方式（侵入式），可实现市面上绝大多数语言的链路跟踪功能（比如skywalking、听云等对ktor都不支持，但opentelemetry支持）</li>
 </ul>
-<h2 id="go-zero示例程序"><a href="#go-zero示例程序" class="headerlink" title="go-zero示例程序"></a>go-zero示例程序</h2><p>以一个封装了蓝鲸CMDB接口的示例工程为例（api工程），工程名叫bkcmdb，目录结构如下：<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2F1.png"></p>
-<p>蓝鲸CMDB提供了HTTP接口，示例工程通过imroc&#x2F;req库封装了蓝鲸CMDB接口，通过在调用蓝鲸接口的前后打入埋点，实现一次调用的链路跟踪功能。</p>
-<p>如下的一次调用，将会在一个链路（即trace）上产生两个节点（即span）：<br>postman –&gt; bkcmdb(go-zero) –&gt; 蓝鲸接口</p>
+<h2 id="go-zero示例程序">go-zero示例程序</h2>
+<p>以一个封装了蓝鲸CMDB接口的示例工程为例（api工程），工程名叫bkcmdb，目录结构如下：<br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2F1.png" alt=""></p>
+<p>蓝鲸CMDB提供了HTTP接口，示例工程通过imroc/req库封装了蓝鲸CMDB接口，通过在调用蓝鲸接口的前后打入埋点，实现一次调用的链路跟踪功能。</p>
+<p>如下的一次调用，将会在一个链路（即trace）上产生两个节点（即span）：<br>
+postman --&gt; bkcmdb(go-zero) --&gt; 蓝鲸接口</p>
 <p>该链路第一个节点是bkcmdb，第二个节点是蓝鲸接口。默认go-zero是没有开启链路跟踪功能的，下文将说明如何启用。</p>
-<h2 id="go-zero启动链路跟踪功能"><a href="#go-zero启动链路跟踪功能" class="headerlink" title="go-zero启动链路跟踪功能"></a>go-zero启动链路跟踪功能</h2><p>在正式介绍opentrace基本概念之前，先通过简单的配置启动go-zero的链路跟踪功能看一看效果。go-zero自带了基于opentelemetry的链路追踪功能，默认未开启，在工程的配置文件etc&#x2F;bkcmdb.yaml中增加如下配置：</p>
+<h2 id="go-zero启动链路跟踪功能">go-zero启动链路跟踪功能</h2>
+<p>在正式介绍opentrace基本概念之前，先通过简单的配置启动go-zero的链路跟踪功能看一看效果。go-zero自带了基于opentelemetry的链路追踪功能，默认未开启，在工程的配置文件etc/bkcmdb.yaml中增加如下配置：</p>
 <pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">Telemetry</span><span class="token punctuation">:</span>
   <span class="token key atrule">Name</span><span class="token punctuation">:</span> fiops<span class="token punctuation">-</span>bkcmdb
   <span class="token key atrule">Endpoint</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//jaeger<span class="token punctuation">-</span>collector.xxx.io/api/traces
   <span class="token key atrule">Sampler</span><span class="token punctuation">:</span> <span class="token number">1.0</span>
   <span class="token key atrule">Batcher</span><span class="token punctuation">:</span> jaeger<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>只需在配置文件中增加<code>Telemetry</code>配置块即可，无需修改任何代码。其中<code>Name</code>是该链路上的ServiceName，将会在jaeger（或zipkin）上显示为Service。Endpoint是链路跟踪工具（jaeger或zipkin）的collector地址。<code>Batcher</code>这里指定链路跟踪工具为jaeger。</p>
-<blockquote><p>注意：默认配置了Telemetry后，只能在链路中采集到客户端（比如postman）访问bkcmdb服务端这前半条链路，bkcmdb通过imroc&#x2F;req访问蓝鲸CMDB的后半条链路现在还采集不到。</p>
+<blockquote><p>注意：默认配置了Telemetry后，只能在链路中采集到客户端（比如postman）访问bkcmdb服务端这前半条链路，bkcmdb通过imroc/req访问蓝鲸CMDB的后半条链路现在还采集不到。</p>
 </blockquote>
-
 <p>现在用postman访问bkcmdb</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">curl</span> <span class="token parameter variable">--location</span> <span class="token string">'http://&lt;bkcmdb-url>/v1/project/search'</span> <span class="token punctuation">\</span>
 <span class="token parameter variable">--header</span> <span class="token string">'Content-Type: application/json'</span> <span class="token punctuation">\</span>
@@ -537,14 +472,18 @@
         "start": 0
     &#125;
 &#125;'</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>打开jaeger前端页面，Service搜索fiops-bkcmdb，可以看到出现了一条链路，且链路中只有一个span，这个span就是客户端访问bkcmdb服务端的链路。<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2F2.png"></p>
-<p>点击这条链路进入详情页，展开trace，地址栏url红框内是traceId，右下角红框是spanId<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2F3.png"></p>
+<p>打开jaeger前端页面，Service搜索fiops-bkcmdb，可以看到出现了一条链路，且链路中只有一个span，这个span就是客户端访问bkcmdb服务端的链路。<br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2F2.png" alt=""></p>
+<p>点击这条链路进入详情页，展开trace，地址栏url红框内是traceId，右下角红框是spanId<br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2F3.png" alt=""></p>
 <p>到此示例工程就算成功开启了链路跟踪功能，但这样还不能满足我们的需求，我们还需要bkcmdb访问蓝鲸CMDB的链路。在继续修改代码之前，我们先来了解一下opentracing、opentelemetry的基本概念。</p>
-<h2 id="OpenTracing"><a href="#OpenTracing" class="headerlink" title="OpenTracing"></a>OpenTracing</h2><blockquote>
+<h2 id="OpenTracing">OpenTracing</h2>
+<blockquote>
 <p><a target="_blank" rel="noopener" href="https://opentracing.io/">https://opentracing.io/</a></p>
 </blockquote>
 <p>分布式追踪为描述和分析跨进程事务、甚至是跨网络调用提供了一种解决方案。早在 2005 年，Google 就在内部部署了一套分布式追踪系统 Dapper，并发表了一篇论文《Dapper, a Large-Scale Distributed Systems Tracing Infrastructure》，阐述了该分布式追踪系统的设计和实现，可以视为分布式追踪领域的鼻祖。后来各家厂商公司受此启发，纷纷开源了自家的链路跟踪产品，如zipkin、Uber的jaeger等。但各家的分布式追踪方案互不兼容，于是就诞生了<strong>OpenTracing</strong>。OpenTracing 是一个 Library，定义了一套通用的数据上报接口，要求各个分布式追踪系统都来实现这套接口。</p>
-<h3 id="数据模型"><a href="#数据模型" class="headerlink" title="数据模型"></a>数据模型</h3><p>OpenTracing规范中定义了数据模型，可参考原始文档The OpenTracing Semantic Specification</p>
+<h3 id="数据模型">数据模型</h3>
+<p>OpenTracing规范中定义了数据模型，可参考原始文档The OpenTracing Semantic Specification</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">Causal relationships between Spans <span class="token keyword">in</span> a single Trace
  
          <span class="token punctuation">[</span>Span A<span class="token punctuation">]</span>  ←←←<span class="token punctuation">(</span>the root span<span class="token punctuation">)</span>
@@ -560,11 +499,12 @@
                                        ↑
                                        ↑
                          <span class="token punctuation">(</span>Span G <span class="token variable"><span class="token variable">`</span>FollowsFrom<span class="token variable">`</span></span> Span F<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>在OpenTracing模型中有三个基本概念：</p>
 <ul>
 <li>Trace：调用链，一次HTTP调用或者一次RPC调用（从起始到最后终止），一个调用链会分配一个全局唯一的TraceID</li>
-<li>Span：每个调用链由多个Span组成。Span的含义是范围，可以理解为一个处理阶段（例如一次HTTP调用、一次数据库访问）。Span是一个分布式追踪的最小单位。Span和Span的关系称为Reference。下面是一个Span的结构。<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> Span <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+<li>Span：每个调用链由多个Span组成。Span的含义是范围，可以理解为一个处理阶段（例如一次HTTP调用、一次数据库访问）。Span是一个分布式追踪的最小单位。Span和Span的关系称为Reference。下面是一个Span的结构。</li>
+</ul>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> Span <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
   ctx           spanContext
   serviceName   <span class="token builtin">string</span>
   operationName <span class="token builtin">string</span>
@@ -572,14 +512,18 @@
   flag          <span class="token builtin">string</span>
   children      <span class="token builtin">int</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-Span会封装一组零个或多个key:value的Tags，用于标识一些想在链路中展示的数据</li>
-<li>SpanContext：保存链路的上下文信息[TraceID,SpanID,或者是其它想要传递的内容]实现了tracer接口<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> spanContext <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+<p>Span会封装一组零个或多个key:value的Tags，用于标识一些想在链路中展示的数据</p>
+<ul>
+<li>SpanContext：保存链路的上下文信息[TraceID,SpanID,或者是其它想要传递的内容]实现了tracer接口</li>
+</ul>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> spanContext <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
   traceId <span class="token builtin">string</span>
   spanId  <span class="token builtin">string</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre></li>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="Span之间的关系">Span之间的关系</h3>
+<ul>
+<li>ChildOf：两个Span可以组成父子关系</li>
 </ul>
-<h3 id="Span之间的关系"><a href="#Span之间的关系" class="headerlink" title="Span之间的关系"></a>Span之间的关系</h3><ul>
-<li><p>ChildOf：两个Span可以组成父子关系</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>-Parent Span---------<span class="token punctuation">]</span>
          <span class="token punctuation">[</span>-Child Span----<span class="token punctuation">]</span>
 
@@ -589,8 +533,9 @@ Span会封装一组零个或多个key:value的Tags，用于标识一些想在链
         <span class="token punctuation">[</span>-Child Span C----<span class="token punctuation">]</span>
          <span class="token punctuation">[</span>-Child Span D---------------<span class="token punctuation">]</span>
          <span class="token punctuation">[</span>-Child Span E----<span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-</li>
-<li><p>FollowsFrom：某些父Span在任何方面都不依赖子Span的结果</p>
+<ul>
+<li>FollowsFrom：某些父Span在任何方面都不依赖子Span的结果</li>
+</ul>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token punctuation">[</span>-Parent Span-<span class="token punctuation">]</span>  <span class="token punctuation">[</span>-Child Span-<span class="token punctuation">]</span>
 
 
@@ -599,19 +544,21 @@ Span会封装一组零个或多个key:value的Tags，用于标识一些想在链
 
 
     <span class="token punctuation">[</span>-Parent Span-<span class="token punctuation">]</span>
-                <span class="token punctuation">[</span>-Child Span-<span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></li>
-</ul>
-<h3 id="OpenCensus"><a href="#OpenCensus" class="headerlink" title="OpenCensus"></a>OpenCensus</h3><blockquote>
+                <span class="token punctuation">[</span>-Child Span-<span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="OpenCensus">OpenCensus</h3>
+<blockquote>
 <p><a target="_blank" rel="noopener" href="https://opencensus.io/">https://opencensus.io/</a></p>
 </blockquote>
 <p>OpenCensus是Google开源的，作为最早提出Tracing概念的公司，OpenCensus也是Google Dapper的社区版本。相对于OpenTracing只支持tracing，OpenCensus不仅支持tracing还支持metrics。OpenTracing只制定规范，OpenCensus不仅制定规范，还包含了Agent和Collector。</p>
-<h2 id="OpenTelemetry"><a href="#OpenTelemetry" class="headerlink" title="OpenTelemetry"></a>OpenTelemetry</h2><blockquote>
+<h2 id="OpenTelemetry">OpenTelemetry</h2>
+<blockquote>
 <p><a target="_blank" rel="noopener" href="https://opentelemetry.io/">https://opentelemetry.io/</a></p>
 </blockquote>
 <p>为了更好的将Tracing、Metrics、Logging融合在一起，OpenTelemetry 诞生了。作为 CNCF 的孵化项目，OpenTelemetry 由 OpenTracing 和 OpenCensus 项目合并而成，是一组规范、API 接口、SDK、工具和集成。为众多开发人员带来 Metrics、Tracing、Loging 的统一标准，三者都有相同的元数据结构，可以轻松实现互相关联。</p>
 <p>OpenTelemetry 与厂商、平台无关，不提供与可观测性相关的后端服务。可根据用户需求将可观测类数据导出到存储、查询、可视化等不同后端，如 Prometheus、Jaeger 、云厂商服务中。</p>
-<p>有了基本概念以后，下来看看如何使用imroc&#x2F;req在发送HTTP的时候加入tracing。</p>
-<h3 id="自定义imroc-req中间件实现发送HTTP的trace跟踪"><a href="#自定义imroc-req中间件实现发送HTTP的trace跟踪" class="headerlink" title="自定义imroc&#x2F;req中间件实现发送HTTP的trace跟踪"></a>自定义imroc&#x2F;req中间件实现发送HTTP的trace跟踪</h3><p>这里我们建一个HttpClient封装一下req。在svc目录下新建httpclient.go，并在里面新建一个结构体：</p>
+<p>有了基本概念以后，下来看看如何使用imroc/req在发送HTTP的时候加入tracing。</p>
+<h3 id="自定义imroc-req中间件实现发送HTTP的trace跟踪">自定义imroc/req中间件实现发送HTTP的trace跟踪</h3>
+<p>这里我们建一个HttpClient封装一下req。在svc目录下新建httpclient.go，并在里面新建一个结构体：</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> HttpClient <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
     <span class="token operator">*</span>req<span class="token punctuation">.</span>Client
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
@@ -693,7 +640,6 @@ Span会封装一组零个或多个key:value的Tags，用于标识一些想在链
     <span class="token punctuation">&#125;</span>
   <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>封装好了HttpClient，接下来把它放入servicecontext方便被调用，并在servicecontext中实例化它</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> ServiceContext <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
   Config        config<span class="token punctuation">.</span>Config
@@ -708,7 +654,6 @@ Span会封装一组零个或多个key:value的Tags，用于标识一些想在链
     Client_bkcmdb<span class="token punctuation">:</span> client<span class="token punctuation">,</span>
   <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>接下来封装一个蓝鲸CMDB接口的结构体</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> BkcmdbUtil <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
   logx<span class="token punctuation">.</span>Logger
@@ -723,7 +668,6 @@ Span会封装一组零个或多个key:value的Tags，用于标识一些想在链
     svcCtx<span class="token punctuation">:</span> svcCtx<span class="token punctuation">,</span>
   <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>然后以一个蓝鲸添加模型实例的接口为例</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>b <span class="token operator">*</span>BkcmdbUtil<span class="token punctuation">)</span> <span class="token function">AddInstance</span><span class="token punctuation">(</span>tablename <span class="token builtin">string</span><span class="token punctuation">,</span> v <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>resp <span class="token operator">*</span>types<span class="token punctuation">.</span>BkcmdbRes<span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
   <span class="token comment">// 下面这句话的核心是.Do(context.WithValue(b.ctx, "SpanName", "AddInstance"))</span>
@@ -740,9 +684,11 @@ Span会封装一组零个或多个key:value的Tags，用于标识一些想在链
   <span class="token punctuation">&#125;</span>
   <span class="token keyword">return</span> <span class="token comment">// 返回值types.BkcmdbRes是自定义的返回结构体</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>示例代码写到这就可以了，接下来再用postman发起一次调用，打开jaeger页面，会发现一个链路里现在出现了两个span，其中一个是postman访问go-zero接口的span，第二个就是go-zero通过req访问蓝鲸CMDB的span。<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2F4.png"><br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2F5.png"></p>
-<h3 id="其它通用操作的trace跟踪"><a href="#其它通用操作的trace跟踪" class="headerlink" title="其它通用操作的trace跟踪"></a>其它通用操作的trace跟踪</h3><p>有了如上示例，我们其实可以在任意操作前后打埋点（开启一个span），比如访问数据库、MongoDB、Redis、Elasticsearch、调用其它平台SDK（比如kubernetes client-go）等等，下来以Elasticsearch为例说明。</p>
+<p>示例代码写到这就可以了，接下来再用postman发起一次调用，打开jaeger页面，会发现一个链路里现在出现了两个span，其中一个是postman访问go-zero接口的span，第二个就是go-zero通过req访问蓝鲸CMDB的span。<br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2F4.png" alt=""><br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2F5.png" alt=""></p>
+<h3 id="其它通用操作的trace跟踪">其它通用操作的trace跟踪</h3>
+<p>有了如上示例，我们其实可以在任意操作前后打埋点（开启一个span），比如访问数据库、MongoDB、Redis、Elasticsearch、调用其它平台SDK（比如kubernetes client-go）等等，下来以Elasticsearch为例说明。</p>
 <p>封装一个<code>EsUtil</code>用来操作elasticsearch</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> EsUtil <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
   logx<span class="token punctuation">.</span>Logger
@@ -759,7 +705,6 @@ Span会封装一组零个或多个key:value的Tags，用于标识一些想在链
     tracer<span class="token punctuation">:</span> otel<span class="token punctuation">.</span><span class="token function">Tracer</span><span class="token punctuation">(</span><span class="token string">"go-elasticsearch"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
   <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>在发起一个ES操作（例如插入一个文档）的前后打入埋点<code>startTracer</code>、<code>endTracer</code></p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>es <span class="token operator">*</span>EsUtil<span class="token punctuation">)</span> <span class="token function">EsIndex</span><span class="token punctuation">(</span>index <span class="token builtin">string</span><span class="token punctuation">,</span> body <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> id <span class="token builtin">string</span><span class="token punctuation">,</span> ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token operator">*</span>types<span class="token punctuation">.</span>EsAddResponse<span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
   b<span class="token punctuation">,</span> <span class="token boolean">_</span> <span class="token operator">:=</span> json<span class="token punctuation">.</span><span class="token function">Marshal</span><span class="token punctuation">(</span>body<span class="token punctuation">)</span>
@@ -825,7 +770,6 @@ Span会封装一组零个或多个key:value的Tags，用于标识一些想在链
     attribute<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token string">"elastic.response.body"</span><span class="token punctuation">,</span> <span class="token function">string</span><span class="token punctuation">(</span>body<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
   <span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>到此，从go-zero的服务A接收到一个请求，到由当前服务A发送出去的第一跳操作（HTTP、Elasticsearch、数据库等）都可以在jaerger里看到trace了，大概长这样：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">microserviceA
   <span class="token operator">|</span>
@@ -835,17 +779,19 @@ Span会封装一组零个或多个key:value的Tags，用于标识一些想在链
   <span class="token operator">|</span>--<span class="token operator">></span> HTTP<span class="token punctuation">(</span>蓝鲸CMDB<span class="token punctuation">)</span>
   <span class="token operator">|</span>--<span class="token operator">></span> HTTP<span class="token punctuation">(</span>蓝鲸CMDB<span class="token punctuation">)</span>
   <span class="token operator">|</span> ……<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>此时我们发现，跨服务（A服务调用B服务）现在还是没有链路，单独看服务A的链路也有，服务B的链路也有，但AB没连起来。原因在于我们在链路传递参数的过程中，并没有把traceId、spanId传递到下一跳。自然下一跳和上一跳就没法连接起来了。</p>
 <p>改造代码之前还是先看原理。</p>
-<h3 id="Opentelemetry链路传递核心原理"><a href="#Opentelemetry链路传递核心原理" class="headerlink" title="Opentelemetry链路传递核心原理"></a>Opentelemetry链路传递核心原理</h3><p>先看一张在HTTP通信下，trace如何进行链路传递参数<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2F6.jpg"></p>
+<h3 id="Opentelemetry链路传递核心原理">Opentelemetry链路传递核心原理</h3>
+<p>先看一张在HTTP通信下，trace如何进行链路传递参数<br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2F6.jpg" alt=""></p>
 <p>链路传递数据时用到一个载体叫做propagators，什么是 Propagator？OpenTelemetry 是这样定义的</p>
 <blockquote><p>Cross-cutting concerns send their state to the next process using Propagators, which are defined as objects used to read and write context data to and from messages exchanged by the applications.</p>
 </blockquote>
-
-<p>大概意思就是：从系统的横向切入面看，通过定义一个可读可写的context对象，在应用间进行状态的传递。<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2Fopentelemetry.png"></p>
+<p>大概意思就是：从系统的横向切入面看，通过定义一个可读可写的context对象，在应用间进行状态的传递。<br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2Fopentelemetry.png" alt=""></p>
 <p>这里还有一个Baggage的概念，但是本文暂未涉及到，因此不再赘述，示例代码只需要propagator就可以满足需求了</p>
-<h3 id="Propagator注入trace实现链路信息传递"><a href="#Propagator注入trace实现链路信息传递" class="headerlink" title="Propagator注入trace实现链路信息传递"></a>Propagator注入trace实现链路信息传递</h3><p>服务A通过imroc&#x2F;req调用服务B（HTTP调用），需要在服务A端HTTP发起之前给propagator注入载体(carrier)，并写入HTTP headers，如下代码</p>
+<h3 id="Propagator注入trace实现链路信息传递">Propagator注入trace实现链路信息传递</h3>
+<p>服务A通过imroc/req调用服务B（HTTP调用），需要在服务A端HTTP发起之前给propagator注入载体(carrier)，并写入HTTP headers，如下代码</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>c <span class="token operator">*</span>HttpClient<span class="token punctuation">)</span> <span class="token function">roundTripFunc</span><span class="token punctuation">(</span>rt req<span class="token punctuation">.</span>RoundTripper<span class="token punctuation">)</span> req<span class="token punctuation">.</span>RoundTripFunc <span class="token punctuation">&#123;</span>
   <span class="token keyword">return</span> <span class="token keyword">func</span><span class="token punctuation">(</span>req <span class="token operator">*</span>req<span class="token punctuation">.</span>Request<span class="token punctuation">)</span> <span class="token punctuation">(</span>resp <span class="token operator">*</span>req<span class="token punctuation">.</span>Response<span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
     <span class="token comment">// 省略……</span>
@@ -858,7 +804,6 @@ Span会封装一组零个或多个key:value的Tags，用于标识一些想在链
     <span class="token punctuation">)</span>
   <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>然后在服务B端，从HTTP headers中提取trace信息到载体(<code>carrier</code>)，并放入<code>context</code>里，这样就完成了应用之间的链路传递。这部分功能go-zero已经默认实现了，当开启了<code>Telemetry</code>后，go-zero会通过内置的trace中间件从载体中提取trace信息，这部分源码如下（<a target="_blank" rel="noopener" href="https://github.com/zeromicro/go-zero/blob/v1.5.2/rest/handler/tracehandler.go%EF%BC%89%EF%BC%9A">https://github.com/zeromicro/go-zero/blob/v1.5.2/rest/handler/tracehandler.go）：</a></p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// TraceHandler return a middleware that process the opentelemetry.</span>
 <span class="token keyword">func</span> <span class="token function">TraceHandler</span><span class="token punctuation">(</span>serviceName<span class="token punctuation">,</span> path <span class="token builtin">string</span><span class="token punctuation">,</span> opts <span class="token operator">...</span>TraceOption<span class="token punctuation">)</span> <span class="token keyword">func</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>Handler<span class="token punctuation">)</span> http<span class="token punctuation">.</span>Handler <span class="token punctuation">&#123;</span>
@@ -907,9 +852,10 @@ Span会封装一组零个或多个key:value的Tags，用于标识一些想在链
     <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
   <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>现在打开jaeger页面，可以看到两个服务之间的链路已经连起来了<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2F7.jpg"></p>
-<p>展开GetProjects，可以看到注入的header长这样<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2F8.png"></p>
+<p>现在打开jaeger页面，可以看到两个服务之间的链路已经连起来了<br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2F7.jpg" alt=""></p>
+<p>展开GetProjects，可以看到注入的header长这样<br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2F8.png" alt=""></p>
 
                 
             </div>
@@ -1001,100 +947,7 @@ Span会封装一组零个或多个key:value的Tags，用于标识一些想在链
                 </div>
             </div>
             
-                <style>
-    #reward {
-        margin: 40px 0;
-        text-align: center;
-    }
-
-    #reward .reward-link {
-        font-size: 1.4rem;
-        line-height: 38px;
-    }
-
-    #reward .btn-floating:hover {
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    #rewardModal {
-        width: 320px;
-        height: 350px;
-    }
-
-    #rewardModal .reward-title {
-        margin: 15px auto;
-        padding-bottom: 5px;
-    }
-
-    #rewardModal .modal-content {
-        padding: 10px;
-    }
-
-    #rewardModal .close {
-        position: absolute;
-        right: 15px;
-        top: 15px;
-        color: rgba(0, 0, 0, 0.5);
-        font-size: 1.3rem;
-        line-height: 20px;
-        cursor: pointer;
-    }
-
-    #rewardModal .close:hover {
-        color: #ef5350;
-        transform: scale(1.3);
-        -moz-transform:scale(1.3);
-        -webkit-transform:scale(1.3);
-        -o-transform:scale(1.3);
-    }
-
-    #rewardModal .reward-tabs {
-        margin: 0 auto;
-        width: 210px;
-    }
-
-    .reward-tabs .tabs {
-        height: 38px;
-        margin: 10px auto;
-        padding-left: 0;
-    }
-
-    .reward-content ul {
-        padding-left: 0 !important;
-    }
-
-    .reward-tabs .tabs .tab {
-        height: 38px;
-        line-height: 38px;
-    }
-
-    .reward-tabs .tab a {
-        color: #fff;
-        background-color: #ccc;
-    }
-
-    .reward-tabs .tab a:hover {
-        background-color: #ccc;
-        color: #fff;
-    }
-
-    .reward-tabs .wechat-tab .active {
-        color: #fff !important;
-        background-color: #22AB38 !important;
-    }
-
-    .reward-tabs .alipay-tab .active {
-        color: #fff !important;
-        background-color: #019FE8 !important;
-    }
-
-    .reward-tabs .reward-img {
-        width: 210px;
-        height: 210px;
-    }
-</style>
-
-<div id="reward">
+                <div id="reward">
     <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
 
     <!-- Modal Structure -->
@@ -1109,10 +962,10 @@ Span会封装一组零个或多个key:value的Tags，用于标识一些想在链
                         <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
                     </ul>
                     <div id="alipay">
-                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2F%E6%89%93%E8%B5%8F%2Falipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                        <img src="/blog/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
                     </div>
                     <div id="wechat">
-                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2F%E6%89%93%E8%B5%8F%2Fweixin.jpg" class="reward-img" alt="微信打赏二维码">
+                        <img src="/blog/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
                     </div>
                 </div>
             </div>
@@ -1129,6 +982,8 @@ Span会封装一组零个或多个key:value的Tags，用于标识一些想在链
             
         </div>
     </div>
+
+    
 
     
 
@@ -1273,6 +1128,11 @@ Span会封装一组零个或多个key:value的Tags，用于标识一些想在链
 <!-- 代码块功能依赖 -->
 <script type="text/javascript" src="/blog/libs/codeBlock/codeBlockFuction.js"></script>
 
+
+  <!-- 是否加载使用自带的 prismjs. -->
+  <script type="text/javascript" src="/blog/libs/prism/prism.min.js"></script>
+
+
 <!-- 代码语言 -->
 
 <script type="text/javascript" src="/blog/libs/codeBlock/codeLang.js"></script>
@@ -1286,6 +1146,7 @@ Span会封装一组零个或多个key:value的Tags，用于标识一些想在链
 <!-- 代码块收缩 -->
 
 <script type="text/javascript" src="/blog/libs/codeBlock/codeShrink.js"></script>
+
 
 
     </div>
@@ -1315,19 +1176,6 @@ Span会封装一组零个或多个key:value的Tags，用于标识一些想在链
             headingsOffset: -($(window).height() * 0.4 - 45),
             collapseDepth: Number('0'),
             headingSelector: 'h2, h3, h4'
-        });
-
-        // modify the toc link href to support Chinese.
-        let i = 0;
-        let tocHeading = 'toc-heading-';
-        $('#toc-content a').each(function () {
-            $(this).attr('href', '#' + tocHeading + (++i));
-        });
-
-        // modify the heading title id to support Chinese.
-        i = 0;
-        $('#articleContent').children('h2, h3, h4').each(function () {
-            $(this).attr('id', tocHeading + (++i));
         });
 
         // Set scroll toc fixed.
@@ -1442,85 +1290,45 @@ Span会封装一组零个或多个key:value的Tags，用于标识一些想在链
 </div>
 
 <script src="/blog/libs/aplayer/APlayer.min.js"></script>
-<script src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/resources%2Fjs%2FMeting.min.js"></script>
+<script src="/blog/libs/aplayer/Meting.min.js"></script>
 
     
-    <div class="container row center-align" style="margin-bottom: 15px !important;">
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
         <div class="col s12 m8 l8 copy-right">
             Copyright&nbsp;&copy;
             
                 <span id="year">2021-2023</span>
             
-            <span id="year">2021</span>
             <a href="/blog/about" target="_blank">洪宇轩</a>
             |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
             |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
-            <br>
-            
-            &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">44.4k</span>&nbsp;字
-            
-            
-            
-            
-            
-            
-            <span id="busuanzi_container_site_pv">
-                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
-                    class="white-color"></span>&nbsp;次
-            </span>
-            
-            
-            <span id="busuanzi_container_site_uv">
-                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
-                    class="white-color"></span>&nbsp;人
-            </span>
             
             <br>
             
-            <span id="sitetime">载入运行时间...</span>
-            <script>
-                function siteTime() {
-                    var seconds = 1000;
-                    var minutes = seconds * 60;
-                    var hours = minutes * 60;
-                    var days = hours * 24;
-                    var years = days * 365;
-                    var today = new Date();
-                    var startYear = "2021";
-                    var startMonth = "6";
-                    var startDate = "28";
-                    var startHour = "0";
-                    var startMinute = "0";
-                    var startSecond = "0";
-                    var todayYear = today.getFullYear();
-                    var todayMonth = today.getMonth() + 1;
-                    var todayDate = today.getDate();
-                    var todayHour = today.getHours();
-                    var todayMinute = today.getMinutes();
-                    var todaySecond = today.getSeconds();
-                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
-                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
-                    var diff = t2 - t1;
-                    var diffYears = Math.floor(diff / years);
-                    var diffDays = Math.floor((diff / days) - diffYears * 365);
-                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
-                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
-                        minutes);
-                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
-                        diffMinutes * minutes) / seconds);
-                    if (startYear == todayYear) {
-                        document.getElementById("year").innerHTML = todayYear;
-                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffDays + " 天 " + diffHours +
-                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
-                    } else {
-                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
-                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffYears + " 年 " + diffDays +
-                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
-                    }
-                }
-                setInterval(siteTime, 1000);
-            </script>
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">44.4k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
             
             <br>
             
@@ -1667,6 +1475,30 @@ $(function () {
 });
 </script>
 
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
     <!-- 回到顶部按钮 -->
 <div id="backTop" class="top-scroll">
     <a class="btn-floating btn-large waves-effect waves-light" href="#!">
@@ -1681,6 +1513,32 @@ $(function () {
     <script src="/blog/libs/scrollprogress/scrollProgress.min.js"></script>
     <script src="/blog/libs/lightGallery/js/lightgallery-all.min.js"></script>
     <script src="/blog/js/matery.js"></script>
+
+    
+        <!-- <script src='https://unpkg.com/mermaid@latest/dist/mermaid.min.js'></script> -->
+        <script src='/blog/libs/mermaid/mermaid.min.js'></script>
+        <script>
+          if (window.mermaid) {
+            mermaid.initialize({theme: 'forest'});
+          }
+        </script>
+    
+
+    
+    
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+     
+        <script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
+        <script src="/blog/libs/others/TencentCaptcha.js"></script>
+        <button id="TencentCaptcha" data-appid="xxxxxxxxxx" data-cbfn="callback" type="button" hidden></button>
+    
 
     <!-- Baidu Analytics -->
 
@@ -1711,7 +1569,8 @@ $(function () {
 
     
 
-	
+    <!--腾讯兔小巢-->
+    
     
 
     

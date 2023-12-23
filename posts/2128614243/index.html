@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="keywords" content="云原生链路跟踪工具Jaeger+OpenTelemetry Collector部署详解, 洪宇轩的博客">
-    <meta name="description" content="">
+    <meta name="description" content="提到链路跟踪，或者叫全链路监控，或者叫APM(Application Performance Management)，具体含义和原理不赘述，开源方案有skywalking、zipkin、elasticapm等工具，商业产品有基调听云等等，但在云原生领域，也有一个CNCF已毕业项目jaeger同样发展迅速。">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -13,25 +13,46 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
     <title>云原生链路跟踪工具Jaeger+OpenTelemetry Collector部署详解 | 洪宇轩的博客</title>
     <link rel="icon" type="image/png" href="/blog/favicon.png">
+    
 
-    <link rel="stylesheet" type="text/css" href="/blog/libs/awesome/css/all.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/materialize/materialize.min.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/aos/aos.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/animate/animate.min.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/lightGallery/css/lightgallery.min.css">
-    <link rel="stylesheet" type="text/css" href="/blog/css/matery.css">
-    <link rel="stylesheet" type="text/css" href="/blog/css/my.css">
 
-    <script src="/blog/libs/jquery/jquery.min.js"></script>
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/blog/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/blog/css/my.css">
+<link rel="stylesheet" type="text/css" href="/blog/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/blog/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/blog/css/post.css">
+
+
+
+
+    
+        <link rel="stylesheet" type="text/css" href="/blog/css/reward.css">
+    
+
+
+
+    <script src="/blog/libs/jquery/jquery-3.6.0.min.js"></script>
 
 <meta name="generator" content="Hexo 6.3.0"></head>
-
-
 
 
 <body>
@@ -133,6 +154,11 @@
       <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
     </a>
   </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
 </ul>
 
 
@@ -149,8 +175,6 @@
             
         </div>
     </div>
-
-    
 
     <ul class="menu-list mobile-menu-list">
         
@@ -328,99 +352,7 @@
 <main class="post-container content">
 
     
-    <link rel="stylesheet" href="/blog/libs/tocbot/tocbot.css">
-<style>
-    #articleContent h1::before,
-    #articleContent h2::before,
-    #articleContent h3::before,
-    #articleContent h4::before,
-    #articleContent h5::before,
-    #articleContent h6::before {
-        display: block;
-        content: " ";
-        height: 100px;
-        margin-top: -100px;
-        visibility: hidden;
-    }
-
-    #articleContent :focus {
-        outline: none;
-    }
-
-    .toc-fixed {
-        position: fixed;
-        top: 64px;
-    }
-
-    .toc-widget {
-        width: 345px;
-        padding-left: 20px;
-    }
-
-    .toc-widget .toc-title {
-        padding: 35px 0 15px 17px;
-        font-size: 1.5rem;
-        font-weight: bold;
-        line-height: 1.5rem;
-    }
-
-    .toc-widget ol {
-        padding: 0;
-        list-style: none;
-    }
-
-    #toc-content {
-        padding-bottom: 30px;
-        overflow: auto;
-    }
-
-    #toc-content ol {
-        padding-left: 10px;
-    }
-
-    #toc-content ol li {
-        padding-left: 10px;
-    }
-
-    #toc-content .toc-link:hover {
-        color: #42b983;
-        font-weight: 700;
-        text-decoration: underline;
-    }
-
-    #toc-content .toc-link::before {
-        background-color: transparent;
-        max-height: 25px;
-
-        position: absolute;
-        right: 23.5vw;
-        display: block;
-    }
-
-    #toc-content .is-active-link {
-        color: #42b983;
-    }
-
-    #floating-toc-btn {
-        position: fixed;
-        right: 15px;
-        bottom: 76px;
-        padding-top: 15px;
-        margin-bottom: 0;
-        z-index: 998;
-    }
-
-    #floating-toc-btn .btn-floating {
-        width: 48px;
-        height: 48px;
-    }
-
-    #floating-toc-btn .btn-floating i {
-        line-height: 48px;
-        font-size: 1.4rem;
-    }
-</style>
-<div class="row">
+    <div class="row">
     <div id="main-content" class="col s12 m12 l9">
         <!-- 文章内容详情 -->
 <div id="artDetail">
@@ -496,7 +428,7 @@
 
         
         <!-- 是否加载使用自带的 prismjs. -->
-        <link rel="stylesheet" href="/blog/libs/prism/prism.css">
+        <link rel="stylesheet" href="/blog/libs/prism/prism.min.css">
         
 
         
@@ -505,10 +437,10 @@
             <div id="articleContent">
                 <blockquote><p>提到链路跟踪，或者叫全链路监控，或者叫APM(Application Performance Management)，具体含义和原理不赘述，开源方案有skywalking、zipkin、elasticapm等工具，商业产品有基调听云等等，但在云原生领域，也有一个CNCF已毕业项目jaeger同样发展迅速。</p>
 </blockquote>
-
-<p><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fjaeger%2Fcncf_landscape.PNG"></p>
+<p><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fjaeger%2Fcncf_landscape.PNG" alt=""></p>
 <p>本文将详细讲述如何在K8S环境部署一整套jaeger工具以实现链路跟踪。同时由于jaeger-ui里的monitor功能需要使用到OpenTelemetry Collector，因此本文将一并部署并讲解原理。</p>
-<h2 id="Jaeger架构"><a href="#Jaeger架构" class="headerlink" title="Jaeger架构"></a>Jaeger架构</h2><p><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fjaeger%2Fjaeger_arch.png"></p>
+<h2 id="Jaeger架构">Jaeger架构</h2>
+<p><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fjaeger%2Fjaeger_arch.png" alt=""></p>
 <p>jaeger组件总共有四个：</p>
 <ul>
 <li>jaeger-agent</li>
@@ -519,7 +451,9 @@
 <p>其中jaeger-agent和应用部署在一个主机上或者一个容器pod里。在实际应用中，jaeger-agent通常已经集成到应用框架里了（如go-zero自带jaeger），或者由opentelemetry SDK（如kotlin或springboot）实现，因此无需额外再部署jaeger-agent。</p>
 <p>jaeger-collector是收集trace的组件，它可提供多种收集方式，本文介绍两种：zipkin方式（监听在9411）和jaeger方式（监听在14268）。</p>
 <p>jaeger将trace存储到数据库，可支持多种关系型和非关系型数据库，本文将使用elasticsearch-7.15做数据存储。</p>
-<h2 id="Jaeger部署"><a href="#Jaeger部署" class="headerlink" title="Jaeger部署"></a>Jaeger部署</h2><h3 id="部署jaeger-collector"><a href="#部署jaeger-collector" class="headerlink" title="部署jaeger-collector"></a>部署jaeger-collector</h3><pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">kind</span><span class="token punctuation">:</span> Deployment
+<h2 id="Jaeger部署">Jaeger部署</h2>
+<h3 id="部署jaeger-collector">部署jaeger-collector</h3>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">kind</span><span class="token punctuation">:</span> Deployment
 <span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> apps/v1
 <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
   <span class="token key atrule">name</span><span class="token punctuation">:</span> jaeger<span class="token punctuation">-</span>collector
@@ -631,8 +565,7 @@
   <span class="token key atrule">clusterIP</span><span class="token punctuation">:</span> 10.96.73.35
   <span class="token key atrule">type</span><span class="token punctuation">:</span> ClusterIP
   <span class="token key atrule">sessionAffinity</span><span class="token punctuation">:</span> None<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>其中用到的collector.yaml以configmap的方式挂载到容器的&#x2F;conf&#x2F;collector.yaml</p>
+<p>其中用到的collector.yaml以configmap的方式挂载到容器的/conf/collector.yaml</p>
 <pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment">## collector.yaml</span>
 <span class="token key atrule">es</span><span class="token punctuation">:</span>
   <span class="token key atrule">server-urls</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//es.xxx.io <span class="token comment">## 需要有一个es</span>
@@ -647,8 +580,8 @@
   <span class="token key atrule">jaeger</span><span class="token punctuation">:</span>
     <span class="token key atrule">http</span><span class="token punctuation">:</span>
       <span class="token key atrule">host-port</span><span class="token punctuation">:</span> 0.0.0.0<span class="token punctuation">:</span><span class="token number">14269</span>  <span class="token comment">## jaeger admin HTTP server（没用上）</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h3 id="部署jaeger-query"><a href="#部署jaeger-query" class="headerlink" title="部署jaeger-query"></a>部署jaeger-query</h3><p>jaeger-query是前端界面</p>
+<h3 id="部署jaeger-query">部署jaeger-query</h3>
+<p>jaeger-query是前端界面</p>
 <pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">kind</span><span class="token punctuation">:</span> Deployment
 <span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> apps/v1
 <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
@@ -754,11 +687,17 @@
   <span class="token key atrule">clusterIP</span><span class="token punctuation">:</span> 10.96.161.39
   <span class="token key atrule">type</span><span class="token punctuation">:</span> ClusterIP
   <span class="token key atrule">sessionAffinity</span><span class="token punctuation">:</span> None<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>其中两个环境变量很重要：<br>METRICS_STORAGE_TYPE：设置此值为prometheus才能开启UI上的monitor页面<br>PROMETHEUS_SERVER_URL：设置prometheus地址，monitor数据将从该prometheus上获取<br>再设置一个ingress或者nodeport暴露query的16686端口即可<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fjaeger%2F1.png"></p>
+<p>其中两个环境变量很重要：<br>
+METRICS_STORAGE_TYPE：设置此值为prometheus才能开启UI上的monitor页面<br>
+PROMETHEUS_SERVER_URL：设置prometheus地址，monitor数据将从该prometheus上获取<br>
+再设置一个ingress或者nodeport暴露query的16686端口即可<br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fjaeger%2F1.png" alt=""></p>
 <p>此时还没有任何trace数据</p>
-<h3 id="部署jaeger-spark-dependencies"><a href="#部署jaeger-spark-dependencies" class="headerlink" title="部署jaeger-spark-dependencies"></a>部署jaeger-spark-dependencies</h3><p>这是一个计算链路图的组件，他周期性的从elasticsearch读取trace并计算依赖链路，然后再写回elasticsearch的jaeger-dependencies索引。</p>
-<h2 id="应用接入"><a href="#应用接入" class="headerlink" title="应用接入"></a>应用接入</h2><h3 id="go-zero应用接入"><a href="#go-zero应用接入" class="headerlink" title="go-zero应用接入"></a>go-zero应用接入</h3><p>配置文件中增加jaeger相关模块：</p>
+<h3 id="部署jaeger-spark-dependencies">部署jaeger-spark-dependencies</h3>
+<p>这是一个计算链路图的组件，他周期性的从elasticsearch读取trace并计算依赖链路，然后再写回elasticsearch的jaeger-dependencies索引。</p>
+<h2 id="应用接入">应用接入</h2>
+<h3 id="go-zero应用接入">go-zero应用接入</h3>
+<p>配置文件中增加jaeger相关模块：</p>
 <pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">Name</span><span class="token punctuation">:</span> Devops
 <span class="token key atrule">Host</span><span class="token punctuation">:</span> 0.0.0.0
 <span class="token key atrule">Port</span><span class="token punctuation">:</span> <span class="token number">8888</span>
@@ -778,9 +717,10 @@
   <span class="token key atrule">Endpoint</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//jaeger<span class="token punctuation">-</span>collector.jaeger<span class="token punctuation">-</span>test<span class="token punctuation">:</span>14268/api/traces
   <span class="token key atrule">Sampler</span><span class="token punctuation">:</span> <span class="token number">1.0</span>
   <span class="token key atrule">Batcher</span><span class="token punctuation">:</span> jaeger<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>再在UI查看<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fjaeger%2F2.png"></p>
-<h3 id="opentelemetry接入"><a href="#opentelemetry接入" class="headerlink" title="opentelemetry接入"></a>opentelemetry接入</h3><p>启动参数增加：</p>
+<p>再在UI查看<br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fjaeger%2F2.png" alt=""></p>
+<h3 id="opentelemetry接入">opentelemetry接入</h3>
+<p>启动参数增加：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token parameter variable">-Dotel.propagators</span><span class="token operator">=</span>b3
 -Dotel.instrumentation.common.default-enabled<span class="token operator">=</span>true
 -javaagent:/path/to/you/opentelemetry-javaagent.jar
@@ -790,15 +730,18 @@
 <span class="token parameter variable">-Dotel.traces.exporter</span><span class="token operator">=</span>zipkin 
 <span class="token parameter variable">-Dotel.exporter.zipkin.endpoint</span><span class="token operator">=</span>http://jaeger-collector.jaeger-test:9411/api/v2/spans<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>注意最后的zipkin.endpoint指向了jaeger-collector的9411端口</p>
-<p>UI查看<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fjaeger%2F3.png"></p>
-<h2 id="elasticsearch配置"><a href="#elasticsearch配置" class="headerlink" title="elasticsearch配置"></a>elasticsearch配置</h2><p>jaeger会在elasticsearch里创建三个索引模板：</p>
+<p>UI查看<br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fjaeger%2F3.png" alt=""></p>
+<h2 id="elasticsearch配置">elasticsearch配置</h2>
+<p>jaeger会在elasticsearch里创建三个索引模板：</p>
 <ul>
 <li>jaeger-service：存放所有已收集的serviceName</li>
 <li>jaeger-span：存放trace数据，每个doc是一个span</li>
 <li>Jaeger-dependencies：存放spark计算后的依赖图</li>
 </ul>
 <p>jaeger提供两种方式的索引管理，一个是rollover、一个是ILM</p>
-<h3 id="rollover方式（默认方式）"><a href="#rollover方式（默认方式）" class="headerlink" title="rollover方式（默认方式）"></a>rollover方式（默认方式）</h3><p>该方式jaeger默认每天创建一个带日期后缀的索引，如：jaeger-span-2023-04-04，可查看其数据：</p>
+<h3 id="rollover方式（默认方式）">rollover方式（默认方式）</h3>
+<p>该方式jaeger默认每天创建一个带日期后缀的索引，如：jaeger-span-2023-04-04，可查看其数据：</p>
 <pre class="line-numbers language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
     <span class="token property">"_index"</span> <span class="token operator">:</span> <span class="token string">"jaeger-span-2023-04-04"</span><span class="token punctuation">,</span>
     <span class="token property">"_type"</span> <span class="token operator">:</span> <span class="token string">"_doc"</span><span class="token punctuation">,</span>
@@ -843,9 +786,11 @@
       <span class="token punctuation">&#125;</span>
     <span class="token punctuation">&#125;</span>
   <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>关于rollover配置参考：<br><a target="_blank" rel="noopener" href="https://www.jaegertracing.io/docs/1.43/deployment/#elasticsearch-rollover">https://www.jaegertracing.io/docs/1.43/deployment/#elasticsearch-rollover</a></p>
-<h3 id="ILM方式（推荐）"><a href="#ILM方式（推荐）" class="headerlink" title="ILM方式（推荐）"></a>ILM方式（推荐）</h3><h4 id="创建策略"><a href="#创建策略" class="headerlink" title="创建策略"></a>创建策略</h4><p>手工在ES创建一个ILM策略，名称必须叫：<code>jaeger-ilm-policy</code></p>
+<p>关于rollover配置参考：<br>
+<a target="_blank" rel="noopener" href="https://www.jaegertracing.io/docs/1.43/deployment/#elasticsearch-rollover">https://www.jaegertracing.io/docs/1.43/deployment/#elasticsearch-rollover</a></p>
+<h3 id="ILM方式（推荐）">ILM方式（推荐）</h3>
+<h4 id="创建策略">创建策略</h4>
+<p>手工在ES创建一个ILM策略，名称必须叫：<code>jaeger-ilm-policy</code></p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">curl</span> <span class="token parameter variable">-X</span> PUT http://ESHOST:9200/_ilm/policy/jaeger-ilm-policy <span class="token punctuation">\</span>
 <span class="token parameter variable">-H</span> <span class="token string">'Content-Type: application/json; charset=utf-8'</span> <span class="token punctuation">\</span>
 --data-binary @- <span class="token operator">&lt;&lt;</span> <span class="token string">EOF
@@ -873,8 +818,8 @@
   &#125;
 &#125;
 EOF</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h4 id="初始化索引"><a href="#初始化索引" class="headerlink" title="初始化索引"></a>初始化索引</h4><p>在K8S创建Job，配置如下：</p>
+<h4 id="初始化索引">初始化索引</h4>
+<p>在K8S创建Job，配置如下：</p>
 <pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> batch/v1
 <span class="token key atrule">kind</span><span class="token punctuation">:</span> Job
 <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
@@ -914,19 +859,25 @@ EOF</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span>
   <span class="token key atrule">parallelism</span><span class="token punctuation">:</span> <span class="token number">1</span>
   <span class="token key atrule">completions</span><span class="token punctuation">:</span> <span class="token number">1</span>
   <span class="token key atrule">backoffLimit</span><span class="token punctuation">:</span> <span class="token number">6</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h4 id="配置collector和query参数"><a href="#配置collector和query参数" class="headerlink" title="配置collector和query参数"></a>配置collector和query参数</h4><p>先将jaeger-collector的pod副本降为0，使得collector不再往ES写入，然后删除之前已经存在的三个index template和所有jaeger-开头的索引。然后在jaeger-collector和jaeger-query的启动参数加上<code>--es.use-ilm=true</code>和<code>--es.use-aliases=true</code>，或者在它们的yaml配置文件里增加：</p>
+<h4 id="配置collector和query参数">配置collector和query参数</h4>
+<p>先将jaeger-collector的pod副本降为0，使得collector不再往ES写入，然后删除之前已经存在的三个index template和所有jaeger-开头的索引。然后在jaeger-collector和jaeger-query的启动参数加上<code>--es.use-ilm=true</code>和<code>--es.use-aliases=true</code>，或者在它们的yaml配置文件里增加：</p>
 <pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">es</span><span class="token punctuation">:</span>
   <span class="token key atrule">use-ilm</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
   <span class="token key atrule">use-aliases</span><span class="token punctuation">:</span> <span class="token boolean important">true</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
-<p>做完上面的步骤后调大jaeger-collector的pod副本数，观察ES重新创建了三个index template，并且已经自动关联上了上一步手动创建的ILM policy<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fjaeger%2F4.jpg"></p>
-<p>观察索引已经出现了-000001，配置成功<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fjaeger%2F5.jpg"></p>
-<p>关于ILM配置参考：<br><a target="_blank" rel="noopener" href="https://www.jaegertracing.io/docs/1.43/deployment/#elasticsearch-ilm-support">https://www.jaegertracing.io/docs/1.43/deployment/#elasticsearch-ilm-support</a></p>
-<h2 id="Service-Performance-Monitoring-SPM"><a href="#Service-Performance-Monitoring-SPM" class="headerlink" title="Service Performance Monitoring (SPM)"></a>Service Performance Monitoring (SPM)</h2><p>jaeger还可对trace进行聚合统计，计算出RED(Request, Error, Duration) metrics，并展示在UI的monitor页面。<br>此功能依赖另外一个组件OpenTelemetry Collector，接入后整体流程如下：<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fjaeger%2F6.png"></p>
-<p>此时应用不再将trace发往jaeger-collector，而是将trace发送到OpenTelemetry Collector（下文简称otel-collocter），otel-collocter分两路走，一路将trace原封不动发送到jaeger-collocter（由它去展示trace），另一路经过它自己内部的一个pipeline，计算出calls_total、latency_bucket等metrics，并通过自己的8889&#x2F;metrics暴露出去，prometheus配置一个job采集它的8889&#x2F;metrics，然后jaeger-query再去prometheus取回这些metrics，并展示到UI的monitor页面。</p>
+<p>做完上面的步骤后调大jaeger-collector的pod副本数，观察ES重新创建了三个index template，并且已经自动关联上了上一步手动创建的ILM policy<br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fjaeger%2F4.jpg" alt=""></p>
+<p>观察索引已经出现了-000001，配置成功<br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fjaeger%2F5.jpg" alt=""></p>
+<p>关于ILM配置参考：<br>
+<a target="_blank" rel="noopener" href="https://www.jaegertracing.io/docs/1.43/deployment/#elasticsearch-ilm-support">https://www.jaegertracing.io/docs/1.43/deployment/#elasticsearch-ilm-support</a></p>
+<h2 id="Service-Performance-Monitoring-SPM">Service Performance Monitoring (SPM)</h2>
+<p>jaeger还可对trace进行聚合统计，计算出RED(Request, Error, Duration) metrics，并展示在UI的monitor页面。<br>
+此功能依赖另外一个组件OpenTelemetry Collector，接入后整体流程如下：<br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fjaeger%2F6.png" alt=""></p>
+<p>此时应用不再将trace发往jaeger-collector，而是将trace发送到OpenTelemetry Collector（下文简称otel-collocter），otel-collocter分两路走，一路将trace原封不动发送到jaeger-collocter（由它去展示trace），另一路经过它自己内部的一个pipeline，计算出calls_total、latency_bucket等metrics，并通过自己的8889/metrics暴露出去，prometheus配置一个job采集它的8889/metrics，然后jaeger-query再去prometheus取回这些metrics，并展示到UI的monitor页面。</p>
 <p>参考：<a target="_blank" rel="noopener" href="https://github.com/jaegertracing/jaeger/tree/main/docker-compose/monitor">https://github.com/jaegertracing/jaeger/tree/main/docker-compose/monitor</a></p>
-<h3 id="部署OpenTelemetry-Collector"><a href="#部署OpenTelemetry-Collector" class="headerlink" title="部署OpenTelemetry Collector"></a>部署OpenTelemetry Collector</h3><pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">kind</span><span class="token punctuation">:</span> Deployment
+<h3 id="部署OpenTelemetry-Collector">部署OpenTelemetry Collector</h3>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">kind</span><span class="token punctuation">:</span> Deployment
 <span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> apps/v1
 <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
   <span class="token key atrule">name</span><span class="token punctuation">:</span> otel<span class="token punctuation">-</span>collector
@@ -1045,7 +996,6 @@ EOF</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span>
   <span class="token key atrule">clusterIP</span><span class="token punctuation">:</span> 10.96.7.76
   <span class="token key atrule">type</span><span class="token punctuation">:</span> ClusterIP
   <span class="token key atrule">sessionAffinity</span><span class="token punctuation">:</span> None<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>otel-collector的配置文件如下。一个otel-collector由receivers、exporters、processors三部分组成，其中receivers定义了jaeger输入(监听在14278)、zipkin输入(监听在9411)和otlp输入(本文未使用otlp)。exporters定义了输出有三条路径，prometheus(即普米从本机 <a target="_blank" rel="noopener" href="http://xx:8889/metrics">http://xx:8889/metrics</a> 采走)、zipkin(zipkin方式过来的trace统计计算需要发送到本机监听的9411)、jaeger(trace原样输出到jaeger)。</p>
 <pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment">## otel-collector-config.yml</span>
 <span class="token key atrule">receivers</span><span class="token punctuation">:</span>
@@ -1092,8 +1042,8 @@ EOF</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span>
     <span class="token key atrule">metrics/spanmetrics</span><span class="token punctuation">:</span>
       <span class="token key atrule">receivers</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>otlp/spanmetrics<span class="token punctuation">]</span>
       <span class="token key atrule">exporters</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>prometheus<span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h3 id="对接prometheus"><a href="#对接prometheus" class="headerlink" title="对接prometheus"></a>对接prometheus</h3><p>应用发送trace到otel-collector以后，可在otel-collector的8889看到metrics，说明聚合统计已经生效：</p>
+<h3 id="对接prometheus">对接prometheus</h3>
+<p>应用发送trace到otel-collector以后，可在otel-collector的8889看到metrics，说明聚合统计已经生效：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">curl</span> http:/otel-collector:8889/metrics
 <span class="token comment">## HELP calls_total </span>
 <span class="token comment">## TYPE calls_total counter</span>
@@ -1110,15 +1060,15 @@ latency_count<span class="token punctuation">&#123;</span>operation<span class="
 latency_bucket<span class="token punctuation">&#123;</span>operation<span class="token operator">=</span><span class="token string">"/checkjwtinredis"</span>,service_name<span class="token operator">=</span><span class="token string">"auth-http-server"</span>,span_kind<span class="token operator">=</span><span class="token string">"SPAN_KIND_SERVER"</span>,status_code<span class="token operator">=</span><span class="token string">"STATUS_CODE_UNSET"</span>,le<span class="token operator">=</span><span class="token string">"2"</span><span class="token punctuation">&#125;</span> <span class="token number">816</span>
 latency_bucket<span class="token punctuation">&#123;</span>operation<span class="token operator">=</span><span class="token string">"/checkjwtinredis"</span>,service_name<span class="token operator">=</span><span class="token string">"auth-http-server"</span>,span_kind<span class="token operator">=</span><span class="token string">"SPAN_KIND_SERVER"</span>,status_code<span class="token operator">=</span><span class="token string">"STATUS_CODE_UNSET"</span>,le<span class="token operator">=</span><span class="token string">"4"</span><span class="token punctuation">&#125;</span> <span class="token number">832</span>
 latency_bucket<span class="token punctuation">&#123;</span>operation<span class="token operator">=</span><span class="token string">"/checkjwtinredis"</span>,service_name<span class="token operator">=</span><span class="token string">"auth-http-server"</span>,span_kind<span class="token operator">=</span><span class="token string">"SPAN_KIND_SERVER"</span>,status_code<span class="token operator">=</span><span class="token string">"STATUS_CODE_UNSET"</span>,le<span class="token operator">=</span><span class="token string">"6"</span><span class="token punctuation">&#125;</span> <span class="token number">834</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>现在可在prometheus.yaml配置job：</p>
 <pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment">## prometheus.yaml</span>
 <span class="token key atrule">scrape_configs</span><span class="token punctuation">:</span>
   <span class="token punctuation">-</span> <span class="token key atrule">job_name</span><span class="token punctuation">:</span> aggregated<span class="token punctuation">-</span>trace<span class="token punctuation">-</span>metrics
     <span class="token key atrule">static_configs</span><span class="token punctuation">:</span>
     <span class="token punctuation">-</span> <span class="token key atrule">targets</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'otel-exporter.jaeger-test.xxx.io'</span><span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>otel-exporter.jaeger-test.xxx.io是我的K8S给otel-collector:8889配置的ingress地址<br>重新加载配置后，可在jaeger-ui的monitor页面查看<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fjaeger%2F7.png"></p>
+<p>otel-exporter.jaeger-test.xxx.io是我的K8S给otel-collector:8889配置的ingress地址<br>
+重新加载配置后，可在jaeger-ui的monitor页面查看<br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fjaeger%2F7.png" alt=""></p>
 
                 
             </div>
@@ -1210,100 +1160,7 @@ latency_bucket<span class="token punctuation">&#123;</span>operation<span class=
                 </div>
             </div>
             
-                <style>
-    #reward {
-        margin: 40px 0;
-        text-align: center;
-    }
-
-    #reward .reward-link {
-        font-size: 1.4rem;
-        line-height: 38px;
-    }
-
-    #reward .btn-floating:hover {
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    #rewardModal {
-        width: 320px;
-        height: 350px;
-    }
-
-    #rewardModal .reward-title {
-        margin: 15px auto;
-        padding-bottom: 5px;
-    }
-
-    #rewardModal .modal-content {
-        padding: 10px;
-    }
-
-    #rewardModal .close {
-        position: absolute;
-        right: 15px;
-        top: 15px;
-        color: rgba(0, 0, 0, 0.5);
-        font-size: 1.3rem;
-        line-height: 20px;
-        cursor: pointer;
-    }
-
-    #rewardModal .close:hover {
-        color: #ef5350;
-        transform: scale(1.3);
-        -moz-transform:scale(1.3);
-        -webkit-transform:scale(1.3);
-        -o-transform:scale(1.3);
-    }
-
-    #rewardModal .reward-tabs {
-        margin: 0 auto;
-        width: 210px;
-    }
-
-    .reward-tabs .tabs {
-        height: 38px;
-        margin: 10px auto;
-        padding-left: 0;
-    }
-
-    .reward-content ul {
-        padding-left: 0 !important;
-    }
-
-    .reward-tabs .tabs .tab {
-        height: 38px;
-        line-height: 38px;
-    }
-
-    .reward-tabs .tab a {
-        color: #fff;
-        background-color: #ccc;
-    }
-
-    .reward-tabs .tab a:hover {
-        background-color: #ccc;
-        color: #fff;
-    }
-
-    .reward-tabs .wechat-tab .active {
-        color: #fff !important;
-        background-color: #22AB38 !important;
-    }
-
-    .reward-tabs .alipay-tab .active {
-        color: #fff !important;
-        background-color: #019FE8 !important;
-    }
-
-    .reward-tabs .reward-img {
-        width: 210px;
-        height: 210px;
-    }
-</style>
-
-<div id="reward">
+                <div id="reward">
     <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
 
     <!-- Modal Structure -->
@@ -1318,10 +1175,10 @@ latency_bucket<span class="token punctuation">&#123;</span>operation<span class=
                         <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
                     </ul>
                     <div id="alipay">
-                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2F%E6%89%93%E8%B5%8F%2Falipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                        <img src="/blog/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
                     </div>
                     <div id="wechat">
-                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2F%E6%89%93%E8%B5%8F%2Fweixin.jpg" class="reward-img" alt="微信打赏二维码">
+                        <img src="/blog/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
                     </div>
                 </div>
             </div>
@@ -1338,6 +1195,8 @@ latency_bucket<span class="token punctuation">&#123;</span>operation<span class=
             
         </div>
     </div>
+
+    
 
     
 
@@ -1478,6 +1337,11 @@ latency_bucket<span class="token punctuation">&#123;</span>operation<span class=
 <!-- 代码块功能依赖 -->
 <script type="text/javascript" src="/blog/libs/codeBlock/codeBlockFuction.js"></script>
 
+
+  <!-- 是否加载使用自带的 prismjs. -->
+  <script type="text/javascript" src="/blog/libs/prism/prism.min.js"></script>
+
+
 <!-- 代码语言 -->
 
 <script type="text/javascript" src="/blog/libs/codeBlock/codeLang.js"></script>
@@ -1491,6 +1355,7 @@ latency_bucket<span class="token punctuation">&#123;</span>operation<span class=
 <!-- 代码块收缩 -->
 
 <script type="text/javascript" src="/blog/libs/codeBlock/codeShrink.js"></script>
+
 
 
     </div>
@@ -1520,19 +1385,6 @@ latency_bucket<span class="token punctuation">&#123;</span>operation<span class=
             headingsOffset: -($(window).height() * 0.4 - 45),
             collapseDepth: Number('0'),
             headingSelector: 'h2, h3, h4'
-        });
-
-        // modify the toc link href to support Chinese.
-        let i = 0;
-        let tocHeading = 'toc-heading-';
-        $('#toc-content a').each(function () {
-            $(this).attr('href', '#' + tocHeading + (++i));
-        });
-
-        // modify the heading title id to support Chinese.
-        i = 0;
-        $('#articleContent').children('h2, h3, h4').each(function () {
-            $(this).attr('id', tocHeading + (++i));
         });
 
         // Set scroll toc fixed.
@@ -1647,85 +1499,45 @@ latency_bucket<span class="token punctuation">&#123;</span>operation<span class=
 </div>
 
 <script src="/blog/libs/aplayer/APlayer.min.js"></script>
-<script src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/resources%2Fjs%2FMeting.min.js"></script>
+<script src="/blog/libs/aplayer/Meting.min.js"></script>
 
     
-    <div class="container row center-align" style="margin-bottom: 15px !important;">
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
         <div class="col s12 m8 l8 copy-right">
             Copyright&nbsp;&copy;
             
                 <span id="year">2021-2023</span>
             
-            <span id="year">2021</span>
             <a href="/blog/about" target="_blank">洪宇轩</a>
             |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
             |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
-            <br>
-            
-            &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">44.4k</span>&nbsp;字
-            
-            
-            
-            
-            
-            
-            <span id="busuanzi_container_site_pv">
-                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
-                    class="white-color"></span>&nbsp;次
-            </span>
-            
-            
-            <span id="busuanzi_container_site_uv">
-                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
-                    class="white-color"></span>&nbsp;人
-            </span>
             
             <br>
             
-            <span id="sitetime">载入运行时间...</span>
-            <script>
-                function siteTime() {
-                    var seconds = 1000;
-                    var minutes = seconds * 60;
-                    var hours = minutes * 60;
-                    var days = hours * 24;
-                    var years = days * 365;
-                    var today = new Date();
-                    var startYear = "2021";
-                    var startMonth = "6";
-                    var startDate = "28";
-                    var startHour = "0";
-                    var startMinute = "0";
-                    var startSecond = "0";
-                    var todayYear = today.getFullYear();
-                    var todayMonth = today.getMonth() + 1;
-                    var todayDate = today.getDate();
-                    var todayHour = today.getHours();
-                    var todayMinute = today.getMinutes();
-                    var todaySecond = today.getSeconds();
-                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
-                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
-                    var diff = t2 - t1;
-                    var diffYears = Math.floor(diff / years);
-                    var diffDays = Math.floor((diff / days) - diffYears * 365);
-                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
-                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
-                        minutes);
-                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
-                        diffMinutes * minutes) / seconds);
-                    if (startYear == todayYear) {
-                        document.getElementById("year").innerHTML = todayYear;
-                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffDays + " 天 " + diffHours +
-                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
-                    } else {
-                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
-                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffYears + " 年 " + diffDays +
-                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
-                    }
-                }
-                setInterval(siteTime, 1000);
-            </script>
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">44.4k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
             
             <br>
             
@@ -1872,6 +1684,30 @@ $(function () {
 });
 </script>
 
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
     <!-- 回到顶部按钮 -->
 <div id="backTop" class="top-scroll">
     <a class="btn-floating btn-large waves-effect waves-light" href="#!">
@@ -1886,6 +1722,32 @@ $(function () {
     <script src="/blog/libs/scrollprogress/scrollProgress.min.js"></script>
     <script src="/blog/libs/lightGallery/js/lightgallery-all.min.js"></script>
     <script src="/blog/js/matery.js"></script>
+
+    
+        <!-- <script src='https://unpkg.com/mermaid@latest/dist/mermaid.min.js'></script> -->
+        <script src='/blog/libs/mermaid/mermaid.min.js'></script>
+        <script>
+          if (window.mermaid) {
+            mermaid.initialize({theme: 'forest'});
+          }
+        </script>
+    
+
+    
+    
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+     
+        <script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
+        <script src="/blog/libs/others/TencentCaptcha.js"></script>
+        <button id="TencentCaptcha" data-appid="xxxxxxxxxx" data-cbfn="callback" type="button" hidden></button>
+    
 
     <!-- Baidu Analytics -->
 
@@ -1916,7 +1778,8 @@ $(function () {
 
     
 
-	
+    <!--腾讯兔小巢-->
+    
     
 
     

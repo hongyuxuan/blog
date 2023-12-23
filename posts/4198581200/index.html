@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="keywords" content="K8S Rook Ceph StorageClass, 洪宇轩的博客">
-    <meta name="description" content="">
+    <meta name="description" content="Ceph是红帽家的分布式块存储。Rook可提供基于Ceph的云原生存储。">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -13,25 +13,46 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
     <title>K8S Rook Ceph StorageClass | 洪宇轩的博客</title>
     <link rel="icon" type="image/png" href="/blog/favicon.png">
+    
 
-    <link rel="stylesheet" type="text/css" href="/blog/libs/awesome/css/all.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/materialize/materialize.min.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/aos/aos.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/animate/animate.min.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/lightGallery/css/lightgallery.min.css">
-    <link rel="stylesheet" type="text/css" href="/blog/css/matery.css">
-    <link rel="stylesheet" type="text/css" href="/blog/css/my.css">
 
-    <script src="/blog/libs/jquery/jquery.min.js"></script>
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/blog/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/blog/css/my.css">
+<link rel="stylesheet" type="text/css" href="/blog/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/blog/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/blog/css/post.css">
+
+
+
+
+    
+        <link rel="stylesheet" type="text/css" href="/blog/css/reward.css">
+    
+
+
+
+    <script src="/blog/libs/jquery/jquery-3.6.0.min.js"></script>
 
 <meta name="generator" content="Hexo 6.3.0"></head>
-
-
 
 
 <body>
@@ -133,6 +154,11 @@
       <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
     </a>
   </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
 </ul>
 
 
@@ -149,8 +175,6 @@
             
         </div>
     </div>
-
-    
 
     <ul class="menu-list mobile-menu-list">
         
@@ -328,99 +352,7 @@
 <main class="post-container content">
 
     
-    <link rel="stylesheet" href="/blog/libs/tocbot/tocbot.css">
-<style>
-    #articleContent h1::before,
-    #articleContent h2::before,
-    #articleContent h3::before,
-    #articleContent h4::before,
-    #articleContent h5::before,
-    #articleContent h6::before {
-        display: block;
-        content: " ";
-        height: 100px;
-        margin-top: -100px;
-        visibility: hidden;
-    }
-
-    #articleContent :focus {
-        outline: none;
-    }
-
-    .toc-fixed {
-        position: fixed;
-        top: 64px;
-    }
-
-    .toc-widget {
-        width: 345px;
-        padding-left: 20px;
-    }
-
-    .toc-widget .toc-title {
-        padding: 35px 0 15px 17px;
-        font-size: 1.5rem;
-        font-weight: bold;
-        line-height: 1.5rem;
-    }
-
-    .toc-widget ol {
-        padding: 0;
-        list-style: none;
-    }
-
-    #toc-content {
-        padding-bottom: 30px;
-        overflow: auto;
-    }
-
-    #toc-content ol {
-        padding-left: 10px;
-    }
-
-    #toc-content ol li {
-        padding-left: 10px;
-    }
-
-    #toc-content .toc-link:hover {
-        color: #42b983;
-        font-weight: 700;
-        text-decoration: underline;
-    }
-
-    #toc-content .toc-link::before {
-        background-color: transparent;
-        max-height: 25px;
-
-        position: absolute;
-        right: 23.5vw;
-        display: block;
-    }
-
-    #toc-content .is-active-link {
-        color: #42b983;
-    }
-
-    #floating-toc-btn {
-        position: fixed;
-        right: 15px;
-        bottom: 76px;
-        padding-top: 15px;
-        margin-bottom: 0;
-        z-index: 998;
-    }
-
-    #floating-toc-btn .btn-floating {
-        width: 48px;
-        height: 48px;
-    }
-
-    #floating-toc-btn .btn-floating i {
-        line-height: 48px;
-        font-size: 1.4rem;
-    }
-</style>
-<div class="row">
+    <div class="row">
     <div id="main-content" class="col s12 m12 l9">
         <!-- 文章内容详情 -->
 <div id="artDetail">
@@ -500,7 +432,7 @@
 
         
         <!-- 是否加载使用自带的 prismjs. -->
-        <link rel="stylesheet" href="/blog/libs/prism/prism.css">
+        <link rel="stylesheet" href="/blog/libs/prism/prism.min.css">
         
 
         
@@ -510,11 +442,17 @@
                 <blockquote>
 <p><a target="_blank" rel="noopener" href="https://rook.io/">https://rook.io/</a></p>
 </blockquote>
-<h2 id="什么是Rook"><a href="#什么是Rook" class="headerlink" title="什么是Rook"></a>什么是Rook</h2><p><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fstorage%2Frook-home.png"><br>Rook是CNCF已经毕业的云原生存储方案<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fstorage%2Fwhat_is_rook.png"></p>
-<h2 id="前置条件"><a href="#前置条件" class="headerlink" title="前置条件"></a>前置条件</h2><p>Rook Ceph将每个k8s节点上的块存储联合成一体作为分布式存储，为k8s提供StorageClass，这样的k8s节点由于同时提供了计算、网络、存储，因此也被称作为超融合节点。<br>为了使用Rook Ceph，k8s集群必须满足的条件有：</p>
+<h2 id="什么是Rook">什么是Rook</h2>
+<p><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fstorage%2Frook-home.png" alt=""><br>
+Rook是CNCF已经毕业的云原生存储方案<br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fstorage%2Fwhat_is_rook.png" alt=""></p>
+<h2 id="前置条件">前置条件</h2>
+<p>Rook Ceph将每个k8s节点上的块存储联合成一体作为分布式存储，为k8s提供StorageClass，这样的k8s节点由于同时提供了计算、网络、存储，因此也被称作为超融合节点。<br>
+为了使用Rook Ceph，k8s集群必须满足的条件有：</p>
 <ul>
 <li>至少三个node</li>
-<li>节点提供块存储，满足下列条件之一<ul>
+<li>节点提供块存储，满足下列条件之一
+<ul>
 <li>Raw devices (no partitions or formatted filesystems)</li>
 <li>Raw partitions (no formatted filesystem)</li>
 <li>PVs available from a storage class in block mode</li>
@@ -530,26 +468,24 @@ sda
 └─sda3                    LVM2_member       1NgIKw-CZDb-6t8t-cIMZ-iHYa-jACV-MQIYnR
   └─ubuntu--vg-ubuntu--lv ext4              6686cd41-a6f4-45a7-a564-5581507cd252     <span class="token number">10</span>.7G    <span class="token number">34</span>% /
 sdb<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>用lsblk看sdb没有FSTYPE</p>
-<h2 id="部署Rook-Operator"><a href="#部署Rook-Operator" class="headerlink" title="部署Rook Operator"></a>部署Rook Operator</h2><p>下载资源文件，并部署</p>
+<h2 id="部署Rook-Operator">部署Rook Operator</h2>
+<p>下载资源文件，并部署</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> clone --single-branch <span class="token parameter variable">--branch</span> v1.9.4 https://github.com/rook/rook.git
 <span class="token builtin class-name">cd</span> rook/deploy/examples
 kubectl create <span class="token parameter variable">-f</span> crds.yaml <span class="token parameter variable">-f</span> common.yaml <span class="token parameter variable">-f</span> operator.yaml
 kubectl get pods <span class="token parameter variable">-n</span> rook-ceph
 rook-ceph-operator-799cd7d684-fzwxb                               <span class="token number">1</span>/1     Running     <span class="token number">0</span>              18h<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h2 id="部署Rook-Ceph-Cluster"><a href="#部署Rook-Ceph-Cluster" class="headerlink" title="部署Rook Ceph Cluster"></a>部署Rook Ceph Cluster</h2><p>编辑cluster.yaml，修改spec.storage.deviceFilter，改为sdb。deviceFilter还可以写正则表达式，详见：<a target="_blank" rel="noopener" href="https://rook.io/docs/rook/v1.9/CRDs/ceph-cluster-crd/?h=devicefilter#storage-selection-settings">https://rook.io/docs/rook/v1.9/CRDs/ceph-cluster-crd/?h=devicefilter#storage-selection-settings</a></p>
+<h2 id="部署Rook-Ceph-Cluster">部署Rook Ceph Cluster</h2>
+<p>编辑cluster.yaml，修改spec.storage.deviceFilter，改为sdb。deviceFilter还可以写正则表达式，详见：<a target="_blank" rel="noopener" href="https://rook.io/docs/rook/v1.9/CRDs/ceph-cluster-crd/?h=devicefilter#storage-selection-settings">https://rook.io/docs/rook/v1.9/CRDs/ceph-cluster-crd/?h=devicefilter#storage-selection-settings</a></p>
 <pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml">……  
   <span class="token key atrule">storage</span><span class="token punctuation">:</span> <span class="token comment">## cluster level storage configuration and selection</span>
     <span class="token key atrule">useAllNodes</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
     <span class="token key atrule">useAllDevices</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
     <span class="token key atrule">deviceFilter</span><span class="token punctuation">:</span> sdb<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>接下来部署cluster</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">cd</span> rook/deploy/examples
 kubectl apply <span class="token parameter variable">-f</span> cluster.yaml<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
 <p>查看pod是否运行。注意下面很多镜像都是从k8s.gcr.io下载的，需要翻墙</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl get pods <span class="token parameter variable">-n</span> rook-ceph
 NAME                                                              READY   STATUS      RESTARTS         AGE
@@ -580,14 +516,12 @@ rook-ceph-osd-prepare-k8s-node2.lab.example.com-sz5b8             <span class="t
 rook-ceph-osd-prepare-k8s-node3.lab.example.com-645cq             <span class="token number">0</span>/1     Completed   <span class="token number">0</span>                <span class="token number">166</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <blockquote><p>If the rook-ceph-mon, rook-ceph-mgr, or rook-ceph-osd pods are not created, please refer to the Ceph common issues for more details and potential solutions.</p>
 </blockquote>
-
 <p>再部署一个toolbox（里面有ceph命令）用于查看ceph状态：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl apply <span class="token parameter variable">-f</span> toolbox.yaml
 kubectl <span class="token builtin class-name">exec</span> <span class="token parameter variable">-it</span> rook-ceph-tools-55587cd5f9-mvnhw <span class="token parameter variable">-n</span> rook-ceph -- <span class="token function">bash</span>
 <span class="token punctuation">[</span>rook@rook-ceph-tools-55587cd5f9-mvnhw /<span class="token punctuation">]</span>$ ceph status<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <blockquote><p>If the cluster is not healthy, please refer to the Ceph common issues for more details and potential solutions.</p>
 </blockquote>
-
 <p>Ceph还提供了一个dashboard：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl expose deployment rook-ceph-mgr-a <span class="token parameter variable">-n</span> rook-ceph <span class="token parameter variable">--type</span><span class="token operator">=</span>NodePort <span class="token parameter variable">--name</span> ceph-dashboard
 kubectl get svc <span class="token parameter variable">-n</span> rook-ceph
@@ -616,15 +550,17 @@ kubectl <span class="token builtin class-name">exec</span> <span class="token pa
 
   io:
     client:   <span class="token number">851</span> B/s rd, <span class="token number">1</span> op/s rd, <span class="token number">0</span> op/s wr<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>访问https:&#x2F;&#x2F;节点IP:32441<br>至此Ceph Cluster部署完毕<br>Ceph可提供三种存储方式：</p>
+<p>访问<a target="_blank" rel="noopener" href="https://xn--IP-rm4e214d:32441">https://节点IP:32441</a><br>
+至此Ceph Cluster部署完毕<br>
+Ceph可提供三种存储方式：</p>
 <ul>
 <li>Block: Create block storage to be consumed by a pod (RWO)</li>
 <li>Shared Filesystem: Create a filesystem to be shared across multiple pods (RWX)</li>
 <li>Object: Create an object store that is accessible inside or outside the Kubernetes cluster</li>
 </ul>
 <p>我们使用shared filesystem提供RWX模式</p>
-<h2 id="创建Filesystem"><a href="#创建Filesystem" class="headerlink" title="创建Filesystem"></a>创建Filesystem</h2><p>filesystem.yaml</p>
+<h2 id="创建Filesystem">创建Filesystem</h2>
+<p>filesystem.yaml</p>
 <pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> ceph.rook.io/v1
 <span class="token key atrule">kind</span><span class="token punctuation">:</span> CephFilesystem
 <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
@@ -647,8 +583,8 @@ kubectl get pods <span class="token parameter variable">-n</span> rook-ceph <spa
 NAME                                    READY   STATUS    RESTARTS   AGE
 rook-ceph-mds-myfs-a-9f6f85968-ljr8f    <span class="token number">1</span>/1     Running   <span class="token number">0</span>          80m
 rook-ceph-mds-myfs-b-595fbc5858-jm5wz   <span class="token number">1</span>/1     Running   <span class="token number">0</span>          79m<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h2 id="提供StorageClass"><a href="#提供StorageClass" class="headerlink" title="提供StorageClass"></a>提供StorageClass</h2><pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> storage.k8s.io/v1
+<h2 id="提供StorageClass">提供StorageClass</h2>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> storage.k8s.io/v1
 <span class="token key atrule">kind</span><span class="token punctuation">:</span> StorageClass
 <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
   <span class="token key atrule">name</span><span class="token punctuation">:</span> rook<span class="token punctuation">-</span>cephfs
@@ -676,8 +612,9 @@ rook-ceph-mds-myfs-b-595fbc5858-jm5wz   <span class="token number">1</span>/1   
   <span class="token key atrule">csi.storage.k8s.io/node-stage-secret-namespace</span><span class="token punctuation">:</span> rook<span class="token punctuation">-</span>ceph
 
 <span class="token key atrule">reclaimPolicy</span><span class="token punctuation">:</span> Delete<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>provisioner名称：rook-ceph.cephfs.csi.ceph.com，其中rook-ceph是cluster运行所在namespace</p>
-<h2 id="创建PVC"><a href="#创建PVC" class="headerlink" title="创建PVC"></a>创建PVC</h2><pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<p>provisioner名称：<a target="_blank" rel="noopener" href="http://rook-ceph.cephfs.csi.ceph.com">rook-ceph.cephfs.csi.ceph.com</a>，其中rook-ceph是cluster运行所在namespace</p>
+<h2 id="创建PVC">创建PVC</h2>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
 <span class="token key atrule">kind</span><span class="token punctuation">:</span> PersistentVolumeClaim
 <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
   <span class="token key atrule">name</span><span class="token punctuation">:</span> cephfs<span class="token punctuation">-</span>fox<span class="token punctuation">-</span>dev
@@ -782,100 +719,7 @@ cephfs-fox-dev   Bound    pvc-451e4fc3-bda4-445a-b2a6-d5dd40a845d3   5Gi        
                 </div>
             </div>
             
-                <style>
-    #reward {
-        margin: 40px 0;
-        text-align: center;
-    }
-
-    #reward .reward-link {
-        font-size: 1.4rem;
-        line-height: 38px;
-    }
-
-    #reward .btn-floating:hover {
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    #rewardModal {
-        width: 320px;
-        height: 350px;
-    }
-
-    #rewardModal .reward-title {
-        margin: 15px auto;
-        padding-bottom: 5px;
-    }
-
-    #rewardModal .modal-content {
-        padding: 10px;
-    }
-
-    #rewardModal .close {
-        position: absolute;
-        right: 15px;
-        top: 15px;
-        color: rgba(0, 0, 0, 0.5);
-        font-size: 1.3rem;
-        line-height: 20px;
-        cursor: pointer;
-    }
-
-    #rewardModal .close:hover {
-        color: #ef5350;
-        transform: scale(1.3);
-        -moz-transform:scale(1.3);
-        -webkit-transform:scale(1.3);
-        -o-transform:scale(1.3);
-    }
-
-    #rewardModal .reward-tabs {
-        margin: 0 auto;
-        width: 210px;
-    }
-
-    .reward-tabs .tabs {
-        height: 38px;
-        margin: 10px auto;
-        padding-left: 0;
-    }
-
-    .reward-content ul {
-        padding-left: 0 !important;
-    }
-
-    .reward-tabs .tabs .tab {
-        height: 38px;
-        line-height: 38px;
-    }
-
-    .reward-tabs .tab a {
-        color: #fff;
-        background-color: #ccc;
-    }
-
-    .reward-tabs .tab a:hover {
-        background-color: #ccc;
-        color: #fff;
-    }
-
-    .reward-tabs .wechat-tab .active {
-        color: #fff !important;
-        background-color: #22AB38 !important;
-    }
-
-    .reward-tabs .alipay-tab .active {
-        color: #fff !important;
-        background-color: #019FE8 !important;
-    }
-
-    .reward-tabs .reward-img {
-        width: 210px;
-        height: 210px;
-    }
-</style>
-
-<div id="reward">
+                <div id="reward">
     <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
 
     <!-- Modal Structure -->
@@ -890,10 +734,10 @@ cephfs-fox-dev   Bound    pvc-451e4fc3-bda4-445a-b2a6-d5dd40a845d3   5Gi        
                         <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
                     </ul>
                     <div id="alipay">
-                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2F%E6%89%93%E8%B5%8F%2Falipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                        <img src="/blog/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
                     </div>
                     <div id="wechat">
-                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2F%E6%89%93%E8%B5%8F%2Fweixin.jpg" class="reward-img" alt="微信打赏二维码">
+                        <img src="/blog/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
                     </div>
                 </div>
             </div>
@@ -910,6 +754,8 @@ cephfs-fox-dev   Bound    pvc-451e4fc3-bda4-445a-b2a6-d5dd40a845d3   5Gi        
             
         </div>
     </div>
+
+    
 
     
 
@@ -1054,6 +900,11 @@ cephfs-fox-dev   Bound    pvc-451e4fc3-bda4-445a-b2a6-d5dd40a845d3   5Gi        
 <!-- 代码块功能依赖 -->
 <script type="text/javascript" src="/blog/libs/codeBlock/codeBlockFuction.js"></script>
 
+
+  <!-- 是否加载使用自带的 prismjs. -->
+  <script type="text/javascript" src="/blog/libs/prism/prism.min.js"></script>
+
+
 <!-- 代码语言 -->
 
 <script type="text/javascript" src="/blog/libs/codeBlock/codeLang.js"></script>
@@ -1067,6 +918,7 @@ cephfs-fox-dev   Bound    pvc-451e4fc3-bda4-445a-b2a6-d5dd40a845d3   5Gi        
 <!-- 代码块收缩 -->
 
 <script type="text/javascript" src="/blog/libs/codeBlock/codeShrink.js"></script>
+
 
 
     </div>
@@ -1096,19 +948,6 @@ cephfs-fox-dev   Bound    pvc-451e4fc3-bda4-445a-b2a6-d5dd40a845d3   5Gi        
             headingsOffset: -($(window).height() * 0.4 - 45),
             collapseDepth: Number('0'),
             headingSelector: 'h2, h3, h4'
-        });
-
-        // modify the toc link href to support Chinese.
-        let i = 0;
-        let tocHeading = 'toc-heading-';
-        $('#toc-content a').each(function () {
-            $(this).attr('href', '#' + tocHeading + (++i));
-        });
-
-        // modify the heading title id to support Chinese.
-        i = 0;
-        $('#articleContent').children('h2, h3, h4').each(function () {
-            $(this).attr('id', tocHeading + (++i));
         });
 
         // Set scroll toc fixed.
@@ -1223,85 +1062,45 @@ cephfs-fox-dev   Bound    pvc-451e4fc3-bda4-445a-b2a6-d5dd40a845d3   5Gi        
 </div>
 
 <script src="/blog/libs/aplayer/APlayer.min.js"></script>
-<script src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/resources%2Fjs%2FMeting.min.js"></script>
+<script src="/blog/libs/aplayer/Meting.min.js"></script>
 
     
-    <div class="container row center-align" style="margin-bottom: 15px !important;">
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
         <div class="col s12 m8 l8 copy-right">
             Copyright&nbsp;&copy;
             
                 <span id="year">2021-2023</span>
             
-            <span id="year">2021</span>
             <a href="/blog/about" target="_blank">洪宇轩</a>
             |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
             |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
-            <br>
-            
-            &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">44.4k</span>&nbsp;字
-            
-            
-            
-            
-            
-            
-            <span id="busuanzi_container_site_pv">
-                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
-                    class="white-color"></span>&nbsp;次
-            </span>
-            
-            
-            <span id="busuanzi_container_site_uv">
-                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
-                    class="white-color"></span>&nbsp;人
-            </span>
             
             <br>
             
-            <span id="sitetime">载入运行时间...</span>
-            <script>
-                function siteTime() {
-                    var seconds = 1000;
-                    var minutes = seconds * 60;
-                    var hours = minutes * 60;
-                    var days = hours * 24;
-                    var years = days * 365;
-                    var today = new Date();
-                    var startYear = "2021";
-                    var startMonth = "6";
-                    var startDate = "28";
-                    var startHour = "0";
-                    var startMinute = "0";
-                    var startSecond = "0";
-                    var todayYear = today.getFullYear();
-                    var todayMonth = today.getMonth() + 1;
-                    var todayDate = today.getDate();
-                    var todayHour = today.getHours();
-                    var todayMinute = today.getMinutes();
-                    var todaySecond = today.getSeconds();
-                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
-                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
-                    var diff = t2 - t1;
-                    var diffYears = Math.floor(diff / years);
-                    var diffDays = Math.floor((diff / days) - diffYears * 365);
-                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
-                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
-                        minutes);
-                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
-                        diffMinutes * minutes) / seconds);
-                    if (startYear == todayYear) {
-                        document.getElementById("year").innerHTML = todayYear;
-                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffDays + " 天 " + diffHours +
-                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
-                    } else {
-                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
-                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffYears + " 年 " + diffDays +
-                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
-                    }
-                }
-                setInterval(siteTime, 1000);
-            </script>
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">44.4k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
             
             <br>
             
@@ -1448,6 +1247,30 @@ $(function () {
 });
 </script>
 
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
     <!-- 回到顶部按钮 -->
 <div id="backTop" class="top-scroll">
     <a class="btn-floating btn-large waves-effect waves-light" href="#!">
@@ -1462,6 +1285,32 @@ $(function () {
     <script src="/blog/libs/scrollprogress/scrollProgress.min.js"></script>
     <script src="/blog/libs/lightGallery/js/lightgallery-all.min.js"></script>
     <script src="/blog/js/matery.js"></script>
+
+    
+        <!-- <script src='https://unpkg.com/mermaid@latest/dist/mermaid.min.js'></script> -->
+        <script src='/blog/libs/mermaid/mermaid.min.js'></script>
+        <script>
+          if (window.mermaid) {
+            mermaid.initialize({theme: 'forest'});
+          }
+        </script>
+    
+
+    
+    
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+     
+        <script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
+        <script src="/blog/libs/others/TencentCaptcha.js"></script>
+        <button id="TencentCaptcha" data-appid="xxxxxxxxxx" data-cbfn="callback" type="button" hidden></button>
+    
 
     <!-- Baidu Analytics -->
 
@@ -1492,7 +1341,8 @@ $(function () {
 
     
 
-	
+    <!--腾讯兔小巢-->
+    
     
 
     

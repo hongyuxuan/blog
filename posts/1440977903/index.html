@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="keywords" content="K8S二次开发系列之二：自定义开发CRD+Operator, 洪宇轩的博客">
-    <meta name="description" content="">
+    <meta name="description" content="本文使用Operator-SDK工具教你自定义开发自己的Kubernetes-Operator。">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -13,25 +13,46 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="referrer" content="no-referrer-when-downgrade">
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
     <title>K8S二次开发系列之二：自定义开发CRD+Operator | 洪宇轩的博客</title>
     <link rel="icon" type="image/png" href="/blog/favicon.png">
+    
 
-    <link rel="stylesheet" type="text/css" href="/blog/libs/awesome/css/all.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/materialize/materialize.min.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/aos/aos.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/animate/animate.min.css">
-    <link rel="stylesheet" type="text/css" href="/blog/libs/lightGallery/css/lightgallery.min.css">
-    <link rel="stylesheet" type="text/css" href="/blog/css/matery.css">
-    <link rel="stylesheet" type="text/css" href="/blog/css/my.css">
 
-    <script src="/blog/libs/jquery/jquery.min.js"></script>
+    <!-- bg-cover style     -->
+
+
+
+<link rel="stylesheet" type="text/css" href="/blog/libs/awesome/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/materialize/materialize.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/aos/aos.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/animate/animate.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/libs/lightGallery/css/lightgallery.min.css">
+<link rel="stylesheet" type="text/css" href="/blog/css/matery.css">
+<link rel="stylesheet" type="text/css" href="/blog/css/my.css">
+<link rel="stylesheet" type="text/css" href="/blog/css/dark.css" media="none" onload="if(media!='all')media='all'">
+
+
+
+
+    <link rel="stylesheet" href="/blog/libs/tocbot/tocbot.css">
+    <link rel="stylesheet" href="/blog/css/post.css">
+
+
+
+
+    
+        <link rel="stylesheet" type="text/css" href="/blog/css/reward.css">
+    
+
+
+
+    <script src="/blog/libs/jquery/jquery-3.6.0.min.js"></script>
 
 <meta name="generator" content="Hexo 6.3.0"></head>
-
-
 
 
 <body>
@@ -133,6 +154,11 @@
       <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
     </a>
   </li>
+  <li>
+    <a href="javascript:;" class="waves-effect waves-light" onclick="switchNightMode()" title="深色/浅色模式" >
+      <i id="sum-moon-icon" class="fas fa-sun" style="zoom: 0.85;"></i>
+    </a>
+  </li>
 </ul>
 
 
@@ -149,8 +175,6 @@
             
         </div>
     </div>
-
-    
 
     <ul class="menu-list mobile-menu-list">
         
@@ -328,99 +352,7 @@
 <main class="post-container content">
 
     
-    <link rel="stylesheet" href="/blog/libs/tocbot/tocbot.css">
-<style>
-    #articleContent h1::before,
-    #articleContent h2::before,
-    #articleContent h3::before,
-    #articleContent h4::before,
-    #articleContent h5::before,
-    #articleContent h6::before {
-        display: block;
-        content: " ";
-        height: 100px;
-        margin-top: -100px;
-        visibility: hidden;
-    }
-
-    #articleContent :focus {
-        outline: none;
-    }
-
-    .toc-fixed {
-        position: fixed;
-        top: 64px;
-    }
-
-    .toc-widget {
-        width: 345px;
-        padding-left: 20px;
-    }
-
-    .toc-widget .toc-title {
-        padding: 35px 0 15px 17px;
-        font-size: 1.5rem;
-        font-weight: bold;
-        line-height: 1.5rem;
-    }
-
-    .toc-widget ol {
-        padding: 0;
-        list-style: none;
-    }
-
-    #toc-content {
-        padding-bottom: 30px;
-        overflow: auto;
-    }
-
-    #toc-content ol {
-        padding-left: 10px;
-    }
-
-    #toc-content ol li {
-        padding-left: 10px;
-    }
-
-    #toc-content .toc-link:hover {
-        color: #42b983;
-        font-weight: 700;
-        text-decoration: underline;
-    }
-
-    #toc-content .toc-link::before {
-        background-color: transparent;
-        max-height: 25px;
-
-        position: absolute;
-        right: 23.5vw;
-        display: block;
-    }
-
-    #toc-content .is-active-link {
-        color: #42b983;
-    }
-
-    #floating-toc-btn {
-        position: fixed;
-        right: 15px;
-        bottom: 76px;
-        padding-top: 15px;
-        margin-bottom: 0;
-        z-index: 998;
-    }
-
-    #floating-toc-btn .btn-floating {
-        width: 48px;
-        height: 48px;
-    }
-
-    #floating-toc-btn .btn-floating i {
-        line-height: 48px;
-        font-size: 1.4rem;
-    }
-</style>
-<div class="row">
+    <div class="row">
     <div id="main-content" class="col s12 m12 l9">
         <!-- 文章内容详情 -->
 <div id="artDetail">
@@ -500,7 +432,7 @@
 
         
         <!-- 是否加载使用自带的 prismjs. -->
-        <link rel="stylesheet" href="/blog/libs/prism/prism.css">
+        <link rel="stylesheet" href="/blog/libs/prism/prism.min.css">
         
 
         
@@ -509,14 +441,14 @@
             <div id="articleContent">
                 <blockquote><p>本文篇幅较长，将手把手教你如何自定义开发一个自己的Operator。本文适合于已经对各种云原生软件Operator安装非常熟悉（例如prometheus-operator等），一时技痒想自己手撸一个Operator；或者是在实际工作中因业务需要自己定制一个Operator。本文不适合新手，如果你还不知道Operator是干啥的，建议先补补课再来。</p>
 </blockquote>
-
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>当前很多云原生软件都会提供一种叫做Operator的安装方式，比如prometheus-operator、istio-operator、awx-operator、rook-operator等等。为什么会出现Operator？什么又是Operator？随着我们越发深入的使用Kubernetes，就会发现K8S中内置的对象，比如<code>Deployment</code>、<code>StatefulSet</code>已经不能满足我们的需求。我们希望在K8S定义一些自己的对象，一是可以通过<code>kube-apiserver</code>提供统一的访问入口，二是可以像其他内置对象一样，通过<code>kubectl</code>命令管理这些自定义的对象。</p>
+<h2 id="前言">前言</h2>
+<p>当前很多云原生软件都会提供一种叫做Operator的安装方式，比如prometheus-operator、istio-operator、awx-operator、rook-operator等等。为什么会出现Operator？什么又是Operator？随着我们越发深入的使用Kubernetes，就会发现K8S中内置的对象，比如<code>Deployment</code>、<code>StatefulSet</code>已经不能满足我们的需求。我们希望在K8S定义一些自己的对象，一是可以通过<code>kube-apiserver</code>提供统一的访问入口，二是可以像其他内置对象一样，通过<code>kubectl</code>命令管理这些自定义的对象。</p>
 <p>Kubernetes 中提供了这种自定义对象的方式，其中之一就是 CRD。</p>
-<h2 id="CRD"><a href="#CRD" class="headerlink" title="CRD"></a>CRD</h2><p>CRD（CustomResourceDefinitions）是Operator的基础，讲Operator之前必先讲CRD。</p>
+<h2 id="CRD">CRD</h2>
+<p>CRD（CustomResourceDefinitions）是Operator的基础，讲Operator之前必先讲CRD。</p>
 <p>CustomResourceDefinition API资源允许我们定义定制资源。 定义CRD对象的操作会使用你所设定的名字和模式定义（Schema）创建一个新的定制资源，Kubernetes API负责为我们的定制资源提供存储和访问服务。K8S官网给出了下面的一个例子：</p>
 <blockquote><p><a target="_blank" rel="noopener" href="https://kubernetes.io/zh-cn/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/">https://kubernetes.io/zh-cn/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/</a></p>
 </blockquote>
-
 <pre class="line-numbers language-yaml" data-language="yaml"><div class="caption"><span>crontabs.crd.yaml</span></div><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> apiextensions.k8s.io/v1
 <span class="token key atrule">kind</span><span class="token punctuation">:</span> CustomResourceDefinition
 <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
@@ -566,63 +498,79 @@
 <span class="token key atrule">spec</span><span class="token punctuation">:</span>
   <span class="token key atrule">cronSpec</span><span class="token punctuation">:</span> <span class="token string">"* * * * */5"</span>
   <span class="token key atrule">image</span><span class="token punctuation">:</span> my<span class="token punctuation">-</span>awesome<span class="token punctuation">-</span>cron<span class="token punctuation">-</span>image<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>现在可以使用kubectl来管理CronTab对象了。例如：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl get <span class="token function">crontab</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
 <p>这里的资源名是大小写不敏感的，我们可以使用复数形式<code>kubectl get crontabs</code>，也可以使用缩写<code>kubectl get ct</code>。和原生内置的API对象一样，这些CRD不仅可以通过kubectl来创建、查看、修改、删除，还可以给其配置RBAC权限。</p>
-<h2 id="什么是Kubernetes-Operator"><a href="#什么是Kubernetes-Operator" class="headerlink" title="什么是Kubernetes Operator"></a>什么是Kubernetes Operator</h2><p>了解了CRD以后，再来看看什么是Kubernetes Operator。Kubernetes通过声明式API来定义对象，其描述的是对象期望的状态（比如replicas:2表示期望POD的副本数是2），而K8S的<code>控制器</code>负责实时查看对应对象的状态，确保对象最终达到定义的期望状态。这也叫做K8S的控制器模式。<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fcustom%2F2.png"><br><code>kube-controller-manager</code>就是由这样一组控制器组成的。</p>
+<h2 id="什么是Kubernetes-Operator">什么是Kubernetes Operator</h2>
+<p>了解了CRD以后，再来看看什么是Kubernetes Operator。Kubernetes通过声明式API来定义对象，其描述的是对象期望的状态（比如replicas:2表示期望POD的副本数是2），而K8S的<code>控制器</code>负责实时查看对应对象的状态，确保对象最终达到定义的期望状态。这也叫做K8S的控制器模式。<br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fcustom%2F2.png" alt=""><br>
+<code>kube-controller-manager</code>就是由这样一组控制器组成的。</p>
 <p>当我们创建好CRD以后，这只是自定义对象的期望状态，还没有任何控制器来控制它的创建、删除、修改、查看等等行为，所以我们还需要编写一个控制器，即<code>Operator</code>，来完成控制逻辑。</p>
-<h2 id="Kubernetes-Operator是如何工作的"><a href="#Kubernetes-Operator是如何工作的" class="headerlink" title="Kubernetes Operator是如何工作的"></a>Kubernetes Operator是如何工作的</h2><p><code>Operator</code>工作的时候采用上述控制器模式，会持续的观察Kubernetes中自定义的对象，即<code>CR（Custom Resource）</code>。</p>
-<pre class="line-numbers language-mermaid" data-language="mermaid"><code class="language-mermaid"><span class="token keyword">graph</span> LR
-A<span class="token text string">[[user]]</span> <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">modifications</span><span class="token arrow operator">--></span></span> B<span class="token text string">&#123;Custom Resource&#125;</span>
-B <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">tracking</span><span class="token arrow operator">--></span></span> C<span class="token text string">(Operator)</span>
-C <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">change events</span><span class="token arrow operator">--></span></span> B
-B <span class="token inter-arrow-label"><span class="token arrow-head arrow operator">--</span><span class="token label property">in case of error</span><span class="token arrow operator">--></span></span>B
-C <span class="token arrow operator">---></span> D<span class="token text string">&#123;Current State&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="Kubernetes-Operator是如何工作的">Kubernetes Operator是如何工作的</h2>
+<p><code>Operator</code>工作的时候采用上述控制器模式，会持续的观察Kubernetes中自定义的对象，即<code>CR（Custom Resource）</code>。</p>
+<div class="mermaid">
+  graph LR
+A[[user]] --modifications--> B{Custom Resource}
+B --tracking--> C(Operator)
+C --change events--> B
+B --in case of error-->B
+C ---> D{Current State}
+</div>
+
 <p>Operator会持续跟踪这些CR的变化事件，比如ADD、UPDATE、DELETE，然后采取一系列操作，使其达到期望的状态。</p>
-<h2 id="构建自己的Kubernetes-Operator"><a href="#构建自己的Kubernetes-Operator" class="headerlink" title="构建自己的Kubernetes Operator"></a>构建自己的Kubernetes Operator</h2><p>社区目前有些成熟的脚手架工具用于构建自己的Operator，常见的有三种：</p>
+<h2 id="构建自己的Kubernetes-Operator">构建自己的Kubernetes Operator</h2>
+<p>社区目前有些成熟的脚手架工具用于构建自己的Operator，常见的有三种：</p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://github.com/kubernetes-sigs/kubebuilder">Kubebuilder</a></li>
 <li><a target="_blank" rel="noopener" href="https://github.com/operator-framework/operator-sdk">Operator-SDK</a></li>
 <li><a target="_blank" rel="noopener" href="https://github.com/kudobuilder/kudo">KUDO</a></li>
 </ul>
 <p>本文将使用Operator-SDK来构建自己的Operator。</p>
-<h3 id="安装Operator-SDK"><a href="#安装Operator-SDK" class="headerlink" title="安装Operator-SDK"></a>安装Operator-SDK</h3><p>在下面的地址选择合适的二进制包下载：<br><a target="_blank" rel="noopener" href="https://github.com/operator-framework/operator-sdk/releases">https://github.com/operator-framework/operator-sdk/releases</a></p>
+<h3 id="安装Operator-SDK">安装Operator-SDK</h3>
+<p>在下面的地址选择合适的二进制包下载：<br>
+<a target="_blank" rel="noopener" href="https://github.com/operator-framework/operator-sdk/releases">https://github.com/operator-framework/operator-sdk/releases</a></p>
 <p>把二进制文件operator-sdk放到PATH里，使其全局可用。</p>
-<h3 id="使用Go创建Operator"><a href="#使用Go创建Operator" class="headerlink" title="使用Go创建Operator"></a>使用Go创建Operator</h3><p>Operator SDK 提供以下工作流来开发一个新的 Operator：</p>
-<pre class="line-numbers language-mermaid" data-language="mermaid"><code class="language-mermaid"><span class="token keyword">graph</span> TD
-A<span class="token text string">(使用operator-sdk工具创建一个新的Operator项目)</span> <span class="token arrow operator">--></span> B<span class="token text string">(使用operator-sdk工具创建一个新的api)</span>
-B <span class="token arrow operator">--></span> C<span class="token text string">(编辑工具自动生成的CRD, 添加自己需要的字段)</span>
-C <span class="token arrow operator">--></span> D<span class="token text string">(在controller部分编辑协调Reconcile逻辑)</span>
-D <span class="token arrow operator">--></span> E<span class="token text string">(使用operator-sdk工具构建并生成部署清单文件)</span>
-E <span class="token arrow operator">--></span> F<span class="token text string">&#123;选择部署方式&#125;</span>
-F <span class="token arrow operator">--></span> G<span class="token text string">(容器外部署)</span>
-F <span class="token arrow operator">--></span> H<span class="token text string">(容器集群内部署)</span>
-H <span class="token arrow operator">--></span> I<span class="token text string">(打包成Docker Image并上传镜像仓库, 在集群内以deployment方式部署)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="使用Go创建Operator">使用Go创建Operator</h3>
+<p>Operator SDK 提供以下工作流来开发一个新的 Operator：</p>
+<div class="mermaid">
+  graph TD
+A(使用operator-sdk工具创建一个新的Operator项目) --> B(使用operator-sdk工具创建一个新的api)
+B --> C(编辑工具自动生成的CRD, 添加自己需要的字段)
+C --> D(在controller部分编辑协调Reconcile逻辑)
+D --> E(使用operator-sdk工具构建并生成部署清单文件)
+E --> F{选择部署方式}
+F --> G(容器外部署)
+F --> H(容器集群内部署)
+H --> I(打包成Docker Image并上传镜像仓库, 在集群内以deployment方式部署)
+</div>
 
-<h3 id="具体步骤"><a href="#具体步骤" class="headerlink" title="具体步骤"></a>具体步骤</h3><p>接下来我们将自定义开发一个具有如下功能的Operator：</p>
+<h3 id="具体步骤">具体步骤</h3>
+<p>接下来我们将自定义开发一个具有如下功能的Operator：</p>
 <ul>
 <li>定义一个CRD叫DemoApplication</li>
-<li>当我提交一个DemoApplication的CR(metadata.name&#x3D;demo)时<ul>
+<li>当我提交一个DemoApplication的CR(metadata.name=demo)时
+<ul>
 <li>如果名为demo的deployment不存在，则创建它</li>
 <li>如果CR的字段里包含Service，则检查名为demo的service是否存在，如果不存在则创建它，并且关联上一步的deployment</li>
 <li>如果CR的字段里包含PersistentVolumeClaims，则检查CR指定的PVC是否已存在，如果不存在则创建它</li>
-<li>如果CR的字段里包含Ingress，则检查CR指定的Ingress是否存在<ul>
+<li>如果CR的字段里包含Ingress，则检查CR指定的Ingress是否存在
+<ul>
 <li>如果Ingress不存在则创建它</li>
 <li>如果Ingress已存在则把CR里指定的Rule添加到已有的Ingress的rules后面</li>
 </ul>
 </li>
 </ul>
 </li>
-<li>当我删除一个DemoApplication的CR时<ul>
+<li>当我删除一个DemoApplication的CR时
+<ul>
 <li>如果名为demo的deployment已存在，则删除它</li>
 <li>如果名为demo的service已存在，则删除它</li>
 </ul>
 </li>
 </ul>
 <p>下面正式开撸</p>
-<h4 id="创建工程"><a href="#创建工程" class="headerlink" title="创建工程"></a>创建工程</h4><p>用operator-sdk命令行工具创建一个工程叫<code>demo-operator</code></p>
+<h4 id="创建工程">创建工程</h4>
+<p>用operator-sdk命令行工具创建一个工程叫<code>demo-operator</code></p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">mkdir</span> demo-operator <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">cd</span> demo-operator
 operator-sdk init <span class="token parameter variable">--domain</span> example.com <span class="token parameter variable">--repo</span> demo<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>–domain指定了自定义的CRD的api-versions里的域名后缀，例如一个istio的<code>networking.istio.io/v1alpha3</code>，其中<code>istio.io</code>即domain，<code>networking</code>是下文要创建的api的一个参数group，<code>v1alpha3</code>是api的version。–repo指定了go工程的mod名，和go mod init xxx是一个意思。</p>
@@ -670,7 +618,6 @@ operator-sdk init <span class="token parameter variable">--domain</span> example
 └── main.go
 
 <span class="token number">10</span> directories, <span class="token number">29</span> files<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>查看自动创建好的main.go</p>
 <pre class="line-numbers language-GO" data-language="GO"><code class="language-GO">func main() &#123;
 	var metricsAddr string
@@ -690,23 +637,20 @@ operator-sdk init <span class="token parameter variable">--domain</span> example
   LeaderElection<span class="token punctuation">:</span>         enableLeaderElection<span class="token punctuation">,</span>
   LeaderElectionID<span class="token punctuation">:</span>       <span class="token string">"aefd3536.example.com"</span><span class="token punctuation">,</span>
 <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>这时候还没有创建任何api，可以试着运行一下程序：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ go run main.go
 <span class="token number">2023</span>-12-07T17:12:55+08:00       INFO    controller-runtime.metrics      Metrics server is starting to listen    <span class="token punctuation">&#123;</span><span class="token string">"addr"</span><span class="token builtin class-name">:</span> <span class="token string">":8080"</span><span class="token punctuation">&#125;</span>
 <span class="token number">2023</span>-12-07T17:12:55+08:00       INFO    setup   starting manager
 <span class="token number">2023</span>-12-07T17:12:55+08:00       INFO    Starting server <span class="token punctuation">&#123;</span><span class="token string">"path"</span><span class="token builtin class-name">:</span> <span class="token string">"/metrics"</span>, <span class="token string">"kind"</span><span class="token builtin class-name">:</span> <span class="token string">"metrics"</span>, <span class="token string">"addr"</span><span class="token builtin class-name">:</span> <span class="token string">"[::]:8080"</span><span class="token punctuation">&#125;</span>
 <span class="token number">2023</span>-12-07T17:12:55+08:00       INFO    Starting server <span class="token punctuation">&#123;</span><span class="token string">"kind"</span><span class="token builtin class-name">:</span> <span class="token string">"health probe"</span>, <span class="token string">"addr"</span><span class="token builtin class-name">:</span> <span class="token string">"[::]:8081"</span><span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>访问一下healthz：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">curl</span> localhost:8081/healthz<span class="token punctuation">;</span><span class="token builtin class-name">echo</span>
 ok<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
 <p>访问一下readyz</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">curl</span> localhost:8081/readyz<span class="token punctuation">;</span><span class="token builtin class-name">echo</span>
 ok<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<h4 id="创建API及Controller"><a href="#创建API及Controller" class="headerlink" title="创建API及Controller"></a>创建API及Controller</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ operator-sdk create api <span class="token parameter variable">--group</span> application <span class="token parameter variable">--version</span> v1 <span class="token parameter variable">--kind</span> DemoApplication <span class="token parameter variable">--resource</span> <span class="token parameter variable">--controller</span>
+<h4 id="创建API及Controller">创建API及Controller</h4>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ operator-sdk create api <span class="token parameter variable">--group</span> application <span class="token parameter variable">--version</span> v1 <span class="token parameter variable">--kind</span> DemoApplication <span class="token parameter variable">--resource</span> <span class="token parameter variable">--controller</span>
 Writing kustomize manifests <span class="token keyword">for</span> you to edit<span class="token punctuation">..</span>.
 Writing scaffold <span class="token keyword">for</span> you to edit<span class="token punctuation">..</span>.
 api/v1/demoapplication_types.go
@@ -721,10 +665,9 @@ $ <span class="token function">make</span> generate
 /home/student/operator/demo-operator/bin/controller-gen object:headerFile<span class="token operator">=</span><span class="token string">"hack/boilerplate.go.txt"</span> <span class="token assign-left variable">paths</span><span class="token operator">=</span><span class="token string">"./..."</span>
 Next: implement your new API and generate the manifests <span class="token punctuation">(</span>e.g. CRDs,CRs<span class="token punctuation">)</span> with:
 $ <span class="token function">make</span> manifests<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>–group指定了组为<code>application</code>，–version指定了版本为<code>v1</code>，于是和上一步的–domain组合起来以后，我们在api-versions里看到的自定义的CRD就是<code>application.example.com/v1</code></p>
-<p>上述的操作将会生成DemoApplication resource API文件，其文件位于api&#x2F;v1&#x2F;demoapplication_types.go及控制器文件位于controllers&#x2F;demoapplication_controller.go。</p>
-<p>这时候再查看工程目录，发现多了api&#x2F;v1目录，config下面多了crd目录</p>
+<p>上述的操作将会生成DemoApplication resource API文件，其文件位于api/v1/demoapplication_types.go及控制器文件位于controllers/demoapplication_controller.go。</p>
+<p>这时候再查看工程目录，发现多了api/v1目录，config下面多了crd目录</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ tree <span class="token parameter variable">-L</span> <span class="token number">2</span>
 <span class="token builtin class-name">.</span>
 ├── Dockerfile
@@ -754,14 +697,13 @@ $ <span class="token function">make</span> manifests<span aria-hidden="true" cla
 └── main.go
 
 <span class="token number">14</span> directories, <span class="token number">11</span> files<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <blockquote><p>注意这里只介绍了单组API的使用，如果我们想支持多组 API，请参考<a target="_blank" rel="noopener" href="https://book.kubebuilder.io/migration/multi-group.html">Single Group to Multi-Group</a>文档。</p>
 </blockquote>
-
-<blockquote><p>有关Kubernetes API和group-version-kind模型的深入解读，我们可以查看这些<a target="_blank" rel="noopener" href="https://book.kubebuilder.io/cronjob-tutorial/gvks.html">kubebuilder docs</a>。<br>一般来说，建议让一个控制器负责管理工程的每个API，以遵循<a target="_blank" rel="noopener" href="https://github.com/kubernetes-sigs/controller-runtime">controller-runtime</a>设定的设计目标。</p>
+<blockquote><p>有关Kubernetes API和group-version-kind模型的深入解读，我们可以查看这些<a target="_blank" rel="noopener" href="https://book.kubebuilder.io/cronjob-tutorial/gvks.html">kubebuilder docs</a>。<br>
+一般来说，建议让一个控制器负责管理工程的每个API，以遵循<a target="_blank" rel="noopener" href="https://github.com/kubernetes-sigs/controller-runtime">controller-runtime</a>设定的设计目标。</p>
 </blockquote>
-
-<h4 id="编辑API类型定义"><a href="#编辑API类型定义" class="headerlink" title="编辑API类型定义"></a>编辑API类型定义</h4><p>接下来修改 <code>api/v1/demoapplication_types.go</code>中的Go类型定义，为DemoApplication自定义资源（CR）定义API，使其具有以下属性字段和状态：</p>
+<h4 id="编辑API类型定义">编辑API类型定义</h4>
+<p>接下来修改 <code>api/v1/demoapplication_types.go</code>中的Go类型定义，为DemoApplication自定义资源（CR）定义API，使其具有以下属性字段和状态：</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// DemoApplicationSpec defines the desired state of DemoApplication</span>
 <span class="token keyword">type</span> DemoApplicationSpec <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
 	<span class="token comment">// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster</span>
@@ -820,7 +762,6 @@ $ <span class="token function">make</span> manifests<span aria-hidden="true" cla
 	IngressName <span class="token builtin">string</span>              <span class="token string">`json:"ingressName"`</span>
 	Rules       <span class="token punctuation">[</span><span class="token punctuation">]</span>netv1<span class="token punctuation">.</span>IngressRule <span class="token string">`json:"rules"`</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>为了控制器可以在不更改CR对象其余部分的情况下更新CR状态，添加marker <code>+kubebuilder:subresource:status</code> 到CR：</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// DemoApplication is the Schema for the demoapplications API</span>
 <span class="token comment">// +kubebuilder:subresource:status  // 添加此行</span>
@@ -831,25 +772,24 @@ $ <span class="token function">make</span> manifests<span aria-hidden="true" cla
 	Spec   DemoApplicationSpec   <span class="token string">`json:"spec,omitempty"`</span>
 	Status DemoApplicationStatus <span class="token string">`json:"status,omitempty"`</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>修改完<code>*_types.go</code>文件后，运行以下命令为该资源类型生成代码：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">make</span> generate<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
 <p>上面的makefile的generate子命令将调用controller-gen来更新<code>zz_generated.deepcopy.go</code>以确保我们API的Go类型定义实现所有Kind类型必须实现的runtime.Object接口。</p>
-<h4 id="生成CRD清单"><a href="#生成CRD清单" class="headerlink" title="生成CRD清单"></a>生成CRD清单</h4><p>定义完并修改完API以后，使用下面的命令生成和更新CRD清单：</p>
+<h4 id="生成CRD清单">生成CRD清单</h4>
+<p>定义完并修改完API以后，使用下面的命令生成和更新CRD清单：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">make</span> manifests<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
 <p>这个makefile的manifests子命令将调用controller-gen在<code>config/crd/bases/application.example.com_demoapplications.yaml</code>文件中生成CRD清单。</p>
-<h4 id="修改Controller"><a href="#修改Controller" class="headerlink" title="修改Controller"></a>修改Controller</h4><p>接下来将修改最主要的Operator的Reconcile逻辑了。编辑controllers&#x2F;demoapplication_controller.go文件，修改Reconcile函数</p>
+<h4 id="修改Controller">修改Controller</h4>
+<p>接下来将修改最主要的Operator的Reconcile逻辑了。编辑controllers/demoapplication_controller.go文件，修改Reconcile函数</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>r <span class="token operator">*</span>DemoApplicationReconciler<span class="token punctuation">)</span> <span class="token function">Reconcile</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">,</span> req ctrl<span class="token punctuation">.</span>Request<span class="token punctuation">)</span> <span class="token punctuation">(</span>ctrl<span class="token punctuation">.</span>Result<span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
 	log <span class="token operator">:=</span> ctrllog<span class="token punctuation">.</span><span class="token function">FromContext</span><span class="token punctuation">(</span>ctx<span class="token punctuation">)</span>
 	log<span class="token punctuation">.</span><span class="token function">Info</span><span class="token punctuation">(</span><span class="token string">"Entering operator reconciling..."</span><span class="token punctuation">)</span>
   <span class="token comment">// ……</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>将要实现的主要逻辑为：</p>
 <ol>
-<li><p>如果CR不存在（比如使用kubectl delete -f删除了CR），则对应将deployment和service删了。</p>
+<li>如果CR不存在（比如使用kubectl delete -f删除了CR），则对应将deployment和service删了。</li>
+</ol>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// Check if CR exist</span>
 demo <span class="token operator">:=</span> <span class="token operator">&amp;</span>demov1<span class="token punctuation">.</span>DemoApplication<span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
 err <span class="token operator">:=</span> r<span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span>ctx<span class="token punctuation">,</span> req<span class="token punctuation">.</span>NamespacedName<span class="token punctuation">,</span> demo<span class="token punctuation">)</span>
@@ -885,8 +825,9 @@ err <span class="token operator">:=</span> r<span class="token punctuation">.</s
   log<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span>err<span class="token punctuation">,</span> <span class="token string">"Failed to get DemoApplication"</span><span class="token punctuation">)</span>
   <span class="token keyword">return</span> ctrl<span class="token punctuation">.</span>Result<span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> err
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-</li>
-<li><p>如果CR中传递了PersistentVolumeClaims，且CR指定的PVC不存在，则创建之（注意创建PVC需要在创建Deployment之前进行，否则Deployment会起不来）</p>
+<ol start="2">
+<li>如果CR中传递了PersistentVolumeClaims，且CR指定的PVC不存在，则创建之（注意创建PVC需要在创建Deployment之前进行，否则Deployment会起不来）</li>
+</ol>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// Check if the pvc already exists, if not create a new one</span>
 <span class="token keyword">if</span> demo<span class="token punctuation">.</span>Spec<span class="token punctuation">.</span>PersistentVolumeClaims <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
   <span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span> x <span class="token operator">:=</span> <span class="token keyword">range</span> demo<span class="token punctuation">.</span>Spec<span class="token punctuation">.</span>PersistentVolumeClaims <span class="token punctuation">&#123;</span>
@@ -909,8 +850,7 @@ err <span class="token operator">:=</span> r<span class="token punctuation">.</s
       log<span class="token punctuation">.</span><span class="token function">Info</span><span class="token punctuation">(</span><span class="token string">"PersistentVolumeClaim already exist, ignore creating"</span><span class="token punctuation">,</span> <span class="token string">"PVC.Namespace"</span><span class="token punctuation">,</span> pvc<span class="token punctuation">.</span>Namespace<span class="token punctuation">,</span> <span class="token string">"PVC.Name"</span><span class="token punctuation">,</span> pvc<span class="token punctuation">.</span>Name<span class="token punctuation">)</span>
     <span class="token punctuation">&#125;</span>
   <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></li>
-</ol>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><code>pvcForDemoApplication</code>函数返回了将要创建的PVC对象。其代码为：</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>r <span class="token operator">*</span>DemoApplicationReconciler<span class="token punctuation">)</span> <span class="token function">pvcForDemoApplication</span><span class="token punctuation">(</span>f <span class="token operator">*</span>demov1<span class="token punctuation">.</span>DemoApplication<span class="token punctuation">,</span> x demov1<span class="token punctuation">.</span>PersistentVolumeClaim<span class="token punctuation">)</span> <span class="token operator">*</span>corev1<span class="token punctuation">.</span>PersistentVolumeClaim <span class="token punctuation">&#123;</span>
 	pvc <span class="token operator">:=</span> <span class="token operator">&amp;</span>corev1<span class="token punctuation">.</span>PersistentVolumeClaim<span class="token punctuation">&#123;</span>
@@ -926,9 +866,10 @@ err <span class="token operator">:=</span> r<span class="token punctuation">.</s
 	<span class="token punctuation">&#125;</span>
 	<span class="token keyword">return</span> pvc
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <ol start="3">
-<li>如果Deployment不存在，则创建之<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// Check if the deployment already exists, if not create a new one</span>
+<li>如果Deployment不存在，则创建之</li>
+</ol>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// Check if the deployment already exists, if not create a new one</span>
 deploy <span class="token operator">:=</span> <span class="token operator">&amp;</span>appsv1<span class="token punctuation">.</span>Deployment<span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
 err <span class="token operator">=</span> r<span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span>ctx<span class="token punctuation">,</span> types<span class="token punctuation">.</span>NamespacedName<span class="token punctuation">&#123;</span>Name<span class="token punctuation">:</span> demo<span class="token punctuation">.</span>Name<span class="token punctuation">,</span> Namespace<span class="token punctuation">:</span> demo<span class="token punctuation">.</span>Namespace<span class="token punctuation">&#125;</span><span class="token punctuation">,</span> deploy<span class="token punctuation">)</span>
 <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token operator">&amp;&amp;</span> errors<span class="token punctuation">.</span><span class="token function">IsNotFound</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
@@ -953,8 +894,7 @@ err <span class="token operator">=</span> r<span class="token punctuation">.</sp
   <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
     log<span class="token punctuation">.</span><span class="token function">Info</span><span class="token punctuation">(</span><span class="token string">"Update Deployment success"</span><span class="token punctuation">,</span> <span class="token string">"Deployment.Namespace"</span><span class="token punctuation">,</span> deploy<span class="token punctuation">.</span>Namespace<span class="token punctuation">,</span> <span class="token string">"Deployment.Name"</span><span class="token punctuation">,</span> deploy<span class="token punctuation">.</span>Name<span class="token punctuation">)</span>
   <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></li>
-</ol>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><code>deploymentForDemoApplication</code>函数返回了将要创建的Deployment对象，其代码为：</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>r <span class="token operator">*</span>DemoApplicationReconciler<span class="token punctuation">)</span> <span class="token function">deploymentForDemoApplication</span><span class="token punctuation">(</span>f <span class="token operator">*</span>demov1<span class="token punctuation">.</span>DemoApplication<span class="token punctuation">)</span> <span class="token operator">*</span>appsv1<span class="token punctuation">.</span>Deployment <span class="token punctuation">&#123;</span>
 	labels <span class="token operator">:=</span> <span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">string</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">&#123;</span>
@@ -1052,7 +992,9 @@ err <span class="token operator">=</span> r<span class="token punctuation">.</sp
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>这其中还为没有指定<code>resources</code>的container和initContainer设置了默认的<code>resources</code></p>
 <ol start="4">
-<li>如果和Deployment同名的Service不存在，则创建之：<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// If DemoApplication Service is not nil, check if the service exists, if not create a new one</span>
+<li>如果和Deployment同名的Service不存在，则创建之：</li>
+</ol>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// If DemoApplication Service is not nil, check if the service exists, if not create a new one</span>
 <span class="token keyword">if</span> demo<span class="token punctuation">.</span>Spec<span class="token punctuation">.</span>Service <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
   service <span class="token operator">:=</span> <span class="token operator">&amp;</span>corev1<span class="token punctuation">.</span>Service<span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
   err <span class="token operator">=</span> r<span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span>ctx<span class="token punctuation">,</span> types<span class="token punctuation">.</span>NamespacedName<span class="token punctuation">&#123;</span>Name<span class="token punctuation">:</span> demo<span class="token punctuation">.</span>Name<span class="token punctuation">,</span> Namespace<span class="token punctuation">:</span> demo<span class="token punctuation">.</span>Namespace<span class="token punctuation">&#125;</span><span class="token punctuation">,</span> service<span class="token punctuation">)</span>
@@ -1079,8 +1021,7 @@ err <span class="token operator">=</span> r<span class="token punctuation">.</sp
       log<span class="token punctuation">.</span><span class="token function">Info</span><span class="token punctuation">(</span><span class="token string">"Update Service success"</span><span class="token punctuation">,</span> <span class="token string">"Service.Namespace"</span><span class="token punctuation">,</span> service<span class="token punctuation">.</span>Namespace<span class="token punctuation">,</span> <span class="token string">"Service.Name"</span><span class="token punctuation">,</span> service<span class="token punctuation">.</span>Name<span class="token punctuation">)</span>
     <span class="token punctuation">&#125;</span>
   <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></li>
-</ol>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><code>serviceForDemoApplication</code>函数返回了将要创建的Service对象，其代码为：</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>r <span class="token operator">*</span>DemoApplicationReconciler<span class="token punctuation">)</span> <span class="token function">serviceForDemoApplication</span><span class="token punctuation">(</span>f <span class="token operator">*</span>demov1<span class="token punctuation">.</span>DemoApplication<span class="token punctuation">)</span> <span class="token operator">*</span>corev1<span class="token punctuation">.</span>Service <span class="token punctuation">&#123;</span>
 	<span class="token keyword">var</span> serviceType corev1<span class="token punctuation">.</span>ServiceType <span class="token operator">=</span> <span class="token string">"ClusterIP"</span>
@@ -1109,9 +1050,10 @@ err <span class="token operator">=</span> r<span class="token punctuation">.</sp
 	<span class="token punctuation">&#125;</span>
 	<span class="token keyword">return</span> service
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <ol start="5">
-<li>如果Ingress不存在，则创建之；如果Ingress已存在，将CR中指定的Ingress rule补到已有的Ingress的rules后面<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// If DemoApplication Ingress is not nil, add rules to Ingress</span>
+<li>如果Ingress不存在，则创建之；如果Ingress已存在，将CR中指定的Ingress rule补到已有的Ingress的rules后面</li>
+</ol>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// If DemoApplication Ingress is not nil, add rules to Ingress</span>
 <span class="token keyword">if</span> demo<span class="token punctuation">.</span>Spec<span class="token punctuation">.</span>Ingress <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
   ingress <span class="token operator">:=</span> <span class="token operator">&amp;</span>netv1<span class="token punctuation">.</span>Ingress<span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
   err <span class="token operator">=</span> r<span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span>ctx<span class="token punctuation">,</span> types<span class="token punctuation">.</span>NamespacedName<span class="token punctuation">&#123;</span>Name<span class="token punctuation">:</span> demo<span class="token punctuation">.</span>Spec<span class="token punctuation">.</span>Ingress<span class="token punctuation">.</span>IngressName<span class="token punctuation">,</span> Namespace<span class="token punctuation">:</span> demo<span class="token punctuation">.</span>Namespace<span class="token punctuation">&#125;</span><span class="token punctuation">,</span> ingress<span class="token punctuation">)</span>
@@ -1137,8 +1079,7 @@ err <span class="token operator">=</span> r<span class="token punctuation">.</sp
       log<span class="token punctuation">.</span><span class="token function">Info</span><span class="token punctuation">(</span><span class="token string">"Update Ingress success"</span><span class="token punctuation">,</span> <span class="token string">"Ingress.Namespace"</span><span class="token punctuation">,</span> demo<span class="token punctuation">.</span>Namespace<span class="token punctuation">,</span> <span class="token string">"Ingress.Name"</span><span class="token punctuation">,</span> demo<span class="token punctuation">.</span>Spec<span class="token punctuation">.</span>Ingress<span class="token punctuation">.</span>IngressName<span class="token punctuation">)</span>
     <span class="token punctuation">&#125;</span>
   <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></li>
-</ol>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><code>ingressForDemoApplication</code>函数返回了将要创建的Ingress对象，其代码为：</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>r <span class="token operator">*</span>DemoApplicationReconciler<span class="token punctuation">)</span> <span class="token function">ingressForDemoApplication</span><span class="token punctuation">(</span>f <span class="token operator">*</span>demov1<span class="token punctuation">.</span>DemoApplication<span class="token punctuation">)</span> <span class="token operator">*</span>netv1<span class="token punctuation">.</span>Ingress <span class="token punctuation">&#123;</span>
 	ingressClassName <span class="token operator">:=</span> <span class="token string">"nginx"</span> <span class="token comment">// default ingressClassName</span>
@@ -1154,8 +1095,8 @@ err <span class="token operator">=</span> r<span class="token punctuation">.</sp
 	<span class="token punctuation">&#125;</span>
 	<span class="token keyword">return</span> ing
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h4 id="Controller-watch的资源"><a href="#Controller-watch的资源" class="headerlink" title="Controller watch的资源"></a>Controller watch的资源</h4><p>现在主要逻辑已经写完了，下来需要指定controller应该监视(watch)哪些资源。<code>SetupWithManager()</code>函数指定了如何构建控制器以监视CR和该控制器拥有和管理的其他资源。</p>
+<h4 id="Controller-watch的资源">Controller watch的资源</h4>
+<p>现在主要逻辑已经写完了，下来需要指定controller应该监视(watch)哪些资源。<code>SetupWithManager()</code>函数指定了如何构建控制器以监视CR和该控制器拥有和管理的其他资源。</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// SetupWithManager sets up the controller with the Manager.</span>
 <span class="token keyword">func</span> <span class="token punctuation">(</span>r <span class="token operator">*</span>DemoApplicationReconciler<span class="token punctuation">)</span> <span class="token function">SetupWithManager</span><span class="token punctuation">(</span>mgr ctrl<span class="token punctuation">.</span>Manager<span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">&#123;</span>
 	<span class="token keyword">return</span> ctrl<span class="token punctuation">.</span><span class="token function">NewControllerManagedBy</span><span class="token punctuation">(</span>mgr<span class="token punctuation">)</span><span class="token punctuation">.</span>
@@ -1164,7 +1105,7 @@ err <span class="token operator">=</span> r<span class="token punctuation">.</sp
 		<span class="token function">Complete</span><span class="token punctuation">(</span>r<span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><code>NewControllerManagedBy()</code>提供了一个控制器构建器，允许各种控制器的配置。</p>
-<p><code>For(&amp;demov1.DemoApplication&#123;&#125;)</code>将DemoApplication类型指定为要监视的主要资源。对于每个DemoApplication类型的Add&#x2F;Update&#x2F;Delete事件，Reconcile Loop将为该DemoApplication对象发送一个Reconcile Request（参数为命名空间和key名称）。</p>
+<p><code>For(&amp;demov1.DemoApplication&#123;&#125;)</code>将DemoApplication类型指定为要监视的主要资源。对于每个DemoApplication类型的Add/Update/Delete事件，Reconcile Loop将为该DemoApplication对象发送一个Reconcile Request（参数为命名空间和key名称）。</p>
 <p><code>WithEventFilter(filterPredicate())</code>是事件过滤器，如果不设定这个过滤器，当CR的状态从Creating变为Pending、从Pending变为Running的过程中还会额外两次触发Reconcile，这是没有必要的。<code>filterPredicate</code>函数代码如下：</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">filterPredicate</span><span class="token punctuation">(</span><span class="token punctuation">)</span> predicate<span class="token punctuation">.</span>Predicate <span class="token punctuation">&#123;</span>
 	<span class="token keyword">return</span> predicate<span class="token punctuation">.</span>Funcs<span class="token punctuation">&#123;</span>
@@ -1181,32 +1122,37 @@ err <span class="token operator">=</span> r<span class="token punctuation">.</sp
 		<span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
 	<span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<h4 id="更多Controller配置"><a href="#更多Controller配置" class="headerlink" title="更多Controller配置"></a>更多Controller配置</h4><p>在初始化控制器时可以进行许多其他有用的配置。有关这些配置的更多详细信息，可以查看上游builder和controller的帮助文档。</p>
+<h4 id="更多Controller配置">更多Controller配置</h4>
+<p>在初始化控制器时可以进行许多其他有用的配置。有关这些配置的更多详细信息，可以查看上游builder和controller的帮助文档。</p>
 <ul>
 <li>通过<code>MaxConcurrentReconciles</code>选项设置控制器的最大并 Reconciles数。默认为 1。</li>
 <li>使用<a target="_blank" rel="noopener" href="https://sdk.operatorframework.io/docs/building-operators/golang/references/event-filtering/">predicates</a>过滤监视事件。</li>
 <li>使用<a target="_blank" rel="noopener" href="https://pkg.go.dev/sigs.k8s.io/controller-runtime/pkg/handler#hdr-EventHandlers">EventHandler</a>将一个Reconcile请求重新放入队列(enqueue)以进行Reconcile循环。</li>
 <li>对于比主次资源更复杂的operator关系，可以使用<a target="_blank" rel="noopener" href="https://pkg.go.dev/sigs.k8s.io/controller-runtime/pkg/handler#EnqueueRequestsFromMapFunc">EnqueueRequestsFromMapFunc</a>处理程序以将监视事件转换为任意一组Reconcile请求。</li>
 </ul>
-<h4 id="Reconcile-Loop"><a href="#Reconcile-Loop" class="headerlink" title="Reconcile Loop"></a>Reconcile Loop</h4><p>每个Controller都有一个Reconciler对象，该对象带有一个Reconcile()方法，用于实现Reconcile循环。每次在监视的CR或资源上发生事件时，它都会运行，并将根据这些状态是否匹配并返回一些值。</p>
+<h4 id="Reconcile-Loop">Reconcile Loop</h4>
+<p>每个Controller都有一个Reconciler对象，该对象带有一个Reconcile()方法，用于实现Reconcile循环。每次在监视的CR或资源上发生事件时，它都会运行，并将根据这些状态是否匹配并返回一些值。</p>
 <p>Reconcile循环传递了<a target="_blank" rel="noopener" href="https://pkg.go.dev/sigs.k8s.io/controller-runtime/pkg/reconcile#Request">Request</a>参数，该参数是用于查找缓存中定义的CRD资源对象DemoApplication。</p>
 <p>有关Reconcilers、客户端以及与资源事件交互的指南，可以参考<a target="_blank" rel="noopener" href="https://sdk.operatorframework.io/docs/building-operators/golang/references/client/">客户端API</a>文档。</p>
 <p>以下是Reconciler的一些可能的返回选项：</p>
 <ul>
-<li><p>发生错误时：</p>
-<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">return</span> ctrl<span class="token punctuation">.</span>Result<span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> err<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-</li>
-<li><p>没有错误时：</p>
-<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">return</span> ctrl<span class="token punctuation">.</span>Result<span class="token punctuation">&#123;</span>Requeue<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token boolean">nil</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-</li>
-<li><p>否则, 需要停止Reconcile，如下：</p>
-<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">return</span> ctrl<span class="token punctuation">.</span>Result<span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token boolean">nil</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-</li>
-<li><p>在X时间之后，再次Reconcile：</p>
-<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">return</span> ctrl<span class="token punctuation">.</span>Result<span class="token punctuation">&#123;</span>RequeueAfter<span class="token punctuation">:</span> nextRun<span class="token punctuation">.</span><span class="token function">Sub</span><span class="token punctuation">(</span>r<span class="token punctuation">.</span><span class="token function">Now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token boolean">nil</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre></li>
+<li>发生错误时：</li>
 </ul>
-<h4 id="指定权限及生成RBAC清单"><a href="#指定权限及生成RBAC清单" class="headerlink" title="指定权限及生成RBAC清单"></a>指定权限及生成RBAC清单</h4><p>controller需要一定的RBAC权限与其管理的资源进行交互，这些是通过<a target="_blank" rel="noopener" href="https://book.kubebuilder.io/reference/markers/rbac.html">RBAC标记</a>指定的，如下代码所示：</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">return</span> ctrl<span class="token punctuation">.</span>Result<span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> err<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<ul>
+<li>没有错误时：</li>
+</ul>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">return</span> ctrl<span class="token punctuation">.</span>Result<span class="token punctuation">&#123;</span>Requeue<span class="token punctuation">:</span> <span class="token boolean">true</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token boolean">nil</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<ul>
+<li>否则, 需要停止Reconcile，如下：</li>
+</ul>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">return</span> ctrl<span class="token punctuation">.</span>Result<span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token boolean">nil</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<ul>
+<li>在X时间之后，再次Reconcile：</li>
+</ul>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">return</span> ctrl<span class="token punctuation">.</span>Result<span class="token punctuation">&#123;</span>RequeueAfter<span class="token punctuation">:</span> nextRun<span class="token punctuation">.</span><span class="token function">Sub</span><span class="token punctuation">(</span>r<span class="token punctuation">.</span><span class="token function">Now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token boolean">nil</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h4 id="指定权限及生成RBAC清单">指定权限及生成RBAC清单</h4>
+<p>controller需要一定的RBAC权限与其管理的资源进行交互，这些是通过<a target="_blank" rel="noopener" href="https://book.kubebuilder.io/reference/markers/rbac.html">RBAC标记</a>指定的，如下代码所示：</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">//+kubebuilder:rbac:groups=application.example.com,resources=demoapplications,verbs=get;list;watch;create;update;patch;delete</span>
 <span class="token comment">//+kubebuilder:rbac:groups=application.example.com,resources=demoapplications/status,verbs=get;update;patch</span>
 <span class="token comment">//+kubebuilder:rbac:groups=application.example.com,resources=demoapplications/finalizers,verbs=update</span>
@@ -1219,10 +1165,11 @@ err <span class="token operator">=</span> r<span class="token punctuation">.</sp
 <span class="token comment">//+kubebuilder:rbac:groups=networking.k8s.io,resources=ingresses,verbs=get;list;create;update;patch</span>
 <span class="token keyword">func</span> <span class="token punctuation">(</span>r <span class="token operator">*</span>DemoApplicationReconciler<span class="token punctuation">)</span> <span class="token function">Reconcile</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">,</span> req ctrl<span class="token punctuation">.</span>Request<span class="token punctuation">)</span> <span class="token punctuation">(</span>ctrl<span class="token punctuation">.</span>Result<span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>通过以上markers可以在config&#x2F;rbac&#x2F;目录下面生成对应的rbac文件。执行以下命令：</p>
+<p>通过以上markers可以在config/rbac/目录下面生成对应的rbac文件。执行以下命令：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">make</span> manifests<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<h3 id="运行Operator"><a href="#运行Operator" class="headerlink" title="运行Operator"></a>运行Operator</h3><h4 id="在本地（集群之外）运行"><a href="#在本地（集群之外）运行" class="headerlink" title="在本地（集群之外）运行"></a>在本地（集群之外）运行</h4><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">make</span> <span class="token function">install</span>
+<h3 id="运行Operator">运行Operator</h3>
+<h4 id="在本地（集群之外）运行">在本地（集群之外）运行</h4>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">make</span> <span class="token function">install</span>
 <span class="token builtin class-name">test</span> <span class="token parameter variable">-s</span> /home/student/operator/demo-operator/bin/controller-gen <span class="token operator">&amp;&amp;</span> /home/student/operator/demo-operator/bin/controller-gen <span class="token parameter variable">--version</span> <span class="token operator">|</span> <span class="token function">grep</span> <span class="token parameter variable">-q</span> v0.11.1 <span class="token operator">||</span> <span class="token punctuation">\</span>
 <span class="token assign-left variable">GOBIN</span><span class="token operator">=</span>/home/student/operator/demo-operator/bin go <span class="token function">install</span> sigs.k8s.io/controller-tools/cmd/controller-gen@v0.11.1
 /home/student/operator/demo-operator/bin/controller-gen rbac:roleName<span class="token operator">=</span>manager-role crd webhook <span class="token assign-left variable">paths</span><span class="token operator">=</span><span class="token string">"./..."</span> output:crd:artifacts:config<span class="token operator">=</span>config/crd/bases
@@ -1232,7 +1179,7 @@ The CustomResourceDefinition <span class="token string">"demoapplications.applic
 * spec.validation.openAPIV3Schema.properties<span class="token punctuation">[</span>spec<span class="token punctuation">]</span>.properties<span class="token punctuation">[</span>persistentVolumeClaims<span class="token punctuation">]</span>.items.properties<span class="token punctuation">[</span>resources<span class="token punctuation">]</span>.properties<span class="token punctuation">[</span>claims<span class="token punctuation">]</span>.items.x-kubernetes-map-type: Invalid value: <span class="token string">"null"</span><span class="token builtin class-name">:</span> must be atomic as item of a list with x-kubernetes-list-type<span class="token operator">=</span>set
 * spec.validation.openAPIV3Schema.properties<span class="token punctuation">[</span>spec<span class="token punctuation">]</span>.properties<span class="token punctuation">[</span>containers<span class="token punctuation">]</span>.items.properties<span class="token punctuation">[</span>resources<span class="token punctuation">]</span>.properties<span class="token punctuation">[</span>claims<span class="token punctuation">]</span>.items.x-kubernetes-map-type: Invalid value: <span class="token string">"null"</span><span class="token builtin class-name">:</span> must be atomic as item of a list with x-kubernetes-list-type<span class="token operator">=</span>set
 make: *** <span class="token punctuation">[</span>Makefile:154: install<span class="token punctuation">]</span> Error <span class="token number">1</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p><code>make install</code>命令会下载<code>kustomize</code>到工程根目录的bin&#x2F;下面，如果没网无法下载，可以手动去下载后放到bin。</p>
+<p><code>make install</code>命令会下载<code>kustomize</code>到工程根目录的bin/下面，如果没网无法下载，可以手动去下载后放到bin。</p>
 <p>接着会报出<code>must be atomic as item of a list with x-kubernetes-list-type=set</code>这个莫名其妙的错误，可能是个bug或者版本问题。根据提示修改<code>config/crd/bases/application.example.com_demoapplications.yaml</code>文件，搜索关键词<code>claims</code>，把所有claims块下面的<code>x-kubernetes-list-type: set</code>这一行删了</p>
 <pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">properties</span><span class="token punctuation">:</span>
   <span class="token key atrule">claims</span><span class="token punctuation">:</span>
@@ -1256,7 +1203,6 @@ make: *** <span class="token punctuation">[</span>Makefile:154: install<span cla
     <span class="token key atrule">x-kubernetes-list-type</span><span class="token punctuation">:</span> set  // &lt;<span class="token punctuation">-</span><span class="token punctuation">-</span>这一行删掉<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>删掉以后不能再次运行make install，否则controller-gen又会自动生成出claims这块内容。直接手动提交这个yaml：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl apply <span class="token parameter variable">-f</span> config/crd/bases/application.example.com_demoapplications.yaml<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
 <p>CRD创建好以后，直接运行：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ go run main.go
 <span class="token number">2023</span>-12-13T10:27:50+08:00       INFO    controller-runtime.metrics      Metrics server is starting to listen    <span class="token punctuation">&#123;</span><span class="token string">"addr"</span><span class="token builtin class-name">:</span> <span class="token string">":8080"</span><span class="token punctuation">&#125;</span>
@@ -1266,7 +1212,6 @@ make: *** <span class="token punctuation">[</span>Makefile:154: install<span cla
 <span class="token number">2023</span>-12-13T10:27:50+08:00       INFO    Starting EventSource    <span class="token punctuation">&#123;</span><span class="token string">"controller"</span><span class="token builtin class-name">:</span> <span class="token string">"demoapplication"</span>, <span class="token string">"controllerGroup"</span><span class="token builtin class-name">:</span> <span class="token string">"application.example.com"</span>, <span class="token string">"controllerKind"</span><span class="token builtin class-name">:</span> <span class="token string">"DemoApplication"</span>, <span class="token string">"source"</span><span class="token builtin class-name">:</span> <span class="token string">"kind source: *v1.DemoApplication"</span><span class="token punctuation">&#125;</span>
 <span class="token number">2023</span>-12-13T10:27:50+08:00       INFO    Starting Controller     <span class="token punctuation">&#123;</span><span class="token string">"controller"</span><span class="token builtin class-name">:</span> <span class="token string">"demoapplication"</span>, <span class="token string">"controllerGroup"</span><span class="token builtin class-name">:</span> <span class="token string">"application.example.com"</span>, <span class="token string">"controllerKind"</span><span class="token builtin class-name">:</span> <span class="token string">"DemoApplication"</span><span class="token punctuation">&#125;</span>
 <span class="token number">2023</span>-12-13T10:27:50+08:00       INFO    Starting workers        <span class="token punctuation">&#123;</span><span class="token string">"controller"</span><span class="token builtin class-name">:</span> <span class="token string">"demoapplication"</span>, <span class="token string">"controllerGroup"</span><span class="token builtin class-name">:</span> <span class="token string">"application.example.com"</span>, <span class="token string">"controllerKind"</span><span class="token builtin class-name">:</span> <span class="token string">"DemoApplication"</span>, <span class="token string">"worker count"</span><span class="token builtin class-name">:</span> <span class="token number">1</span><span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>现在提交一个CR到集群:</p>
 <pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> application.example.com/v1
 <span class="token key atrule">kind</span><span class="token punctuation">:</span> DemoApplication
@@ -1283,30 +1228,26 @@ make: *** <span class="token punctuation">[</span>Makefile:154: install<span cla
       <span class="token key atrule">protocol</span><span class="token punctuation">:</span> TCP
   <span class="token key atrule">replica</span><span class="token punctuation">:</span> <span class="token number">1</span>
   <span class="token key atrule">service</span><span class="token punctuation">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>将会看到controller打印下面的日志：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token number">2023</span>-12-13T10:32:07+08:00       INFO    Entering operator reconciling<span class="token punctuation">..</span>.        <span class="token punctuation">&#123;</span><span class="token string">"controller"</span><span class="token builtin class-name">:</span> <span class="token string">"demoapplication"</span>, <span class="token string">"controllerGroup"</span><span class="token builtin class-name">:</span> <span class="token string">"application.example.com"</span>, <span class="token string">"controllerKind"</span><span class="token builtin class-name">:</span> <span class="token string">"DemoApplication"</span>, <span class="token string">"DemoApplication"</span><span class="token builtin class-name">:</span> <span class="token punctuation">&#123;</span><span class="token string">"name"</span><span class="token builtin class-name">:</span><span class="token string">"demo"</span>,<span class="token string">"namespace"</span><span class="token builtin class-name">:</span><span class="token string">"default"</span><span class="token punctuation">&#125;</span>, <span class="token string">"namespace"</span><span class="token builtin class-name">:</span> <span class="token string">"default"</span>, <span class="token string">"name"</span><span class="token builtin class-name">:</span> <span class="token string">"demo"</span>, <span class="token string">"reconcileID"</span><span class="token builtin class-name">:</span> <span class="token string">"a94b5cc2-c9d6-467a-83cc-fb8be5ade3a8"</span><span class="token punctuation">&#125;</span>
 <span class="token number">2023</span>-12-13T10:32:07+08:00       INFO    Creating a new Deployment       <span class="token punctuation">&#123;</span><span class="token string">"controller"</span><span class="token builtin class-name">:</span> <span class="token string">"demoapplication"</span>, <span class="token string">"controllerGroup"</span><span class="token builtin class-name">:</span> <span class="token string">"application.example.com"</span>, <span class="token string">"controllerKind"</span><span class="token builtin class-name">:</span> <span class="token string">"DemoApplication"</span>, <span class="token string">"DemoApplication"</span><span class="token builtin class-name">:</span> <span class="token punctuation">&#123;</span><span class="token string">"name"</span><span class="token builtin class-name">:</span><span class="token string">"demo"</span>,<span class="token string">"namespace"</span><span class="token builtin class-name">:</span><span class="token string">"default"</span><span class="token punctuation">&#125;</span>, <span class="token string">"namespace"</span><span class="token builtin class-name">:</span> <span class="token string">"default"</span>, <span class="token string">"name"</span><span class="token builtin class-name">:</span> <span class="token string">"demo"</span>, <span class="token string">"reconcileID"</span><span class="token builtin class-name">:</span> <span class="token string">"a94b5cc2-c9d6-467a-83cc-fb8be5ade3a8"</span>, <span class="token string">"Deployment.Namespace"</span><span class="token builtin class-name">:</span> <span class="token string">"default"</span>, <span class="token string">"Deployment.Name"</span><span class="token builtin class-name">:</span> <span class="token string">"demo"</span><span class="token punctuation">&#125;</span>
 <span class="token number">2023</span>-12-13T10:32:07+08:00       INFO    Creating a new Service  <span class="token punctuation">&#123;</span><span class="token string">"controller"</span><span class="token builtin class-name">:</span> <span class="token string">"demoapplication"</span>, <span class="token string">"controllerGroup"</span><span class="token builtin class-name">:</span> <span class="token string">"application.example.com"</span>, <span class="token string">"controllerKind"</span><span class="token builtin class-name">:</span> <span class="token string">"DemoApplication"</span>, <span class="token string">"DemoApplication"</span><span class="token builtin class-name">:</span> <span class="token punctuation">&#123;</span><span class="token string">"name"</span><span class="token builtin class-name">:</span><span class="token string">"demo"</span>,<span class="token string">"namespace"</span><span class="token builtin class-name">:</span><span class="token string">"default"</span><span class="token punctuation">&#125;</span>, <span class="token string">"namespace"</span><span class="token builtin class-name">:</span> <span class="token string">"default"</span>, <span class="token string">"name"</span><span class="token builtin class-name">:</span> <span class="token string">"demo"</span>, <span class="token string">"reconcileID"</span><span class="token builtin class-name">:</span> <span class="token string">"a94b5cc2-c9d6-467a-83cc-fb8be5ade3a8"</span>, <span class="token string">"Serivce.Namespace"</span><span class="token builtin class-name">:</span> <span class="token string">"default"</span>, <span class="token string">"Serivce.Name"</span><span class="token builtin class-name">:</span> <span class="token string">"demo"</span><span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
 <p>修改CR里面的各个字段，会发现controller对应的更新了deployment、service、ingress等资源。最后删除这个CR，deployment和service也随之会被删除。</p>
-<h4 id="在集群中以Deployment运行"><a href="#在集群中以Deployment运行" class="headerlink" title="在集群中以Deployment运行"></a>在集群中以Deployment运行</h4><p>首先编译出可执行文件：</p>
+<h4 id="在集群中以Deployment运行">在集群中以Deployment运行</h4>
+<p>首先编译出可执行文件：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">go build <span class="token parameter variable">-o</span> bin/manager main.go<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
 <p>然后修改Dockerfile，改为如下内容：</p>
 <pre class="line-numbers language-Dockerfile" data-language="Dockerfile"><code class="language-Dockerfile">FROM alpine:3.15.4
 WORKDIR &#x2F;
 COPY bin&#x2F;manager &#x2F;manager
 ## USER 65532:65532
 ENTRYPOINT [&quot;&#x2F;manager&quot;]<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>然后build出镜像并上传到镜像仓库。假设镜像为：demo-operator:1.0.0，修改Makefile：</p>
 <pre class="line-numbers language-Makefile" data-language="Makefile"><code class="language-Makefile">VERSION ?&#x3D; 1.0.0
 ……
 IMAGE_TAG_BASE ?&#x3D; demo-operator
 ……
 IMG ?&#x3D; $(IMAGE_TAG_BASE):$(VERSION)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
 <p>执行以下命令部署：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ <span class="token function">make</span> deploy
 namespace/demo-operator-system created
@@ -1329,14 +1270,13 @@ make: *** <span class="token punctuation">[</span>Makefile:163: deploy<span clas
 <p>可以看到创建了ns，创建了一堆rbac，最后部署了deployment，如果deployment起不来，再去手动检查什么问题。</p>
 <p>最后可执行以下命令清理环境：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">make</span> undeploy<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
 <blockquote><p>本例完整代码参见：<a target="_blank" rel="noopener" href="https://gitee.com/hongyuxuan2138/demo-operator">https://gitee.com/hongyuxuan2138/demo-operator</a></p>
 </blockquote>
-
-<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>就在几年前没有Operator的时候，大部分软件都是用一个yaml文件来安装，或者复杂点的用Helm Charts。现在我们随便去安装部署一个云原生的软件，基本上都是Operator方式安装，为什么要用Operator，它到底有啥好的？</p>
+<h2 id="后记">后记</h2>
+<p>就在几年前没有Operator的时候，大部分软件都是用一个yaml文件来安装，或者复杂点的用Helm Charts。现在我们随便去安装部署一个云原生的软件，基本上都是Operator方式安装，为什么要用Operator，它到底有啥好的？</p>
 <p>实际上，如果软件架构简单、安装过程不需要任何逻辑，用一个yaml完全可以应付；如果架构复杂，安装过程带一些判断逻辑，有一些前后依赖关系，这种情况就需要Helm Charts了；而如果要对软件做一些自动化控制，或者是对某些资源类型做高级抽象，就必须依赖CRD+Operator了。</p>
-<p>举个例子，Prometheus-Operator里有一个CRD叫<code>ServiceMonitor</code>，翻译过来叫服务监控导出器，它可以通过<code>LabelSelector</code>选中<code>Service</code>，并暴露服务的&#x2F;metrics端点。而另外一个叫做<code>Prometheus</code>的CRD再通过<code>LabelSelector</code>选中<code>ServiceMonitor</code>，这样就能实现当我需要配置Prometheus去scrape一个服务的时候，只需要为这个服务创建一个<code>ServiceMonitor</code>这个CR就行了，Prometheus就能通过这个<code>ServiceMonitor</code>自动地抓取它对应的<code>Service</code>的&#x2F;metrics，而这个自动的过程就由Prometheus-Operator来完成。像这种逻辑复杂、高度抽象的东西，就必须由CRD+Operator来完成了。</p>
-<p>设想一下如果Prometheus不是云原生安装，而是虚机部署的，为了scrape一个endpoint的&#x2F;metrics，我要么写一个static_config，要么写一个file_sd_config，把endpoint写入文件，再重启Prometheus；要么高级点的用一个consul_sd_config，那我还得装个Consul，把endpoint注册到Consul里，这复杂度成几何倍数增长。</p>
+<p>举个例子，Prometheus-Operator里有一个CRD叫<code>ServiceMonitor</code>，翻译过来叫服务监控导出器，它可以通过<code>LabelSelector</code>选中<code>Service</code>，并暴露服务的/metrics端点。而另外一个叫做<code>Prometheus</code>的CRD再通过<code>LabelSelector</code>选中<code>ServiceMonitor</code>，这样就能实现当我需要配置Prometheus去scrape一个服务的时候，只需要为这个服务创建一个<code>ServiceMonitor</code>这个CR就行了，Prometheus就能通过这个<code>ServiceMonitor</code>自动地抓取它对应的<code>Service</code>的/metrics，而这个自动的过程就由Prometheus-Operator来完成。像这种逻辑复杂、高度抽象的东西，就必须由CRD+Operator来完成了。</p>
+<p>设想一下如果Prometheus不是云原生安装，而是虚机部署的，为了scrape一个endpoint的/metrics，我要么写一个static_config，要么写一个file_sd_config，把endpoint写入文件，再重启Prometheus；要么高级点的用一个consul_sd_config，那我还得装个Consul，把endpoint注册到Consul里，这复杂度成几何倍数增长。</p>
 <p>再举一个例子，用过Prometheus的rules的人都知道，为了新增一个rule，我需要改<code>rules.yml</code>，这种手工改文件的操作，没法集成做平台化。如果每个人都需要自定义自己的rule，<code>rules.yml</code>可能有上千行。如果我要修改一个现有的rule，我得打开<code>rules.yml</code>文件，可能是从几千行里找到我要的rule并且修改它，再保存文件，这工作根本没法做了。曾经我在某国有大行工作的时候负责Prometheus，就一直没解决这个rules的问题。</p>
 <p>云原生部署Prometheus的时候是如何解决rules的问题的？很简单，Prometheus-Operator提供了一个CRD叫<code>PrometheusRules</code>，一个<code>PrometheusRules</code>即是一个rule规则，它有自己的名字。我要新增一个rule，我就提交一个<code>PrometheusRules</code>的CR到K8S就行了。我要修改一个rule，我只需要找到这个名字的<code>PrometheusRules</code>，修改它再保存就行了。完美解决了之前的rules问题。</p>
 <p>好了，说了半天，我又为什么要自己写一个Operator？目前我在一中字头券商部门负责DevOps和云原生的相关工作。当我为一个项目去往K8S部署应用的时候，它不仅仅是部署一个<code>Deployment</code>就完了，还要对应的配置<code>Service</code>、<code>PVC</code>、<code>ConfigMap</code>、<code>Ingress</code>，这是一个应用的全套资源。部署下一个应用的时候还是这套资源。于是我就把这一套资源抽象成一个CRD叫<code>Application</code>，用Operator来完成部署，当我提交一个<code>Application</code>就相当于提交了一整套应用，这大大加快了应用的部署速度（卸载应用的时候也是全套卸载）。</p>
@@ -1432,100 +1372,7 @@ make: *** <span class="token punctuation">[</span>Makefile:163: deploy<span clas
                 </div>
             </div>
             
-                <style>
-    #reward {
-        margin: 40px 0;
-        text-align: center;
-    }
-
-    #reward .reward-link {
-        font-size: 1.4rem;
-        line-height: 38px;
-    }
-
-    #reward .btn-floating:hover {
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    #rewardModal {
-        width: 320px;
-        height: 350px;
-    }
-
-    #rewardModal .reward-title {
-        margin: 15px auto;
-        padding-bottom: 5px;
-    }
-
-    #rewardModal .modal-content {
-        padding: 10px;
-    }
-
-    #rewardModal .close {
-        position: absolute;
-        right: 15px;
-        top: 15px;
-        color: rgba(0, 0, 0, 0.5);
-        font-size: 1.3rem;
-        line-height: 20px;
-        cursor: pointer;
-    }
-
-    #rewardModal .close:hover {
-        color: #ef5350;
-        transform: scale(1.3);
-        -moz-transform:scale(1.3);
-        -webkit-transform:scale(1.3);
-        -o-transform:scale(1.3);
-    }
-
-    #rewardModal .reward-tabs {
-        margin: 0 auto;
-        width: 210px;
-    }
-
-    .reward-tabs .tabs {
-        height: 38px;
-        margin: 10px auto;
-        padding-left: 0;
-    }
-
-    .reward-content ul {
-        padding-left: 0 !important;
-    }
-
-    .reward-tabs .tabs .tab {
-        height: 38px;
-        line-height: 38px;
-    }
-
-    .reward-tabs .tab a {
-        color: #fff;
-        background-color: #ccc;
-    }
-
-    .reward-tabs .tab a:hover {
-        background-color: #ccc;
-        color: #fff;
-    }
-
-    .reward-tabs .wechat-tab .active {
-        color: #fff !important;
-        background-color: #22AB38 !important;
-    }
-
-    .reward-tabs .alipay-tab .active {
-        color: #fff !important;
-        background-color: #019FE8 !important;
-    }
-
-    .reward-tabs .reward-img {
-        width: 210px;
-        height: 210px;
-    }
-</style>
-
-<div id="reward">
+                <div id="reward">
     <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
 
     <!-- Modal Structure -->
@@ -1540,10 +1387,10 @@ make: *** <span class="token punctuation">[</span>Makefile:163: deploy<span clas
                         <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
                     </ul>
                     <div id="alipay">
-                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2F%E6%89%93%E8%B5%8F%2Falipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                        <img src="/blog/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
                     </div>
                     <div id="wechat">
-                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2F%E6%89%93%E8%B5%8F%2Fweixin.jpg" class="reward-img" alt="微信打赏二维码">
+                        <img src="/blog/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
                     </div>
                 </div>
             </div>
@@ -1560,6 +1407,8 @@ make: *** <span class="token punctuation">[</span>Makefile:163: deploy<span clas
             
         </div>
     </div>
+
+    
 
     
 
@@ -1704,6 +1553,11 @@ make: *** <span class="token punctuation">[</span>Makefile:163: deploy<span clas
 <!-- 代码块功能依赖 -->
 <script type="text/javascript" src="/blog/libs/codeBlock/codeBlockFuction.js"></script>
 
+
+  <!-- 是否加载使用自带的 prismjs. -->
+  <script type="text/javascript" src="/blog/libs/prism/prism.min.js"></script>
+
+
 <!-- 代码语言 -->
 
 <script type="text/javascript" src="/blog/libs/codeBlock/codeLang.js"></script>
@@ -1717,6 +1571,7 @@ make: *** <span class="token punctuation">[</span>Makefile:163: deploy<span clas
 <!-- 代码块收缩 -->
 
 <script type="text/javascript" src="/blog/libs/codeBlock/codeShrink.js"></script>
+
 
 
     </div>
@@ -1746,19 +1601,6 @@ make: *** <span class="token punctuation">[</span>Makefile:163: deploy<span clas
             headingsOffset: -($(window).height() * 0.4 - 45),
             collapseDepth: Number('0'),
             headingSelector: 'h2, h3, h4'
-        });
-
-        // modify the toc link href to support Chinese.
-        let i = 0;
-        let tocHeading = 'toc-heading-';
-        $('#toc-content a').each(function () {
-            $(this).attr('href', '#' + tocHeading + (++i));
-        });
-
-        // modify the heading title id to support Chinese.
-        i = 0;
-        $('#articleContent').children('h2, h3, h4').each(function () {
-            $(this).attr('id', tocHeading + (++i));
         });
 
         // Set scroll toc fixed.
@@ -1873,85 +1715,45 @@ make: *** <span class="token punctuation">[</span>Makefile:163: deploy<span clas
 </div>
 
 <script src="/blog/libs/aplayer/APlayer.min.js"></script>
-<script src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/resources%2Fjs%2FMeting.min.js"></script>
+<script src="/blog/libs/aplayer/Meting.min.js"></script>
 
     
-    <div class="container row center-align" style="margin-bottom: 15px !important;">
+
+    <div class="container row center-align"
+         style="margin-bottom: 0px !important;">
         <div class="col s12 m8 l8 copy-right">
             Copyright&nbsp;&copy;
             
                 <span id="year">2021-2023</span>
             
-            <span id="year">2021</span>
             <a href="/blog/about" target="_blank">洪宇轩</a>
             |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
             |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
-            <br>
-            
-            &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                class="white-color">44.4k</span>&nbsp;字
-            
-            
-            
-            
-            
-            
-            <span id="busuanzi_container_site_pv">
-                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
-                    class="white-color"></span>&nbsp;次
-            </span>
-            
-            
-            <span id="busuanzi_container_site_uv">
-                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
-                    class="white-color"></span>&nbsp;人
-            </span>
             
             <br>
             
-            <span id="sitetime">载入运行时间...</span>
-            <script>
-                function siteTime() {
-                    var seconds = 1000;
-                    var minutes = seconds * 60;
-                    var hours = minutes * 60;
-                    var days = hours * 24;
-                    var years = days * 365;
-                    var today = new Date();
-                    var startYear = "2021";
-                    var startMonth = "6";
-                    var startDate = "28";
-                    var startHour = "0";
-                    var startMinute = "0";
-                    var startSecond = "0";
-                    var todayYear = today.getFullYear();
-                    var todayMonth = today.getMonth() + 1;
-                    var todayDate = today.getDate();
-                    var todayHour = today.getHours();
-                    var todayMinute = today.getMinutes();
-                    var todaySecond = today.getSeconds();
-                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
-                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
-                    var diff = t2 - t1;
-                    var diffYears = Math.floor(diff / years);
-                    var diffDays = Math.floor((diff / days) - diffYears * 365);
-                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
-                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
-                        minutes);
-                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
-                        diffMinutes * minutes) / seconds);
-                    if (startYear == todayYear) {
-                        document.getElementById("year").innerHTML = todayYear;
-                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffDays + " 天 " + diffHours +
-                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
-                    } else {
-                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
-                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffYears + " 年 " + diffDays +
-                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
-                    }
-                }
-                setInterval(siteTime, 1000);
-            </script>
+                &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
+                        class="white-color">44.4k</span>
+            
+            
+            
+                
+            
+            
+                <span id="busuanzi_container_site_pv">
+                &nbsp;|&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;
+                    <span id="busuanzi_value_site_pv" class="white-color"></span>
+            </span>
+            
+            
+                <span id="busuanzi_container_site_uv">
+                &nbsp;|&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;
+                    <span id="busuanzi_value_site_uv" class="white-color"></span>
+            </span>
+            
+            <br>
+
+            <!-- 运行天数提醒. -->
             
             <br>
             
@@ -2098,6 +1900,30 @@ $(function () {
 });
 </script>
 
+    <!-- 白天和黑夜主题 -->
+<div class="stars-con">
+    <div id="stars"></div>
+    <div id="stars2"></div>
+    <div id="stars3"></div>  
+</div>
+
+<script>
+    function switchNightMode() {
+        $('<div class="Cuteen_DarkSky"><div class="Cuteen_DarkPlanet"></div></div>').appendTo($('body')),
+        setTimeout(function () {
+            $('body').hasClass('DarkMode') 
+            ? ($('body').removeClass('DarkMode'), localStorage.setItem('isDark', '0'), $('#sum-moon-icon').removeClass("fa-sun").addClass('fa-moon')) 
+            : ($('body').addClass('DarkMode'), localStorage.setItem('isDark', '1'), $('#sum-moon-icon').addClass("fa-sun").removeClass('fa-moon')),
+            
+            setTimeout(function () {
+            $('.Cuteen_DarkSky').fadeOut(1e3, function () {
+                $(this).remove()
+            })
+            }, 2e3)
+        })
+    }
+</script>
+
     <!-- 回到顶部按钮 -->
 <div id="backTop" class="top-scroll">
     <a class="btn-floating btn-large waves-effect waves-light" href="#!">
@@ -2112,6 +1938,32 @@ $(function () {
     <script src="/blog/libs/scrollprogress/scrollProgress.min.js"></script>
     <script src="/blog/libs/lightGallery/js/lightgallery-all.min.js"></script>
     <script src="/blog/js/matery.js"></script>
+
+    
+        <!-- <script src='https://unpkg.com/mermaid@latest/dist/mermaid.min.js'></script> -->
+        <script src='/blog/libs/mermaid/mermaid.min.js'></script>
+        <script>
+          if (window.mermaid) {
+            mermaid.initialize({theme: 'forest'});
+          }
+        </script>
+    
+
+    
+    
+    
+
+    <!-- 雪花特效 -->
+    
+
+    <!-- 鼠标星星特效 -->
+    
+
+     
+        <script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
+        <script src="/blog/libs/others/TencentCaptcha.js"></script>
+        <button id="TencentCaptcha" data-appid="xxxxxxxxxx" data-cbfn="callback" type="button" hidden></button>
+    
 
     <!-- Baidu Analytics -->
 
@@ -2142,7 +1994,8 @@ $(function () {
 
     
 
-	
+    <!--腾讯兔小巢-->
+    
     
 
     
