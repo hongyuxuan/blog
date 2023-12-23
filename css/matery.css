@@ -305,6 +305,7 @@ header .brand-logo .logo-img {
 
 header .brand-logo .logo-span {
     font-size: 1.6rem;
+    padding-top: -10px;
 }
 
 /*修改顶部 logo 的文字垂直对齐为 top，避免默认 middle 看起来偏下*/
@@ -555,12 +556,13 @@ header .go-back i {
 }
 
 .post-cover {
-    height: 40vh !important;
+    height: 46vh !important;
 }
 
 .bg-cover:after {
-    -webkit-animation: rainbow 60s infinite;
-    animation: rainbow 60s infinite;
+    /* -webkit-animation: rainbow 60s infinite; */
+    /* animation: rainbow 60s infinite; */
+    background-color: rgba(0, 0, 0, .3);
 }
 
 .bg-cover:before,
