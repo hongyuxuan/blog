@@ -4,6 +4,62 @@
   
     
     <entry>
+      <title>有了面包机，自己也能做出香喷喷好吃的面包</title>
+      <link href="/blog/posts/5734/"/>
+      <url>/blog/posts/5734/</url>
+      
+        <content type="html"><![CDATA[<p>今天给大家安利一款好用的面包机——柏翠PE889。此型号的面包机可以做普通面包、全麦面包、土司、馒头、肉松、果酱、冰激淋，也能和面。</p><p>入手了面包机以后，迫不及待地开始自己动手做起来。</p><h2 id="和面">和面</h2><p><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fdaily%2Fbread%2F%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20240110215831.jpg" alt=""></p><h2 id="黄油巧克力">黄油巧克力</h2><p><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fdaily%2Fbread%2F%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20240110215827.jpg" alt=""><br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fdaily%2Fbread%2F%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20240110215822.jpg" alt=""><br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fdaily%2Fbread%2F%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20240110215818.jpg" alt=""><br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fdaily%2Fbread%2F%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20240110215815.jpg" alt=""></p><h2 id="芝士热狗">芝士热狗</h2><p>小崽子也上手啦~<br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fdaily%2Fbread%2F%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20240110215811.jpg" alt=""><br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fdaily%2Fbread%2F%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20240110215803.jpg" alt=""></p><h2 id="巧克力土司">巧克力土司</h2><p><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fdaily%2Fbread%2F%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20240110214516.jpg" alt=""><br><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fdaily%2Fbread%2F%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20240110214455.jpg" alt=""></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 居家 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 美食 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>K8S二次开发系列之五：深度解析scheduler原理</title>
+      <link href="/blog/posts/59790/"/>
+      <url>/blog/posts/59790/</url>
+      
+        <content type="html"><![CDATA[<div class="mermaid">  graph TDA[kube-apiserver] --list/watch-->B[informer]B--没有调度过的Pod或已调度过的Pod但Pod发生变化-->C[activeQ]B--异常退出Pod-->D[podBackOffQ]subgraph schedulerQueueD-->CE[unschedullableQ]-->CendB--Node发生变化-->FB--已经调度过的Pod-->Gsubgraph schedulerCacheF[Nodes]G[PodsState]end</div>]]></content>
+      
+      
+      <categories>
+          
+          <category> 云原生 </category>
+          
+          <category> kubernetes </category>
+          
+          <category> K8S二次开发系列 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> cloud native </tag>
+            
+            <tag> kubernetes </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>2023圣诞趴</title>
       <link href="/blog/posts/58996/"/>
       <url>/blog/posts/58996/</url>
