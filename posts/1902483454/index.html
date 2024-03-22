@@ -52,7 +52,9 @@
 
     <script src="/blog/libs/jquery/jquery-3.6.0.min.js"></script>
 
-<meta name="generator" content="Hexo 6.3.0"></head>
+<meta name="generator" content="Hexo 6.3.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
 
 
 <body>
@@ -409,14 +411,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    3.6k
+                    3.5k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    18 分
+                    17 分
                 </div>
                 
 
@@ -461,39 +463,39 @@
 <ol>
 <li>创建CA证书机构配置文件ca-config.json</li>
 </ol>
-<pre class="line-numbers language-json" data-language="json"><div class="caption"><span>ca-config.json</span></div><code class="language-json"><span class="token punctuation">&#123;</span>
-  <span class="token property">"signing"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
-    <span class="token property">"default"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+<pre class="line-numbers language-json" data-language="json"><div class="caption"><span>ca-config.json</span></div><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"signing"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"default"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
       <span class="token property">"expiry"</span><span class="token operator">:</span> <span class="token string">"876000h"</span>
-    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
-    <span class="token property">"profiles"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
-      <span class="token property">"server"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"profiles"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"server"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
         <span class="token property">"usages"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"signing"</span><span class="token punctuation">,</span> <span class="token string">"key encipherment"</span><span class="token punctuation">,</span> <span class="token string">"server auth"</span><span class="token punctuation">,</span> <span class="token string">"client auth"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
         <span class="token property">"expiry"</span><span class="token operator">:</span> <span class="token string">"876000h"</span>
-      <span class="token punctuation">&#125;</span>
-    <span class="token punctuation">&#125;</span>
-  <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <ol start="2">
 <li>创建CA证书请求配置文件ca-csr.json</li>
 </ol>
-<pre class="line-numbers language-json" data-language="json"><div class="caption"><span>ca-csr.json</span></div><code class="language-json"><span class="token punctuation">&#123;</span>
-    <span class="token property">"CA"</span><span class="token operator">:</span><span class="token punctuation">&#123;</span><span class="token property">"expiry"</span><span class="token operator">:</span><span class="token string">"876000h"</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+<pre class="line-numbers language-json" data-language="json"><div class="caption"><span>ca-csr.json</span></div><code class="language-json"><span class="token punctuation">{</span>
+    <span class="token property">"CA"</span><span class="token operator">:</span><span class="token punctuation">{</span><span class="token property">"expiry"</span><span class="token operator">:</span><span class="token string">"876000h"</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
     <span class="token property">"CN"</span><span class="token operator">:</span> <span class="token string">"kubernetes"</span><span class="token punctuation">,</span>
-    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
         <span class="token property">"algo"</span><span class="token operator">:</span> <span class="token string">"rsa"</span><span class="token punctuation">,</span>
         <span class="token property">"size"</span><span class="token operator">:</span> <span class="token number">2048</span>
-    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
     <span class="token property">"names"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
-        <span class="token punctuation">&#123;</span>
+        <span class="token punctuation">{</span>
             <span class="token property">"C"</span><span class="token operator">:</span> <span class="token string">"CN"</span><span class="token punctuation">,</span>
             <span class="token property">"L"</span><span class="token operator">:</span> <span class="token string">"BJ"</span><span class="token punctuation">,</span>
             <span class="token property">"ST"</span><span class="token operator">:</span> <span class="token string">"BJ"</span><span class="token punctuation">,</span>
             <span class="token property">"O"</span><span class="token operator">:</span> <span class="token string">"k8s"</span><span class="token punctuation">,</span>
             <span class="token property">"OU"</span><span class="token operator">:</span> <span class="token string">"System"</span>
-        <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">}</span>
     <span class="token punctuation">]</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <ol start="3">
 <li>生成CA证书和私钥</li>
 </ol>
@@ -508,20 +510,20 @@
 <ol start="4">
 <li>创建服务端证书请求配置文件tls-csr.json</li>
 </ol>
-<pre class="line-numbers language-json" data-language="json"><div class="caption"><span>tls-csr.json</span></div><code class="language-json"><span class="token punctuation">&#123;</span>
+<pre class="line-numbers language-json" data-language="json"><div class="caption"><span>tls-csr.json</span></div><code class="language-json"><span class="token punctuation">{</span>
   <span class="token property">"CN"</span><span class="token operator">:</span> <span class="token string">"admission"</span><span class="token punctuation">,</span>
-  <span class="token property">"key"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+  <span class="token property">"key"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
     <span class="token property">"algo"</span><span class="token operator">:</span> <span class="token string">"rsa"</span><span class="token punctuation">,</span>
     <span class="token property">"size"</span><span class="token operator">:</span> <span class="token number">2048</span>
-  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
   <span class="token property">"names"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
-    <span class="token punctuation">&#123;</span>
+    <span class="token punctuation">{</span>
         <span class="token property">"C"</span><span class="token operator">:</span> <span class="token string">"CN"</span><span class="token punctuation">,</span>
         <span class="token property">"L"</span><span class="token operator">:</span> <span class="token string">"BJ"</span><span class="token punctuation">,</span>
         <span class="token property">"ST"</span><span class="token operator">:</span> <span class="token string">"BJ"</span><span class="token punctuation">,</span>
         <span class="token property">"O"</span><span class="token operator">:</span> <span class="token string">"k8s"</span><span class="token punctuation">,</span>
         <span class="token property">"OU"</span><span class="token operator">:</span> <span class="token string">"System"</span>
-    <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">}</span>
   <span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"hosts"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
     <span class="token string">"podaffinity-webhook-server"</span><span class="token punctuation">,</span>
@@ -529,7 +531,7 @@
     <span class="token string">"podaffinity-webhook-server.kube-system.svc"</span><span class="token punctuation">,</span>
     <span class="token string">"192.168.126.100"</span>
   <span class="token punctuation">]</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>最重要的就是hosts字段，webhook要部署到哪个域名/IP下，就得把对应的域名/IP写进csr。</p>
 <ol start="5">
 <li>用前一步生成的CA证书签发服务端证书和私钥</li>
@@ -552,21 +554,21 @@
 <li>准备CA证书配置文件ca.conf</li>
 </ol>
 <pre class="line-numbers language-conf" data-language="conf"><div class="caption"><span>ca.conf</span></div><code class="language-conf">[ req ]
-default_bits       &#x3D; 4096
-distinguished_name &#x3D; req_distinguished_name
+default_bits       = 4096
+distinguished_name = req_distinguished_name
 
 [ req_distinguished_name ]
-countryName                 &#x3D; Country Name (2 letter code)
-countryName_default         &#x3D; CN
-stateOrProvinceName         &#x3D; State or Province Name (full name)
-stateOrProvinceName_default &#x3D; BJ
-localityName                &#x3D; Locality Name (eg, city)
-localityName_default        &#x3D; BJ
-organizationName            &#x3D; Organization Name (eg, company)
-organizationName_default    &#x3D; Kubernetes
-commonName                  &#x3D; Common Name (e.g. server FQDN or YOUR name)
-commonName_max              &#x3D; 64
-commonName_default          &#x3D; podaffinity-webhook-server.kube-system<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+countryName                 = Country Name (2 letter code)
+countryName_default         = CN
+stateOrProvinceName         = State or Province Name (full name)
+stateOrProvinceName_default = BJ
+localityName                = Locality Name (eg, city)
+localityName_default        = BJ
+organizationName            = Organization Name (eg, company)
+organizationName_default    = Kubernetes
+commonName                  = Common Name (e.g. server FQDN or YOUR name)
+commonName_max              = 64
+commonName_default          = podaffinity-webhook-server.kube-system<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <ol start="3">
 <li>生成CA证书请求文件</li>
 </ol>
@@ -583,30 +585,30 @@ commonName_default          &#x3D; podaffinity-webhook-server.kube-system<span a
 <li>准备服务端证书配置文件tls.conf</li>
 </ol>
 <pre class="line-numbers language-conf" data-language="conf"><div class="caption"><span>tls.conf</span></div><code class="language-conf">[ req ]
-default_bits       &#x3D; 2048
-distinguished_name &#x3D; req_distinguished_name
-req_extensions     &#x3D; req_ext
+default_bits       = 2048
+distinguished_name = req_distinguished_name
+req_extensions     = req_ext
 
 [ req_distinguished_name ]
-countryName                 &#x3D; Country Name (2 letter code)
-countryName_default         &#x3D; CN
-stateOrProvinceName         &#x3D; State or Province Name (full name)
-stateOrProvinceName_default &#x3D; BJ
-localityName                &#x3D; Locality Name (eg, city)
-localityName_default        &#x3D; BJ
-organizationName            &#x3D; Organization Name (eg, company)
-organizationName_default    &#x3D; LZBBY
-commonName                  &#x3D; Common Name (e.g. server FQDN or YOUR name)
-commonName_max              &#x3D; 64
-commonName_default          &#x3D; podaffinity-webhook-server.kube-system
+countryName                 = Country Name (2 letter code)
+countryName_default         = CN
+stateOrProvinceName         = State or Province Name (full name)
+stateOrProvinceName_default = BJ
+localityName                = Locality Name (eg, city)
+localityName_default        = BJ
+organizationName            = Organization Name (eg, company)
+organizationName_default    = LZBBY
+commonName                  = Common Name (e.g. server FQDN or YOUR name)
+commonName_max              = 64
+commonName_default          = podaffinity-webhook-server.kube-system
 
 [ req_ext ]
-subjectAltName &#x3D; @alt_names
+subjectAltName = @alt_names
 
 [alt_names]
-DNS.1   &#x3D; podaffinity-webhook-server
-DNS.2   &#x3D; podaffinity-webhook-server.kube-system
-DNS.3   &#x3D; podaffinity-webhook-server.kube-system.svc<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+DNS.1   = podaffinity-webhook-server
+DNS.2   = podaffinity-webhook-server.kube-system
+DNS.3   = podaffinity-webhook-server.kube-system.svc<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>alt_names和上面cfssl的hosts是一样的，webhook要部署到哪个域名/IP下，就得把对应的域名/IP写进去</p>
 <ol start="7">
 <li>生成服务端证书请求文件</li>
@@ -646,7 +648,7 @@ podaffinity-webhook-server
 	gracefulStop     <span class="token operator">=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> os<span class="token punctuation">.</span>Signal<span class="token punctuation">)</span>
 <span class="token punctuation">)</span>
 
-<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
 	<span class="token comment">// Parse flags</span>
 	kingpin<span class="token punctuation">.</span><span class="token function">Version</span><span class="token punctuation">(</span><span class="token string">"0.1"</span><span class="token punctuation">)</span>
 	kingpin<span class="token punctuation">.</span>HelpFlag<span class="token punctuation">.</span><span class="token function">Short</span><span class="token punctuation">(</span><span class="token char">'h'</span><span class="token punctuation">)</span>
@@ -659,65 +661,65 @@ podaffinity-webhook-server
 	signal<span class="token punctuation">.</span><span class="token function">Notify</span><span class="token punctuation">(</span>gracefulStop<span class="token punctuation">,</span> syscall<span class="token punctuation">.</span>SIGQUIT<span class="token punctuation">)</span>
 
 	<span class="token comment">// listener for the termination signals from the OS</span>
-	<span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
 		log<span class="token punctuation">.</span><span class="token function">Infof</span><span class="token punctuation">(</span><span class="token string">"Listening and wait for graceful stop"</span><span class="token punctuation">)</span>
 		sig <span class="token operator">:=</span> <span class="token operator">&lt;-</span>gracefulStop
 		log<span class="token punctuation">.</span><span class="token function">Infof</span><span class="token punctuation">(</span><span class="token string">"Caught signal: %+v. Wait 1 seconds..."</span><span class="token punctuation">,</span> sig<span class="token punctuation">)</span>
 		time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
 		log<span class="token punctuation">.</span><span class="token function">Infof</span><span class="token punctuation">(</span><span class="token string">"Terminate program on port: %s"</span><span class="token punctuation">,</span> <span class="token operator">*</span>listeningAddress<span class="token punctuation">)</span>
 		os<span class="token punctuation">.</span><span class="token function">Exit</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
-	<span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token punctuation">}</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 
 	router <span class="token operator">:=</span> gin<span class="token punctuation">.</span><span class="token function">New</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-	router<span class="token punctuation">.</span><span class="token function">GET</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">,</span> <span class="token keyword">func</span><span class="token punctuation">(</span>c <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-		c<span class="token punctuation">.</span><span class="token function">JSON</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">,</span> gin<span class="token punctuation">.</span>H<span class="token punctuation">&#123;</span>
+	router<span class="token punctuation">.</span><span class="token function">GET</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">,</span> <span class="token keyword">func</span><span class="token punctuation">(</span>c <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+		c<span class="token punctuation">.</span><span class="token function">JSON</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">,</span> gin<span class="token punctuation">.</span>H<span class="token punctuation">{</span>
 			<span class="token string">"data"</span><span class="token punctuation">:</span> <span class="token string">"hello podaffinity-webhook-server!"</span><span class="token punctuation">,</span>
-		<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
-	<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+		<span class="token punctuation">}</span><span class="token punctuation">)</span>
+	<span class="token punctuation">}</span><span class="token punctuation">)</span>
 
-	router<span class="token punctuation">.</span><span class="token function">POST</span><span class="token punctuation">(</span><span class="token string">"/mutate"</span><span class="token punctuation">,</span> <span class="token keyword">func</span><span class="token punctuation">(</span>c <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	router<span class="token punctuation">.</span><span class="token function">POST</span><span class="token punctuation">(</span><span class="token string">"/mutate"</span><span class="token punctuation">,</span> <span class="token keyword">func</span><span class="token punctuation">(</span>c <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token punctuation">{</span>
 		body<span class="token punctuation">,</span> err <span class="token operator">:=</span> ioutil<span class="token punctuation">.</span><span class="token function">ReadAll</span><span class="token punctuation">(</span>c<span class="token punctuation">.</span>Request<span class="token punctuation">.</span>Body<span class="token punctuation">)</span>
 		<span class="token keyword">defer</span> c<span class="token punctuation">.</span>Request<span class="token punctuation">.</span>Body<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 		log<span class="token punctuation">.</span><span class="token function">Infof</span><span class="token punctuation">(</span><span class="token string">"Received body: %+v"</span><span class="token punctuation">,</span> <span class="token function">string</span><span class="token punctuation">(</span>body<span class="token punctuation">)</span><span class="token punctuation">)</span>
-		<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
 			log<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-			c<span class="token punctuation">.</span><span class="token function">JSON</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>StatusInternalServerError<span class="token punctuation">,</span> gin<span class="token punctuation">.</span>H<span class="token punctuation">&#123;</span>
+			c<span class="token punctuation">.</span><span class="token function">JSON</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>StatusInternalServerError<span class="token punctuation">,</span> gin<span class="token punctuation">.</span>H<span class="token punctuation">{</span>
 				<span class="token string">"code"</span><span class="token punctuation">:</span>    http<span class="token punctuation">.</span>StatusInternalServerError<span class="token punctuation">,</span>
 				<span class="token string">"message"</span><span class="token punctuation">:</span> err<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
-			<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
-		<span class="token punctuation">&#125;</span>
+			<span class="token punctuation">}</span><span class="token punctuation">)</span>
+		<span class="token punctuation">}</span>
 		mutRes<span class="token punctuation">,</span> err <span class="token operator">:=</span> <span class="token function">mutate</span><span class="token punctuation">(</span>body<span class="token punctuation">)</span>
-		<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
 			log<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-			c<span class="token punctuation">.</span><span class="token function">JSON</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>StatusInternalServerError<span class="token punctuation">,</span> gin<span class="token punctuation">.</span>H<span class="token punctuation">&#123;</span>
+			c<span class="token punctuation">.</span><span class="token function">JSON</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>StatusInternalServerError<span class="token punctuation">,</span> gin<span class="token punctuation">.</span>H<span class="token punctuation">{</span>
 				<span class="token string">"code"</span><span class="token punctuation">:</span>    http<span class="token punctuation">.</span>StatusInternalServerError<span class="token punctuation">,</span>
 				<span class="token string">"message"</span><span class="token punctuation">:</span> err<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
-			<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
-		<span class="token punctuation">&#125;</span>
+			<span class="token punctuation">}</span><span class="token punctuation">)</span>
+		<span class="token punctuation">}</span>
 		c<span class="token punctuation">.</span>Writer<span class="token punctuation">.</span><span class="token function">Write</span><span class="token punctuation">(</span>mutRes<span class="token punctuation">)</span>
-	<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+	<span class="token punctuation">}</span><span class="token punctuation">)</span>
 
-	server <span class="token operator">:=</span> <span class="token operator">&amp;</span>http<span class="token punctuation">.</span>Server<span class="token punctuation">&#123;</span>Addr<span class="token punctuation">:</span> <span class="token operator">*</span>listeningAddress<span class="token punctuation">,</span> Handler<span class="token punctuation">:</span> router<span class="token punctuation">&#125;</span>
+	server <span class="token operator">:=</span> <span class="token operator">&amp;</span>http<span class="token punctuation">.</span>Server<span class="token punctuation">{</span>Addr<span class="token punctuation">:</span> <span class="token operator">*</span>listeningAddress<span class="token punctuation">,</span> Handler<span class="token punctuation">:</span> router<span class="token punctuation">}</span>
 	server<span class="token punctuation">.</span><span class="token function">ListenAndServeTLS</span><span class="token punctuation">(</span><span class="token operator">*</span>certFile<span class="token punctuation">,</span> <span class="token operator">*</span>keyFile<span class="token punctuation">)</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>使用gin框架，注册了一个handler叫/mutate，收到的请求参数是一个json，将其作为参数传递给主要函数逻辑mutate。下来看一下这个mutate函数：</p>
-<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">mutate</span><span class="token punctuation">(</span>body <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-	admReview <span class="token operator">:=</span> admissionv1<span class="token punctuation">.</span>AdmissionReview<span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
-	<span class="token keyword">if</span> err <span class="token operator">:=</span> json<span class="token punctuation">.</span><span class="token function">Unmarshal</span><span class="token punctuation">(</span>body<span class="token punctuation">,</span> <span class="token operator">&amp;</span>admReview<span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">mutate</span><span class="token punctuation">(</span>body <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	admReview <span class="token operator">:=</span> admissionv1<span class="token punctuation">.</span>AdmissionReview<span class="token punctuation">{</span><span class="token punctuation">}</span>
+	<span class="token keyword">if</span> err <span class="token operator">:=</span> json<span class="token punctuation">.</span><span class="token function">Unmarshal</span><span class="token punctuation">(</span>body<span class="token punctuation">,</span> <span class="token operator">&amp;</span>admReview<span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
 		<span class="token keyword">return</span> <span class="token boolean">nil</span><span class="token punctuation">,</span> fmt<span class="token punctuation">.</span><span class="token function">Errorf</span><span class="token punctuation">(</span><span class="token string">"unmarshal request body failed: %v"</span><span class="token punctuation">,</span> err<span class="token punctuation">)</span>
-	<span class="token punctuation">&#125;</span>
+	<span class="token punctuation">}</span>
 
 	<span class="token keyword">var</span> err <span class="token builtin">error</span>
 	<span class="token keyword">var</span> pod <span class="token operator">*</span>corev1<span class="token punctuation">.</span>Pod
 
-	responseBody <span class="token operator">:=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+	responseBody <span class="token operator">:=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">{</span><span class="token punctuation">}</span>
 	ar <span class="token operator">:=</span> admReview<span class="token punctuation">.</span>Request
-	resp <span class="token operator">:=</span> admissionv1<span class="token punctuation">.</span>AdmissionResponse<span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+	resp <span class="token operator">:=</span> admissionv1<span class="token punctuation">.</span>AdmissionResponse<span class="token punctuation">{</span><span class="token punctuation">}</span>
 
-	<span class="token keyword">if</span> ar <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
-		<span class="token keyword">if</span> err <span class="token operator">:=</span> json<span class="token punctuation">.</span><span class="token function">Unmarshal</span><span class="token punctuation">(</span>ar<span class="token punctuation">.</span>Object<span class="token punctuation">.</span>Raw<span class="token punctuation">,</span> <span class="token operator">&amp;</span>pod<span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">if</span> ar <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+		<span class="token keyword">if</span> err <span class="token operator">:=</span> json<span class="token punctuation">.</span><span class="token function">Unmarshal</span><span class="token punctuation">(</span>ar<span class="token punctuation">.</span>Object<span class="token punctuation">.</span>Raw<span class="token punctuation">,</span> <span class="token operator">&amp;</span>pod<span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
 			<span class="token keyword">return</span> <span class="token boolean">nil</span><span class="token punctuation">,</span> fmt<span class="token punctuation">.</span><span class="token function">Errorf</span><span class="token punctuation">(</span><span class="token string">"unable to unmarshal pod json object %v"</span><span class="token punctuation">,</span> err<span class="token punctuation">)</span>
-		<span class="token punctuation">&#125;</span>
+		<span class="token punctuation">}</span>
 		<span class="token comment">// set response options</span>
 		resp<span class="token punctuation">.</span>Allowed <span class="token operator">=</span> <span class="token boolean">true</span>
 		resp<span class="token punctuation">.</span>UID <span class="token operator">=</span> ar<span class="token punctuation">.</span>UID
@@ -725,65 +727,65 @@ podaffinity-webhook-server
 		resp<span class="token punctuation">.</span>PatchType <span class="token operator">=</span> <span class="token operator">&amp;</span>pT
 
 		<span class="token comment">// add some audit annotations, helpful to know why a object was modified.</span>
-		resp<span class="token punctuation">.</span>AuditAnnotations <span class="token operator">=</span> <span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">string</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">&#123;</span>
+		resp<span class="token punctuation">.</span>AuditAnnotations <span class="token operator">=</span> <span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">string</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">{</span>
 			<span class="token string">"mutateme"</span><span class="token punctuation">:</span> <span class="token string">"webhook add it"</span><span class="token punctuation">,</span>
-		<span class="token punctuation">&#125;</span>
+		<span class="token punctuation">}</span>
 
 		<span class="token comment">// Get Pod labels</span>
 		labels <span class="token operator">:=</span> pod<span class="token punctuation">.</span>ObjectMeta<span class="token punctuation">.</span><span class="token function">GetLabels</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-		<span class="token keyword">if</span> appType<span class="token punctuation">,</span> ok <span class="token operator">:=</span> labels<span class="token punctuation">[</span><span class="token string">"app_type"</span><span class="token punctuation">]</span><span class="token punctuation">;</span> ok <span class="token punctuation">&#123;</span> <span class="token comment">// if has app_type, then will add PodAntiAffinity</span>
+		<span class="token keyword">if</span> appType<span class="token punctuation">,</span> ok <span class="token operator">:=</span> labels<span class="token punctuation">[</span><span class="token string">"app_type"</span><span class="token punctuation">]</span><span class="token punctuation">;</span> ok <span class="token punctuation">{</span> <span class="token comment">// if has app_type, then will add PodAntiAffinity</span>
 			log<span class="token punctuation">.</span><span class="token function">Infof</span><span class="token punctuation">(</span><span class="token string">"Pod label app_type = %s"</span><span class="token punctuation">,</span> appType<span class="token punctuation">)</span>
 			<span class="token keyword">var</span> patches <span class="token punctuation">[</span><span class="token punctuation">]</span>types<span class="token punctuation">.</span>PatchOperation
-			op <span class="token operator">:=</span> types<span class="token punctuation">.</span>PatchOperation<span class="token punctuation">&#123;</span>
+			op <span class="token operator">:=</span> types<span class="token punctuation">.</span>PatchOperation<span class="token punctuation">{</span>
 				Op<span class="token punctuation">:</span>   <span class="token string">"add"</span><span class="token punctuation">,</span>
 				Path<span class="token punctuation">:</span> <span class="token string">"/spec/affinity"</span><span class="token punctuation">,</span>
-				Value<span class="token punctuation">:</span> corev1<span class="token punctuation">.</span>Affinity<span class="token punctuation">&#123;</span>
-					PodAntiAffinity<span class="token punctuation">:</span> <span class="token operator">&amp;</span>corev1<span class="token punctuation">.</span>PodAntiAffinity<span class="token punctuation">&#123;</span>
-						RequiredDuringSchedulingIgnoredDuringExecution<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>corev1<span class="token punctuation">.</span>PodAffinityTerm<span class="token punctuation">&#123;</span>
-							<span class="token punctuation">&#123;</span>
-								LabelSelector<span class="token punctuation">:</span> <span class="token operator">&amp;</span>metav1<span class="token punctuation">.</span>LabelSelector<span class="token punctuation">&#123;</span>
-									MatchExpressions<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>metav1<span class="token punctuation">.</span>LabelSelectorRequirement<span class="token punctuation">&#123;</span>
-										<span class="token punctuation">&#123;</span>
+				Value<span class="token punctuation">:</span> corev1<span class="token punctuation">.</span>Affinity<span class="token punctuation">{</span>
+					PodAntiAffinity<span class="token punctuation">:</span> <span class="token operator">&amp;</span>corev1<span class="token punctuation">.</span>PodAntiAffinity<span class="token punctuation">{</span>
+						RequiredDuringSchedulingIgnoredDuringExecution<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>corev1<span class="token punctuation">.</span>PodAffinityTerm<span class="token punctuation">{</span>
+							<span class="token punctuation">{</span>
+								LabelSelector<span class="token punctuation">:</span> <span class="token operator">&amp;</span>metav1<span class="token punctuation">.</span>LabelSelector<span class="token punctuation">{</span>
+									MatchExpressions<span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>metav1<span class="token punctuation">.</span>LabelSelectorRequirement<span class="token punctuation">{</span>
+										<span class="token punctuation">{</span>
 											Key<span class="token punctuation">:</span>      <span class="token string">"app_type"</span><span class="token punctuation">,</span>
 											Operator<span class="token punctuation">:</span> <span class="token string">"In"</span><span class="token punctuation">,</span>
-											Values<span class="token punctuation">:</span>   <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">&#123;</span>appType<span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
-										<span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
-									<span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
-								<span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+											Values<span class="token punctuation">:</span>   <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">{</span>appType<span class="token punctuation">}</span><span class="token punctuation">,</span>
+										<span class="token punctuation">}</span><span class="token punctuation">,</span>
+									<span class="token punctuation">}</span><span class="token punctuation">,</span>
+								<span class="token punctuation">}</span><span class="token punctuation">,</span>
 								TopologyKey<span class="token punctuation">:</span> <span class="token string">"kubernetes.io/hostname"</span><span class="token punctuation">,</span>
-							<span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
-						<span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
-					<span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
-				<span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
-			<span class="token punctuation">&#125;</span>
+							<span class="token punctuation">}</span><span class="token punctuation">,</span>
+						<span class="token punctuation">}</span><span class="token punctuation">,</span>
+					<span class="token punctuation">}</span><span class="token punctuation">,</span>
+				<span class="token punctuation">}</span><span class="token punctuation">,</span>
+			<span class="token punctuation">}</span>
 			patches <span class="token operator">=</span> <span class="token function">append</span><span class="token punctuation">(</span>patches<span class="token punctuation">,</span> op<span class="token punctuation">)</span>
 			<span class="token comment">// parse the []map into JSON</span>
 			resp<span class="token punctuation">.</span>Patch<span class="token punctuation">,</span> <span class="token boolean">_</span> <span class="token operator">=</span> json<span class="token punctuation">.</span><span class="token function">Marshal</span><span class="token punctuation">(</span>patches<span class="token punctuation">)</span>
-		<span class="token punctuation">&#125;</span>
+		<span class="token punctuation">}</span>
 
 		<span class="token comment">// Success, of course ;)</span>
-		resp<span class="token punctuation">.</span>Result <span class="token operator">=</span> <span class="token operator">&amp;</span>metav1<span class="token punctuation">.</span>Status<span class="token punctuation">&#123;</span>
+		resp<span class="token punctuation">.</span>Result <span class="token operator">=</span> <span class="token operator">&amp;</span>metav1<span class="token punctuation">.</span>Status<span class="token punctuation">{</span>
 			Status<span class="token punctuation">:</span> <span class="token string">"Success"</span><span class="token punctuation">,</span>
-		<span class="token punctuation">&#125;</span>
+		<span class="token punctuation">}</span>
 
 		admReview<span class="token punctuation">.</span>Response <span class="token operator">=</span> <span class="token operator">&amp;</span>resp
 		<span class="token comment">// back into JSON so we can return the finished AdmissionReview w/ Response directly</span>
 		<span class="token comment">// w/o needing to convert things in the http handler</span>
 		responseBody<span class="token punctuation">,</span> err <span class="token operator">=</span> json<span class="token punctuation">.</span><span class="token function">Marshal</span><span class="token punctuation">(</span>admReview<span class="token punctuation">)</span>
-		<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
 			<span class="token keyword">return</span> <span class="token boolean">nil</span><span class="token punctuation">,</span> err <span class="token comment">// untested section</span>
-		<span class="token punctuation">&#125;</span>
-	<span class="token punctuation">&#125;</span>
+		<span class="token punctuation">}</span>
+	<span class="token punctuation">}</span>
 
 	<span class="token keyword">return</span> responseBody<span class="token punctuation">,</span> <span class="token boolean">nil</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>将请求参数body反序列化至<code>AdmissionReview</code>类型的变量，从中拿出Pod，通过patch为Pod增加反亲和性配置，注入的path为<code>/spec/affinity</code>。</p>
 <p>patch的时候用到了一个struct叫<code>types.PatchOperation</code>，在types目录下新建types.go</p>
-<pre class="line-numbers language-go" data-language="go"><div class="caption"><span>types/types.go</span></div><code class="language-go"><span class="token keyword">type</span> PatchOperation <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+<pre class="line-numbers language-go" data-language="go"><div class="caption"><span>types/types.go</span></div><code class="language-go"><span class="token keyword">type</span> PatchOperation <span class="token keyword">struct</span> <span class="token punctuation">{</span>
 	Op    <span class="token builtin">string</span>      <span class="token string">`json:"op"`</span>
 	Path  <span class="token builtin">string</span>      <span class="token string">`json:"path"`</span>
-	Value <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span> <span class="token string">`json:"value,omitempty"`</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+	Value <span class="token keyword">interface</span><span class="token punctuation">{</span><span class="token punctuation">}</span> <span class="token string">`json:"value,omitempty"`</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>本例就注入了一个反亲和性配置。当然我们可以在mutate逻辑里随意注入其它属性字段，比如注入sidecar等。</p>
 <p>接口最终需要返回一个<code>AdmissionResponse</code>类型的返回值，该类型指定了几个必要的属性：<code>UID</code>、<code>Allowed</code>、<code>Result</code>，最终将<code>AdmissionResponse</code>封装到<code>admReview.Response</code>里返回给Apiserver。</p>
 <h3 id="部署webhook">部署webhook</h3>
@@ -799,7 +801,7 @@ podaffinity-webhook-server
 <span class="token key atrule">webhooks</span><span class="token punctuation">:</span>
   <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> podaffinity<span class="token punctuation">-</span>webhook<span class="token punctuation">-</span>server.kube<span class="token punctuation">-</span>system.svc
     <span class="token key atrule">clientConfig</span><span class="token punctuation">:</span>
-      <span class="token key atrule">caBundle</span><span class="token punctuation">:</span> &lt;CA BASE64<span class="token punctuation">></span>
+      <span class="token key atrule">caBundle</span><span class="token punctuation">:</span> &lt;CA BASE64<span class="token punctuation">&gt;</span>
       <span class="token comment">#service:</span>
       <span class="token comment">##  name: podaffinity-webhook-server</span>
       <span class="token comment">##  namespace: kube-system</span>
@@ -845,8 +847,8 @@ Events:
 <li>没有找到service，创建service即可。</li>
 <li>caBundle的内容和服务端证书不匹配，按照前面的步骤重新生成。</li>
 </ul>
-<blockquote><p>本例完整代码参见：<a target="_blank" rel="noopener" href="https://gitee.com/hongyuxuan2138/podaffinity-webhook-server">https://gitee.com/hongyuxuan2138/podaffinity-webhook-server</a></p>
-</blockquote>
+<div class="note success no-icon"><p>本例完整代码参见：<a target="_blank" rel="noopener" href="https://gitee.com/hongyuxuan2138/podaffinity-webhook-server">https://gitee.com/hongyuxuan2138/podaffinity-webhook-server</a></p>
+</div>
 <h2 id="Validating-Admission-Webhook">Validating Admission Webhook</h2>
 <p>本节将实现一个验证型准入控制器逻辑，判断提交上来的Pod的image是否含有nginx子串，如果有则拒绝这个资源请求。</p>
 <h3 id="编写代码逻辑-2">编写代码逻辑</h3>
@@ -858,7 +860,7 @@ Events:
 	gracefulStop     <span class="token operator">=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> os<span class="token punctuation">.</span>Signal<span class="token punctuation">)</span>
 <span class="token punctuation">)</span>
 
-<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
 	<span class="token comment">// Parse flags</span>
 	kingpin<span class="token punctuation">.</span><span class="token function">Version</span><span class="token punctuation">(</span><span class="token string">"0.1"</span><span class="token punctuation">)</span>
 	kingpin<span class="token punctuation">.</span>HelpFlag<span class="token punctuation">.</span><span class="token function">Short</span><span class="token punctuation">(</span><span class="token char">'h'</span><span class="token punctuation">)</span>
@@ -871,101 +873,101 @@ Events:
 	signal<span class="token punctuation">.</span><span class="token function">Notify</span><span class="token punctuation">(</span>gracefulStop<span class="token punctuation">,</span> syscall<span class="token punctuation">.</span>SIGQUIT<span class="token punctuation">)</span>
 
 	<span class="token comment">// listener for the termination signals from the OS</span>
-	<span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
 		log<span class="token punctuation">.</span><span class="token function">Infof</span><span class="token punctuation">(</span><span class="token string">"Listening and wait for graceful stop"</span><span class="token punctuation">)</span>
 		sig <span class="token operator">:=</span> <span class="token operator">&lt;-</span>gracefulStop
 		log<span class="token punctuation">.</span><span class="token function">Infof</span><span class="token punctuation">(</span><span class="token string">"Caught signal: %+v. Wait 1 seconds..."</span><span class="token punctuation">,</span> sig<span class="token punctuation">)</span>
 		time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
 		log<span class="token punctuation">.</span><span class="token function">Infof</span><span class="token punctuation">(</span><span class="token string">"Terminate program on port: %s"</span><span class="token punctuation">,</span> <span class="token operator">*</span>listeningAddress<span class="token punctuation">)</span>
 		os<span class="token punctuation">.</span><span class="token function">Exit</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
-	<span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token punctuation">}</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 
 	router <span class="token operator">:=</span> gin<span class="token punctuation">.</span><span class="token function">New</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-	router<span class="token punctuation">.</span><span class="token function">GET</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">,</span> <span class="token keyword">func</span><span class="token punctuation">(</span>c <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-		c<span class="token punctuation">.</span><span class="token function">JSON</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">,</span> gin<span class="token punctuation">.</span>H<span class="token punctuation">&#123;</span>
+	router<span class="token punctuation">.</span><span class="token function">GET</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">,</span> <span class="token keyword">func</span><span class="token punctuation">(</span>c <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+		c<span class="token punctuation">.</span><span class="token function">JSON</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">,</span> gin<span class="token punctuation">.</span>H<span class="token punctuation">{</span>
 			<span class="token string">"data"</span><span class="token punctuation">:</span> <span class="token string">"hello image-webhook-server!"</span><span class="token punctuation">,</span>
-		<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
-	<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+		<span class="token punctuation">}</span><span class="token punctuation">)</span>
+	<span class="token punctuation">}</span><span class="token punctuation">)</span>
 
-	router<span class="token punctuation">.</span><span class="token function">POST</span><span class="token punctuation">(</span><span class="token string">"/validate"</span><span class="token punctuation">,</span> <span class="token keyword">func</span><span class="token punctuation">(</span>c <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	router<span class="token punctuation">.</span><span class="token function">POST</span><span class="token punctuation">(</span><span class="token string">"/validate"</span><span class="token punctuation">,</span> <span class="token keyword">func</span><span class="token punctuation">(</span>c <span class="token operator">*</span>gin<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token punctuation">{</span>
 		body<span class="token punctuation">,</span> err <span class="token operator">:=</span> ioutil<span class="token punctuation">.</span><span class="token function">ReadAll</span><span class="token punctuation">(</span>c<span class="token punctuation">.</span>Request<span class="token punctuation">.</span>Body<span class="token punctuation">)</span>
 		<span class="token keyword">defer</span> c<span class="token punctuation">.</span>Request<span class="token punctuation">.</span>Body<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 		log<span class="token punctuation">.</span><span class="token function">Infof</span><span class="token punctuation">(</span><span class="token string">"Received body: %+v"</span><span class="token punctuation">,</span> <span class="token function">string</span><span class="token punctuation">(</span>body<span class="token punctuation">)</span><span class="token punctuation">)</span>
-		<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
 			log<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-			c<span class="token punctuation">.</span><span class="token function">JSON</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>StatusInternalServerError<span class="token punctuation">,</span> gin<span class="token punctuation">.</span>H<span class="token punctuation">&#123;</span>
+			c<span class="token punctuation">.</span><span class="token function">JSON</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>StatusInternalServerError<span class="token punctuation">,</span> gin<span class="token punctuation">.</span>H<span class="token punctuation">{</span>
 				<span class="token string">"code"</span><span class="token punctuation">:</span>    http<span class="token punctuation">.</span>StatusInternalServerError<span class="token punctuation">,</span>
 				<span class="token string">"message"</span><span class="token punctuation">:</span> err<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
-			<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
-		<span class="token punctuation">&#125;</span>
+			<span class="token punctuation">}</span><span class="token punctuation">)</span>
+		<span class="token punctuation">}</span>
 		validRes<span class="token punctuation">,</span> err <span class="token operator">:=</span> <span class="token function">validate</span><span class="token punctuation">(</span>body<span class="token punctuation">)</span>
-		<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
 			log<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
-			c<span class="token punctuation">.</span><span class="token function">JSON</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>StatusInternalServerError<span class="token punctuation">,</span> gin<span class="token punctuation">.</span>H<span class="token punctuation">&#123;</span>
+			c<span class="token punctuation">.</span><span class="token function">JSON</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>StatusInternalServerError<span class="token punctuation">,</span> gin<span class="token punctuation">.</span>H<span class="token punctuation">{</span>
 				<span class="token string">"code"</span><span class="token punctuation">:</span>    http<span class="token punctuation">.</span>StatusInternalServerError<span class="token punctuation">,</span>
 				<span class="token string">"message"</span><span class="token punctuation">:</span> err<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
-			<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
-		<span class="token punctuation">&#125;</span>
+			<span class="token punctuation">}</span><span class="token punctuation">)</span>
+		<span class="token punctuation">}</span>
 		c<span class="token punctuation">.</span>Writer<span class="token punctuation">.</span><span class="token function">Write</span><span class="token punctuation">(</span>validRes<span class="token punctuation">)</span>
-	<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+	<span class="token punctuation">}</span><span class="token punctuation">)</span>
 
-	server <span class="token operator">:=</span> <span class="token operator">&amp;</span>http<span class="token punctuation">.</span>Server<span class="token punctuation">&#123;</span>Addr<span class="token punctuation">:</span> <span class="token operator">*</span>listeningAddress<span class="token punctuation">,</span> Handler<span class="token punctuation">:</span> router<span class="token punctuation">&#125;</span>
+	server <span class="token operator">:=</span> <span class="token operator">&amp;</span>http<span class="token punctuation">.</span>Server<span class="token punctuation">{</span>Addr<span class="token punctuation">:</span> <span class="token operator">*</span>listeningAddress<span class="token punctuation">,</span> Handler<span class="token punctuation">:</span> router<span class="token punctuation">}</span>
 	server<span class="token punctuation">.</span><span class="token function">ListenAndServeTLS</span><span class="token punctuation">(</span><span class="token operator">*</span>certFile<span class="token punctuation">,</span> <span class="token operator">*</span>keyFile<span class="token punctuation">)</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>validate函数如下：</p>
-<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">validate</span><span class="token punctuation">(</span>body <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-	admReview <span class="token operator">:=</span> admissionv1<span class="token punctuation">.</span>AdmissionReview<span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
-	<span class="token keyword">if</span> err <span class="token operator">:=</span> json<span class="token punctuation">.</span><span class="token function">Unmarshal</span><span class="token punctuation">(</span>body<span class="token punctuation">,</span> <span class="token operator">&amp;</span>admReview<span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">validate</span><span class="token punctuation">(</span>body <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	admReview <span class="token operator">:=</span> admissionv1<span class="token punctuation">.</span>AdmissionReview<span class="token punctuation">{</span><span class="token punctuation">}</span>
+	<span class="token keyword">if</span> err <span class="token operator">:=</span> json<span class="token punctuation">.</span><span class="token function">Unmarshal</span><span class="token punctuation">(</span>body<span class="token punctuation">,</span> <span class="token operator">&amp;</span>admReview<span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
 		<span class="token keyword">return</span> <span class="token boolean">nil</span><span class="token punctuation">,</span> fmt<span class="token punctuation">.</span><span class="token function">Errorf</span><span class="token punctuation">(</span><span class="token string">"unmarshal request body failed: %v"</span><span class="token punctuation">,</span> err<span class="token punctuation">)</span>
-	<span class="token punctuation">&#125;</span>
+	<span class="token punctuation">}</span>
 
 	<span class="token keyword">var</span> err <span class="token builtin">error</span>
 	<span class="token keyword">var</span> pod <span class="token operator">*</span>corev1<span class="token punctuation">.</span>Pod
 
-	responseBody <span class="token operator">:=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+	responseBody <span class="token operator">:=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">{</span><span class="token punctuation">}</span>
 	ar <span class="token operator">:=</span> admReview<span class="token punctuation">.</span>Request
-	resp <span class="token operator">:=</span> admissionv1<span class="token punctuation">.</span>AdmissionResponse<span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+	resp <span class="token operator">:=</span> admissionv1<span class="token punctuation">.</span>AdmissionResponse<span class="token punctuation">{</span><span class="token punctuation">}</span>
 
-	<span class="token keyword">if</span> ar <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
-		<span class="token keyword">if</span> err <span class="token operator">:=</span> json<span class="token punctuation">.</span><span class="token function">Unmarshal</span><span class="token punctuation">(</span>ar<span class="token punctuation">.</span>Object<span class="token punctuation">.</span>Raw<span class="token punctuation">,</span> <span class="token operator">&amp;</span>pod<span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">if</span> ar <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+		<span class="token keyword">if</span> err <span class="token operator">:=</span> json<span class="token punctuation">.</span><span class="token function">Unmarshal</span><span class="token punctuation">(</span>ar<span class="token punctuation">.</span>Object<span class="token punctuation">.</span>Raw<span class="token punctuation">,</span> <span class="token operator">&amp;</span>pod<span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
 			<span class="token keyword">return</span> <span class="token boolean">nil</span><span class="token punctuation">,</span> fmt<span class="token punctuation">.</span><span class="token function">Errorf</span><span class="token punctuation">(</span><span class="token string">"unable to unmarshal pod json object %v"</span><span class="token punctuation">,</span> err<span class="token punctuation">)</span>
-		<span class="token punctuation">&#125;</span>
+		<span class="token punctuation">}</span>
 		<span class="token comment">// set response options</span>
 		resp<span class="token punctuation">.</span>UID <span class="token operator">=</span> ar<span class="token punctuation">.</span>UID
 		containers <span class="token operator">:=</span> pod<span class="token punctuation">.</span>Spec<span class="token punctuation">.</span>Containers
 
 		<span class="token comment">// Modify the Pod spec to include the volumes, then op the original pod.</span>
-		<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token keyword">range</span> containers <span class="token punctuation">&#123;</span>
-			<span class="token keyword">if</span> strings<span class="token punctuation">.</span><span class="token function">Contains</span><span class="token punctuation">(</span>containers<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>Image<span class="token punctuation">,</span> <span class="token string">"nginx"</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token comment">// nginx image will be denied</span>
+		<span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token keyword">range</span> containers <span class="token punctuation">{</span>
+			<span class="token keyword">if</span> strings<span class="token punctuation">.</span><span class="token function">Contains</span><span class="token punctuation">(</span>containers<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>Image<span class="token punctuation">,</span> <span class="token string">"nginx"</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment">// nginx image will be denied</span>
 				msg <span class="token operator">:=</span> fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"Image[%s] which has 'nginx' str is not allowed"</span><span class="token punctuation">,</span> containers<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>Image<span class="token punctuation">)</span>
 				resp<span class="token punctuation">.</span>Allowed <span class="token operator">=</span> <span class="token boolean">false</span>
-				resp<span class="token punctuation">.</span>Result <span class="token operator">=</span> <span class="token operator">&amp;</span>metav1<span class="token punctuation">.</span>Status<span class="token punctuation">&#123;</span>
+				resp<span class="token punctuation">.</span>Result <span class="token operator">=</span> <span class="token operator">&amp;</span>metav1<span class="token punctuation">.</span>Status<span class="token punctuation">{</span>
 					Status<span class="token punctuation">:</span>  <span class="token string">"Failure"</span><span class="token punctuation">,</span>
 					Code<span class="token punctuation">:</span>    <span class="token function">int32</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>StatusForbidden<span class="token punctuation">)</span><span class="token punctuation">,</span>
 					Reason<span class="token punctuation">:</span>  metav1<span class="token punctuation">.</span><span class="token function">StatusReason</span><span class="token punctuation">(</span>msg<span class="token punctuation">)</span><span class="token punctuation">,</span>
 					Message<span class="token punctuation">:</span> msg<span class="token punctuation">,</span>
-				<span class="token punctuation">&#125;</span>
+				<span class="token punctuation">}</span>
 				log<span class="token punctuation">.</span><span class="token function">Errorln</span><span class="token punctuation">(</span>msg<span class="token punctuation">)</span>
 				<span class="token keyword">break</span>
-			<span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+			<span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
 				resp<span class="token punctuation">.</span>Allowed <span class="token operator">=</span> <span class="token boolean">true</span>
-				resp<span class="token punctuation">.</span>Result <span class="token operator">=</span> <span class="token operator">&amp;</span>metav1<span class="token punctuation">.</span>Status<span class="token punctuation">&#123;</span>
+				resp<span class="token punctuation">.</span>Result <span class="token operator">=</span> <span class="token operator">&amp;</span>metav1<span class="token punctuation">.</span>Status<span class="token punctuation">{</span>
 					Status<span class="token punctuation">:</span> <span class="token string">"Success"</span><span class="token punctuation">,</span>
 					Code<span class="token punctuation">:</span>   <span class="token function">int32</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>StatusOK<span class="token punctuation">)</span><span class="token punctuation">,</span>
-				<span class="token punctuation">&#125;</span>
-			<span class="token punctuation">&#125;</span>
-		<span class="token punctuation">&#125;</span>
+				<span class="token punctuation">}</span>
+			<span class="token punctuation">}</span>
+		<span class="token punctuation">}</span>
 
 		admReview<span class="token punctuation">.</span>Response <span class="token operator">=</span> <span class="token operator">&amp;</span>resp
 		<span class="token comment">// back into JSON so we can return the finished AdmissionReview w/ Response directly</span>
 		<span class="token comment">// w/o needing to convert things in the http handler</span>
 		responseBody<span class="token punctuation">,</span> err <span class="token operator">=</span> json<span class="token punctuation">.</span><span class="token function">Marshal</span><span class="token punctuation">(</span>admReview<span class="token punctuation">)</span>
-		<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+		<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
 			<span class="token keyword">return</span> <span class="token boolean">nil</span><span class="token punctuation">,</span> err <span class="token comment">// untested section</span>
-		<span class="token punctuation">&#125;</span>
-	<span class="token punctuation">&#125;</span>
+		<span class="token punctuation">}</span>
+	<span class="token punctuation">}</span>
 	<span class="token keyword">return</span> responseBody<span class="token punctuation">,</span> <span class="token boolean">nil</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="部署webhook-2">部署webhook</h3>
 <p>略</p>
 <h3 id="注册Validate-Webhook到集群">注册Validate Webhook到集群</h3>
@@ -998,8 +1000,8 @@ Events:
   Type     Reason        Age                From                   Message
   ----     ------        ----               ----                   -------
   Warning  FailedCreate  2s <span class="token punctuation">(</span>x14 over 43s<span class="token punctuation">)</span>  replicaset-controller  Error creating: admission webhook <span class="token string">"image-webhook-server.kube-system.svc"</span> denied the request: Image<span class="token punctuation">[</span>nginx:1.21.4<span class="token punctuation">]</span> <span class="token function">which</span> has <span class="token string">'nginx'</span> str is not allowed<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<blockquote><p>本例完整代码参见：<a target="_blank" rel="noopener" href="https://gitee.com/hongyuxuan2138/image-webhook-server">https://gitee.com/hongyuxuan2138/image-webhook-server</a></p>
-</blockquote>
+<div class="note success no-icon"><p>本例完整代码参见：<a target="_blank" rel="noopener" href="https://gitee.com/hongyuxuan2138/image-webhook-server">https://gitee.com/hongyuxuan2138/image-webhook-server</a></p>
+</div>
                 
             </div>
             <hr/>
@@ -1105,7 +1107,7 @@ Events:
                         <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
                     </ul>
                     <div id="alipay">
-                        <img src="/blog/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                        <img src="/blog/medias/reward/alipay.png" class="reward-img" alt="支付宝打赏二维码">
                     </div>
                     <div id="wechat">
                         <img src="/blog/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
@@ -1133,6 +1135,273 @@ Events:
     
 
     
+
+    
+        <style>
+    .valine-card {
+        margin: 1.5rem auto;
+    }
+
+    .valine-card .card-content {
+        padding: 20px 20px 5px 20px;
+    }
+
+    #vcomments textarea {
+        box-sizing: border-box;
+        background: url("/blog/medias/comment_bg.png") 100% 100% no-repeat;
+    }
+
+    #vcomments p {
+        margin: 2px 2px 10px;
+        font-size: 1.05rem;
+        line-height: 1.78rem;
+    }
+
+    #vcomments blockquote p {
+        text-indent: 0.2rem;
+    }
+
+    #vcomments a {
+        padding: 0 2px;
+        color: #4cbf30;
+        font-weight: 500;
+        text-decoration: none;
+    }
+
+    #vcomments img {
+        max-width: 100%;
+        height: auto;
+        cursor: pointer;
+    }
+
+    #vcomments ol li {
+        list-style-type: decimal;
+    }
+
+    #vcomments ol,
+    ul {
+        display: block;
+        padding-left: 2em;
+        word-spacing: 0.05rem;
+    }
+
+    #vcomments ul li,
+    ol li {
+        display: list-item;
+        line-height: 1.8rem;
+        font-size: 1rem;
+    }
+
+    #vcomments ul li {
+        list-style-type: disc;
+    }
+
+    #vcomments ul ul li {
+        list-style-type: circle;
+    }
+
+    #vcomments table, th, td {
+        padding: 12px 13px;
+        border: 1px solid #dfe2e5;
+    }
+
+    #vcomments table, th, td {
+        border: 0;
+    }
+
+    table tr:nth-child(2n), thead {
+        background-color: #fafafa;
+    }
+
+    #vcomments table th {
+        background-color: #f2f2f2;
+        min-width: 80px;
+    }
+
+    #vcomments table td {
+        min-width: 80px;
+    }
+
+    #vcomments h1 {
+        font-size: 1.85rem;
+        font-weight: bold;
+        line-height: 2.2rem;
+    }
+
+    #vcomments h2 {
+        font-size: 1.65rem;
+        font-weight: bold;
+        line-height: 1.9rem;
+    }
+
+    #vcomments h3 {
+        font-size: 1.45rem;
+        font-weight: bold;
+        line-height: 1.7rem;
+    }
+
+    #vcomments h4 {
+        font-size: 1.25rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    #vcomments h5 {
+        font-size: 1.1rem;
+        font-weight: bold;
+        line-height: 1.4rem;
+    }
+
+    #vcomments h6 {
+        font-size: 1rem;
+        line-height: 1.3rem;
+    }
+
+    #vcomments p {
+        font-size: 1rem;
+        line-height: 1.5rem;
+    }
+
+    #vcomments hr {
+        margin: 12px 0;
+        border: 0;
+        border-top: 1px solid #ccc;
+    }
+
+    #vcomments blockquote {
+        margin: 15px 0;
+        border-left: 5px solid #42b983;
+        padding: 1rem 0.8rem 0.3rem 0.8rem;
+        color: #666;
+        background-color: rgba(66, 185, 131, .1);
+    }
+
+    #vcomments pre {
+        font-family: monospace, monospace;
+        padding: 1.2em;
+        margin: .5em 0;
+        background: #272822;
+        overflow: auto;
+        border-radius: 0.3em;
+        tab-size: 4;
+    }
+
+    #vcomments code {
+        font-family: monospace, monospace;
+        padding: 1px 3px;
+        font-size: 0.92rem;
+        color: #e96900;
+        background-color: #f8f8f8;
+        border-radius: 2px;
+    }
+
+    #vcomments pre code {
+        font-family: monospace, monospace;
+        padding: 0;
+        color: #e8eaf6;
+        background-color: #272822;
+    }
+
+    #vcomments pre[class*="language-"] {
+        padding: 1.2em;
+        margin: .5em 0;
+    }
+
+    #vcomments code[class*="language-"],
+    pre[class*="language-"] {
+        color: #e8eaf6;
+    }
+
+    #vcomments [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+        position: inherit;
+        margin-left: -1.3rem;
+        margin-right: 0.4rem;
+        margin-top: -1px;
+        vertical-align: middle;
+        left: unset;
+        visibility: visible;
+    }
+
+    #vcomments b,
+    strong {
+        font-weight: bold;
+    }
+
+    #vcomments dfn {
+        font-style: italic;
+    }
+
+    #vcomments small {
+        font-size: 85%;
+    }
+
+    #vcomments cite {
+        font-style: normal;
+    }
+
+    #vcomments mark {
+        background-color: #fcf8e3;
+        padding: .2em;
+    }
+
+    #vcomments table, th, td {
+        padding: 12px 13px;
+        border: 1px solid #dfe2e5;
+    }
+
+    table tr:nth-child(2n), thead {
+        background-color: #fafafa;
+    }
+
+    #vcomments table th {
+        background-color: #f2f2f2;
+        min-width: 80px;
+    }
+
+    #vcomments table td {
+        min-width: 80px;
+    }
+
+    #vcomments [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+        position: inherit;
+        margin-left: -1.3rem;
+        margin-right: 0.4rem;
+        margin-top: -1px;
+        vertical-align: middle;
+        left: unset;
+        visibility: visible;
+    }
+</style>
+
+<div class="card valine-card" data-aos="fade-up">
+    <div class="comment_headling" style="font-size: 20px; font-weight: 700; position: relative; padding-left: 20px; top: 15px; padding-bottom: 5px;">
+        <i class="fas fa-comments fa-fw" aria-hidden="true"></i>
+        <span>评论</span>
+    </div>
+    <div id="vcomments" class="card-content" style="display: grid">
+    </div>
+</div>
+
+<script src="/blog/libs/valine/av-min.js"></script>
+<script src="https://unpkg.com/valine/dist/Valine.min.js"></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        appId: 'lrUDzoXHA8J9LL4P55q2Vt2N-gzGzoHsz',
+        appKey: '6ClQluKY0m4zPsu6ghTkaMPp',
+        serverURLs: 'https://lrudzoxh.lc-cn-n1-shared.com',
+        notify: 'true' === 'true',
+        verify: 'false' === 'true',
+        visitor: 'true' === 'true',
+        avatar: 'mm',
+        pageSize: '10',
+        lang: 'zh-cn',
+        placeholder: 'just go go'
+    });
+</script>
+
+<!--酷Q推送-->
+
 
     
 
@@ -1211,36 +1480,28 @@ Events:
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/blog/posts/2712021489/">
+                <a href="/blog/posts/5595753519/">
                     <div class="card-image">
                         
-                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fmetallb%2Fmetallb_banner.jpeg" class="responsive-img" alt="K8S系列文章之四：使用MetalLB提供LoadBalancer">
+                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Ftravel%2Fshanhaiguan%2Fmmexport1692273332202(1).jpg" class="responsive-img" alt="山海关追忆童年">
                         
-                        <span class="card-title">K8S系列文章之四：使用MetalLB提供LoadBalancer</span>
+                        <span class="card-title">山海关追忆童年</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            LoadBalancer是K8S提供的四层网络访问方式，一般云厂商都会提供。但如果是我们自己安装的K8S则没有LoadBalancer。MetalLB是一个开源的LoadBalancer产品。
+                            
                         
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2023-11-30
+                                <i class="far fa-clock fa-fw icon-date"></i>2023-11-29
                             </span>
                         <span class="publish-author">
                             
-                            <i class="fas fa-bookmark fa-fw icon-category"></i>
-                            
-                            <a href="/blog/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/" class="post-category">
-                                    云原生
-                                </a>
-                            
-                            <a href="/blog/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/kubernetes/" class="post-category">
-                                    kubernetes
-                                </a>
-                            
+                            <i class="fas fa-user fa-fw"></i>
+                            洪宇轩
                             
                         </span>
                     </div>
@@ -1248,12 +1509,12 @@ Events:
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/blog/tags/cloud-native/">
-                        <span class="chip bg-color">cloud native</span>
+                    <a href="/blog/tags/%E6%97%85%E6%B8%B8/">
+                        <span class="chip bg-color">旅游</span>
                     </a>
                     
-                    <a href="/blog/tags/kubernetes/">
-                        <span class="chip bg-color">kubernetes</span>
+                    <a href="/blog/tags/%E5%A4%A7%E4%BA%8C%E7%8F%AD%E6%AF%95%E4%B8%9A%E5%AD%A3/">
+                        <span class="chip bg-color">大二班毕业季</span>
                     </a>
                     
                 </div>
@@ -1451,7 +1712,7 @@ Events:
             <br>
             
                 &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                        class="white-color">45.5k</span>
+                        class="white-color">51.9k</span>
             
             
             

@@ -4,8 +4,8 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="K8S系列文章之四：使用MetalLB提供LoadBalancer, 洪宇轩的博客">
-    <meta name="description" content="LoadBalancer是K8S提供的四层网络访问方式，一般云厂商都会提供。但如果是我们自己安装的K8S则没有LoadBalancer。MetalLB是一个开源的LoadBalancer产品。">
+    <meta name="keywords" content="K8S网络系列之二：Ingress介绍和使用, 洪宇轩的博客">
+    <meta name="description" content="本文介绍Ingress的原理、实现方案、配置方法和用法。">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -17,7 +17,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>K8S系列文章之四：使用MetalLB提供LoadBalancer | 洪宇轩的博客</title>
+    <title>K8S网络系列之二：Ingress介绍和使用 | 洪宇轩的博客</title>
     <link rel="icon" type="image/png" href="/blog/favicon.png">
     
 
@@ -52,7 +52,9 @@
 
     <script src="/blog/libs/jquery/jquery-3.6.0.min.js"></script>
 
-<meta name="generator" content="Hexo 6.3.0"></head>
+<meta name="generator" content="Hexo 6.3.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
 
 
 <body>
@@ -334,12 +336,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fmetallb%2Fmetallb_banner.jpeg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fnetwork%2Fingress%2Fingress(1).png')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">K8S系列文章之四：使用MetalLB提供LoadBalancer</h1>
+                    <h1 class="description center-align post-title">K8S网络系列之二：Ingress介绍和使用</h1>
                 </div>
             </div>
         </div>
@@ -387,6 +389,10 @@
                                 kubernetes
                             </a>
                         
+                            <a href="/blog/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/kubernetes/kubernetes-network/" class="post-category">
+                                kubernetes network
+                            </a>
+                        
                     </div>
                     
                 </div>
@@ -396,7 +402,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2023-11-30
+                    2024-01-26
                 </div>
                 
 
@@ -405,14 +411,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    366
+                    839
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    1 分
+                    3 分
                 </div>
                 
 
@@ -435,52 +441,145 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <blockquote><p>LoadBalancer是K8S提供的四层网络访问方式，一般云厂商都会提供。但如果是我们自己安装的K8S则没有LoadBalancer。MetalLB是一个开源的LoadBalancer产品，非常适合在自己搭的K8S集群上提供四层网络服务。</p>
-</blockquote>
-<blockquote><p>MetalLB官网：<a target="_blank" rel="noopener" href="https://metallb.universe.tf/installation/">https://metallb.universe.tf/installation/</a></p>
-</blockquote>
-<h2 id="准备工作">准备工作</h2>
-<ol>
-<li>修改kube-proxy的配置文件将ipvs的<code>strictARP</code>参数改为<code>true</code></li>
-</ol>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl edit configmap <span class="token parameter variable">-n</span> kube-system kube-proxy<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> kubeproxy.config.k8s.io/v1alpha1
-<span class="token key atrule">kind</span><span class="token punctuation">:</span> KubeProxyConfiguration
-<span class="token key atrule">mode</span><span class="token punctuation">:</span> <span class="token string">"ipvs"</span>
-<span class="token key atrule">ipvs</span><span class="token punctuation">:</span>
-  <span class="token key atrule">strictARP</span><span class="token punctuation">:</span> <span class="token boolean important">true</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h2 id="安装MetalLB">安装MetalLB</h2>
-<p>准备yaml文件：<a target="_blank" rel="noopener" href="https://blog-1255547500.cos.ap-beijing.myqcloud.com/resources%2Fmanifests%2Fmetallb.yaml">metallb.yaml</a></p>
-<h3 id="执行命令安装">执行命令安装</h3>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl apply <span class="token parameter variable">-f</span> metallb.yaml<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<p>以上操作将MetalLB安装到<code>metalb-system</code>命名空间，包括以下组件：</p>
-<ul>
-<li>metallb-system/controller deployment：这是一个集群范围内的controller，用于分配IP地址</li>
-<li>metallb-system/speaker daemonset：This is the component that speaks the protocol(s) of your choice to make the services reachable.</li>
-<li>service accounts for the controller and speaker, along with the RBAC permissions that the components need to function.</li>
-</ul>
-<p>以上yaml并不包括需要设置LoadBalancer的配置文件，MetalLB将会一直处于空闲状态直到我们开始部署一个资源。</p>
-<p>以上命令会安装如下CRD资源：<code>IPAddressPool</code>, <code>L2Advertisement</code>等。</p>
-<h3 id="配置IP地址池">配置IP地址池</h3>
-<pre class="line-numbers language-yaml" data-language="yaml"><div class="caption"><span>ipaddresspool.yaml</span></div><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> metallb.io/v1beta1
-<span class="token key atrule">kind</span><span class="token punctuation">:</span> IPAddressPool
-<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
-  <span class="token key atrule">name</span><span class="token punctuation">:</span> metallb<span class="token punctuation">-</span>pool
-  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> metallb<span class="token punctuation">-</span>system
-<span class="token key atrule">spec</span><span class="token punctuation">:</span>
-  <span class="token key atrule">addresses</span><span class="token punctuation">:</span>
-  <span class="token punctuation">-</span> 192.168.126.200<span class="token punctuation">-</span>192.168.126.210<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h3 id="公告服务IP">公告服务IP</h3>
-<pre class="line-numbers language-yaml" data-language="yaml"><div class="caption"><span>l2advertisement.yaml</span></div><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> metallb.io/v1beta1
-<span class="token key atrule">kind</span><span class="token punctuation">:</span> L2Advertisement
-<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
-  <span class="token key atrule">name</span><span class="token punctuation">:</span> metallb<span class="token punctuation">-</span>advertisement
-  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> metallb<span class="token punctuation">-</span>system
-<span class="token key atrule">spec</span><span class="token punctuation">:</span>
-  <span class="token key atrule">ipAddressPools</span><span class="token punctuation">:</span>
-  <span class="token punctuation">-</span> metallb<span class="token punctuation">-</span>pool<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h2 id="使用">使用</h2>
-<p>编辑任意一个svc，将其type改为<code>LoadBalancer</code>，可以看到<code>EXTERNAL-IP</code>自动从我们配置的IP地址池中按顺序分配了一个可用IP。</p>
+                <h2 id="介绍">介绍</h2>
+<p>Ingress类似一个7层HTTP服务器，通过配置域名、location路径等将访问到ingress的请求反向代理到service，再由service路由到pod。<br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fnetwork%2Fingress%2Fingress-arch.png" alt=""></p>
+<p>Ingress需要对应的Controller去实现，实现Ingress Controller的方案和开源项目有很多，最常见的就是Nginx Ingress Controller。除此之外还有Kong、APISIX、HAProxy等。<br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fnetwork%2Fingress%2Fingress-controller.png" alt=""></p>
+<p>下表是各类Ingress Controller的对比：</p>
+<table>
+<thead>
+<tr>
+<th>对比项</th>
+<th>APISIX Ingress</th>
+<th>Nginx Ingress</th>
+<th>Kong Ingress</th>
+<th>Traefix</th>
+<th>HAProxy</th>
+<th>Istio Ingress</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>协议</td>
+<td>http/https,http2,grpc,tcp/udp,tcp+tls,Dubbo</td>
+<td>http/https,http2,grpc,tcp/udp</td>
+<td>http/https,http2,grpc</td>
+<td>http/https,http2,grpc,tcp,tcp+tls</td>
+<td>http/https,http2,grpc,tcp,tcp+tls</td>
+<td>http/https,http2,grpc,tcp,tcp+tls,mongo,mysql,redis</td>
+</tr>
+<tr>
+<td>基础平台</td>
+<td>Openresty/tengine</td>
+<td>Nginx</td>
+<td>openresty</td>
+<td>Traefik</td>
+<td>Haproxy</td>
+<td>Envoy</td>
+</tr>
+<tr>
+<td>路由匹配</td>
+<td>path,method,host,header,nginx变量,args变量,自定义函数</td>
+<td>host,path</td>
+<td>path,method,host,header</td>
+<td>path,method,host,header,query,path prefix</td>
+<td>host,path</td>
+<td>path,method,host,header</td>
+</tr>
+<tr>
+<td>命名空间支持</td>
+<td>-</td>
+<td>-</td>
+<td>指定命名空间</td>
+<td>公用或指定命名空间</td>
+<td>公用或指定命名空间</td>
+<td>公用或指定命名空间</td>
+</tr>
+<tr>
+<td>部署策略</td>
+<td>ab部署、灰度发布、金丝雀发布</td>
+<td>-</td>
+<td>金丝雀部署、蓝绿部署</td>
+<td>金丝雀部署、蓝绿部署、灰度发布</td>
+<td>蓝绿部署、灰度发布</td>
+<td>金丝雀部署、蓝绿部署、灰度发布</td>
+</tr>
+<tr>
+<td>upstream探测</td>
+<td>重试、超时、心跳、熔断</td>
+<td>重试、超时、心跳</td>
+<td>心跳、熔断</td>
+<td>重试、超时、心跳、熔断</td>
+<td>探测url、ip、port</td>
+<td>重试、超时、心跳、熔断</td>
+</tr>
+<tr>
+<td>负载均衡算法</td>
+<td>一致性hash、WRR</td>
+<td>RR、会话保持、最小连接、最短时间、一致性hash</td>
+<td>WRR、会话保持</td>
+<td>WRR、动态RR、会话保持</td>
+<td>RR、static-RR、最小连接、源IP、url、header、会话保持</td>
+<td>RR、会话保持、一致性hash、maglev负载均衡</td>
+</tr>
+</tbody>
+</table>
+<h2 id="配置说明">配置说明</h2>
+<h3 id="ingress-spec字段说明">ingress.spec字段说明</h3>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>defaultBackend</td>
+<td>&lt;Object&gt;</td>
+<td>当请求不匹配任何rules时，使用的默认流量处理后端。如果没有rules，则必须指定defaultBackend。如果没有设置defaultBackend，那么对不匹配任何规则的请求的处理将取决于Ingress Controller</td>
+</tr>
+<tr>
+<td>ingressClassName</td>
+<td>&lt;string&gt;</td>
+<td>指定ingressClass资源的名字。用于替代退役的annotation ‘<a target="_blank" rel="noopener" href="http://kubernetes.io/ingress.class">kubernetes.io/ingress.class</a>’。当同时设置时并出现冲突时，annotation优先级高于ingressClassName，并发出警告。<br>xxClassName广泛应用于k8s的各类资源，表示指定对该类资源的一个实现，通常都需要一个安装一个Controller</td>
+</tr>
+<tr>
+<td>rules</td>
+<td>&lt;[]Object&gt;</td>
+<td>用于配置Ingress Controller的主机规则列表。如果未指定或者没有匹配的规则，所有流量都被发送到defaultBackend</td>
+</tr>
+<tr>
+<td>tls</td>
+<td>&lt;[]Object&gt;</td>
+<td>TLS配置。Ingress目前只支持一个TLS端口443.如果列表中的多个成员指定了不同的主机，那么根据SNI TLS扩展指定的主机名，它们将在同一个端口上多路复用，如果实现Ingress的控制器支持SNI。<br>备注：SNI(Server Name Indication) 是TLS的扩展，用来解决一个服务器拥有多个域名的情况</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ingress-spec-rules说明">ingress.spec.rules说明</h3>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>host</td>
+<td>&lt;string&gt;</td>
+<td>访问主机的FQDN。1.不允许使用IP地址。2.不允许使用":“指定端口，端口隐式的表示为80-http、443-https。<a target="_blank" rel="noopener" href="http://3.xn--foo-g88dj4ao0au0jmqf3h021czx0bu68aivu.bar.com">3.可以精准使用主机名如foo.bar.com</a>，也可以”<em>"作为前缀如</em>.foo.com，但不能独立使用"*"作为主机名</td>
+</tr>
+<tr>
+<td>http</td>
+<td>&lt;Object&gt;</td>
+<td>指向后端的http选择器列表<br> paths: &lt;[]Object&gt; - required - 将请求映射到后端的路径集合</td>
+</tr>
+</tbody>
+</table>
 
                 
             </div>
@@ -507,7 +606,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://hongyuxuan2138.gitee.io/blog/blog/posts/2712021489/">https://hongyuxuan2138.gitee.io/blog/blog/posts/2712021489/</a>
+                    <a href="https://hongyuxuan2138.gitee.io/blog/blog/posts/55739/">https://hongyuxuan2138.gitee.io/blog/blog/posts/55739/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -587,7 +686,7 @@
                         <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
                     </ul>
                     <div id="alipay">
-                        <img src="/blog/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                        <img src="/blog/medias/reward/alipay.png" class="reward-img" alt="支付宝打赏二维码">
                     </div>
                     <div id="wechat">
                         <img src="/blog/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
@@ -617,6 +716,273 @@
     
 
     
+        <style>
+    .valine-card {
+        margin: 1.5rem auto;
+    }
+
+    .valine-card .card-content {
+        padding: 20px 20px 5px 20px;
+    }
+
+    #vcomments textarea {
+        box-sizing: border-box;
+        background: url("/blog/medias/comment_bg.png") 100% 100% no-repeat;
+    }
+
+    #vcomments p {
+        margin: 2px 2px 10px;
+        font-size: 1.05rem;
+        line-height: 1.78rem;
+    }
+
+    #vcomments blockquote p {
+        text-indent: 0.2rem;
+    }
+
+    #vcomments a {
+        padding: 0 2px;
+        color: #4cbf30;
+        font-weight: 500;
+        text-decoration: none;
+    }
+
+    #vcomments img {
+        max-width: 100%;
+        height: auto;
+        cursor: pointer;
+    }
+
+    #vcomments ol li {
+        list-style-type: decimal;
+    }
+
+    #vcomments ol,
+    ul {
+        display: block;
+        padding-left: 2em;
+        word-spacing: 0.05rem;
+    }
+
+    #vcomments ul li,
+    ol li {
+        display: list-item;
+        line-height: 1.8rem;
+        font-size: 1rem;
+    }
+
+    #vcomments ul li {
+        list-style-type: disc;
+    }
+
+    #vcomments ul ul li {
+        list-style-type: circle;
+    }
+
+    #vcomments table, th, td {
+        padding: 12px 13px;
+        border: 1px solid #dfe2e5;
+    }
+
+    #vcomments table, th, td {
+        border: 0;
+    }
+
+    table tr:nth-child(2n), thead {
+        background-color: #fafafa;
+    }
+
+    #vcomments table th {
+        background-color: #f2f2f2;
+        min-width: 80px;
+    }
+
+    #vcomments table td {
+        min-width: 80px;
+    }
+
+    #vcomments h1 {
+        font-size: 1.85rem;
+        font-weight: bold;
+        line-height: 2.2rem;
+    }
+
+    #vcomments h2 {
+        font-size: 1.65rem;
+        font-weight: bold;
+        line-height: 1.9rem;
+    }
+
+    #vcomments h3 {
+        font-size: 1.45rem;
+        font-weight: bold;
+        line-height: 1.7rem;
+    }
+
+    #vcomments h4 {
+        font-size: 1.25rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    #vcomments h5 {
+        font-size: 1.1rem;
+        font-weight: bold;
+        line-height: 1.4rem;
+    }
+
+    #vcomments h6 {
+        font-size: 1rem;
+        line-height: 1.3rem;
+    }
+
+    #vcomments p {
+        font-size: 1rem;
+        line-height: 1.5rem;
+    }
+
+    #vcomments hr {
+        margin: 12px 0;
+        border: 0;
+        border-top: 1px solid #ccc;
+    }
+
+    #vcomments blockquote {
+        margin: 15px 0;
+        border-left: 5px solid #42b983;
+        padding: 1rem 0.8rem 0.3rem 0.8rem;
+        color: #666;
+        background-color: rgba(66, 185, 131, .1);
+    }
+
+    #vcomments pre {
+        font-family: monospace, monospace;
+        padding: 1.2em;
+        margin: .5em 0;
+        background: #272822;
+        overflow: auto;
+        border-radius: 0.3em;
+        tab-size: 4;
+    }
+
+    #vcomments code {
+        font-family: monospace, monospace;
+        padding: 1px 3px;
+        font-size: 0.92rem;
+        color: #e96900;
+        background-color: #f8f8f8;
+        border-radius: 2px;
+    }
+
+    #vcomments pre code {
+        font-family: monospace, monospace;
+        padding: 0;
+        color: #e8eaf6;
+        background-color: #272822;
+    }
+
+    #vcomments pre[class*="language-"] {
+        padding: 1.2em;
+        margin: .5em 0;
+    }
+
+    #vcomments code[class*="language-"],
+    pre[class*="language-"] {
+        color: #e8eaf6;
+    }
+
+    #vcomments [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+        position: inherit;
+        margin-left: -1.3rem;
+        margin-right: 0.4rem;
+        margin-top: -1px;
+        vertical-align: middle;
+        left: unset;
+        visibility: visible;
+    }
+
+    #vcomments b,
+    strong {
+        font-weight: bold;
+    }
+
+    #vcomments dfn {
+        font-style: italic;
+    }
+
+    #vcomments small {
+        font-size: 85%;
+    }
+
+    #vcomments cite {
+        font-style: normal;
+    }
+
+    #vcomments mark {
+        background-color: #fcf8e3;
+        padding: .2em;
+    }
+
+    #vcomments table, th, td {
+        padding: 12px 13px;
+        border: 1px solid #dfe2e5;
+    }
+
+    table tr:nth-child(2n), thead {
+        background-color: #fafafa;
+    }
+
+    #vcomments table th {
+        background-color: #f2f2f2;
+        min-width: 80px;
+    }
+
+    #vcomments table td {
+        min-width: 80px;
+    }
+
+    #vcomments [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+        position: inherit;
+        margin-left: -1.3rem;
+        margin-right: 0.4rem;
+        margin-top: -1px;
+        vertical-align: middle;
+        left: unset;
+        visibility: visible;
+    }
+</style>
+
+<div class="card valine-card" data-aos="fade-up">
+    <div class="comment_headling" style="font-size: 20px; font-weight: 700; position: relative; padding-left: 20px; top: 15px; padding-bottom: 5px;">
+        <i class="fas fa-comments fa-fw" aria-hidden="true"></i>
+        <span>评论</span>
+    </div>
+    <div id="vcomments" class="card-content" style="display: grid">
+    </div>
+</div>
+
+<script src="/blog/libs/valine/av-min.js"></script>
+<script src="https://unpkg.com/valine/dist/Valine.min.js"></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        appId: 'lrUDzoXHA8J9LL4P55q2Vt2N-gzGzoHsz',
+        appKey: '6ClQluKY0m4zPsu6ghTkaMPp',
+        serverURLs: 'https://lrudzoxh.lc-cn-n1-shared.com',
+        notify: 'true' === 'true',
+        verify: 'false' === 'true',
+        visitor: 'true' === 'true',
+        avatar: 'mm',
+        pageSize: '10',
+        lang: 'zh-cn',
+        placeholder: 'just go go'
+    });
+</script>
+
+<!--酷Q推送-->
+
+
+    
 
     
 
@@ -633,23 +999,23 @@
             <div class="article-badge left-badge text-color">
                 <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/blog/posts/1902483454/">
+                <a href="/blog/posts/25942/">
                     <div class="card-image">
                         
-                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fcustom%2Fadmission_banner.jpeg" class="responsive-img" alt="K8S二次开发系列之三：自定义开发Admission Webhook">
+                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fnetwork%2Fgateway%2Fgateway.png" class="responsive-img" alt="K8S网络系列之三：流量新贵GatewayAPI">
                         
-                        <span class="card-title">K8S二次开发系列之三：自定义开发Admission Webhook</span>
+                        <span class="card-title">K8S网络系列之三：流量新贵GatewayAPI</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            本文教你如何自定义开发自己的admission webook，包括验证型准入控制器（validating admission webhook）和变更型准入控制器（mutating admission webhook）。
+                            本文介绍一种新的K8S流量管控资源类型——GatewayAPI，未来将替代Ingrses。
                         
                     </div>
                     <div class="publish-info">
                         <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2023-12-07
+                            <i class="far fa-clock fa-fw icon-date"></i>2024-01-26
                         </span>
                         <span class="publish-author">
                             
@@ -663,8 +1029,8 @@
                                     kubernetes
                                 </a>
                             
-                            <a href="/blog/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/kubernetes/K8S%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97/" class="post-category">
-                                    K8S二次开发系列
+                            <a href="/blog/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/kubernetes/kubernetes-network/" class="post-category">
+                                    kubernetes network
                                 </a>
                             
                             
@@ -693,28 +1059,40 @@
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/blog/posts/5595753519/">
+                <a href="/blog/posts/40075/">
                     <div class="card-image">
                         
-                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Ftravel%2Fshanhaiguan%2Fmmexport1692273332202(1).jpg" class="responsive-img" alt="山海关追忆童年">
+                        <img src="https://www.fujisoft.kr/blog/wp-content/uploads/2020/12/201216_0-1.jpg" class="responsive-img" alt="K8S网络系列之一：Service的基本原理和工作模式">
                         
-                        <span class="card-title">山海关追忆童年</span>
+                        <span class="card-title">K8S网络系列之一：Service的基本原理和工作模式</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            
+                            本文介绍kube-proxy原理和service的4种类型。
                         
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2023-11-29
+                                <i class="far fa-clock fa-fw icon-date"></i>2024-01-26
                             </span>
                         <span class="publish-author">
                             
-                            <i class="fas fa-user fa-fw"></i>
-                            洪宇轩
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/blog/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/" class="post-category">
+                                    云原生
+                                </a>
+                            
+                            <a href="/blog/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/kubernetes/" class="post-category">
+                                    kubernetes
+                                </a>
+                            
+                            <a href="/blog/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/kubernetes/kubernetes-network/" class="post-category">
+                                    kubernetes network
+                                </a>
+                            
                             
                         </span>
                     </div>
@@ -722,12 +1100,12 @@
                 
                 <div class="card-action article-tags">
                     
-                    <a href="/blog/tags/%E6%97%85%E6%B8%B8/">
-                        <span class="chip bg-color">旅游</span>
+                    <a href="/blog/tags/cloud-native/">
+                        <span class="chip bg-color">cloud native</span>
                     </a>
                     
-                    <a href="/blog/tags/%E5%A4%A7%E4%BA%8C%E7%8F%AD%E6%AF%95%E4%B8%9A%E5%AD%A3/">
-                        <span class="chip bg-color">大二班毕业季</span>
+                    <a href="/blog/tags/kubernetes/">
+                        <span class="chip bg-color">kubernetes</span>
                     </a>
                     
                 </div>
@@ -925,7 +1303,7 @@
             <br>
             
                 &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                        class="white-color">45.5k</span>
+                        class="white-color">51.9k</span>
             
             
             

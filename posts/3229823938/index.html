@@ -52,7 +52,9 @@
 
     <script src="/blog/libs/jquery/jquery-3.6.0.min.js"></script>
 
-<meta name="generator" content="Hexo 6.3.0"></head>
+<meta name="generator" content="Hexo 6.3.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
 
 
 <body>
@@ -405,7 +407,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    459
+                    491
                 </div>
                 
 
@@ -435,41 +437,106 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <blockquote><p>目前istio已经弃用了Helm方式安装，改为使用istioctl进行安装</p>
-</blockquote>
+                <div class="note info no-icon"><p>目前istio已经弃用了Helm方式安装，改为使用istioctl进行安装</p>
+</div>
 <h2 id="准备k8s集群">准备k8s集群</h2>
-<p>本文使用kubesphere提供的kubekey工具部署了一个简易的k8s集群（1master+2node），具体步骤详见官方说明：</p>
-<p><a target="_blank" rel="noopener" href="https://kubesphere.io/zh/docs/installing-on-linux/introduction/multioverview/">https://kubesphere.io/zh/docs/installing-on-linux/introduction/multioverview/</a></p>
-<p>本文部署的k8s版本是v1.21.5</p>
+<p>本文使用sealos工具部署了发文时最新的k8s集群（1master+3node），具体步骤详见官方说明：</p>
+<p><a target="_blank" rel="noopener" href="https://sealos.run/docs/self-hosting/lifecycle-management/quick-start/deploy-kubernetes">https://sealos.run/docs/self-hosting/lifecycle-management/quick-start/deploy-kubernetes</a></p>
+<p>本文部署的k8s版本是v1.29.1</p>
 <h2 id="下载istio介质">下载istio介质</h2>
 <p>前往github官网下载：<a target="_blank" rel="noopener" href="https://github.com/istio/istio/releases">https://github.com/istio/istio/releases</a></p>
-<p>本文使用的版本是 Istio 1.12.1</p>
+<p>本文使用的版本是 Istio 1.17.0</p>
 <h2 id="安装istio">安装istio</h2>
 <ol>
 <li>解压安装包到/opt</li>
 </ol>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">tar</span> zxvf istio-1.12.1-linux-amd64.tar.gz <span class="token parameter variable">-C</span> /opt/<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-<ol start="2">
-<li>创建istioctl软链</li>
-</ol>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">ln</span> <span class="token parameter variable">-s</span> /opt/istio-1.12.1/bin/istioctl /usr/bin<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">tar</span> zxf istioctl-1.17.0-linux-amd64.tar.gz
+<span class="token function">cp</span> istio-1.17.0/bin/istioctl /usr/bin/<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <ol start="3">
 <li>安装istio</li>
 </ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">istioctl <span class="token function">install</span> <span class="token parameter variable">--set</span> <span class="token assign-left variable">profile</span><span class="token operator">=</span>demo <span class="token parameter variable">-y</span>
-✔ Istio core installed                                                                                                 
-✔ Istiod installed                                                                                                     
-✔ Egress gateways installed                                                                                            
-✔ Ingress gateways installed                                                                                           
-✔ Installation complete                                                                                                Thank you <span class="token keyword">for</span> installing Istio <span class="token number">1.12</span>.1.  Please take a few minutes to tell us about your install/upgrade experience<span class="token operator">!</span>  https://forms.gle/KjkrDnMPByq7akrYA<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+This will <span class="token function">install</span> the Istio <span class="token number">1.17</span>.0 <span class="token string">"demo"</span> profile <span class="token punctuation">(</span>with components: Istio core, Istiod, Ingress gateways, and Egress gateways<span class="token punctuation">)</span> into the cluster. Proceed? <span class="token punctuation">(</span>y/N<span class="token punctuation">)</span> y
+✔ Istio core installed
+✔ Istiod installed
+✔ Ingress gateways installed
+✔ Egress gateways installed
+✔ Installation complete 
+Made this installation the default <span class="token keyword">for</span> injection and validation.<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>关于不同profile的说明如下：<br>
-<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmicroservice%2Fistio%2F1.png" alt=""></p>
+<a target="_blank" rel="noopener" href="https://istio.io/latest/zh/docs/setup/additional-setup/config-profiles/">https://istio.io/latest/zh/docs/setup/additional-setup/config-profiles/</a></p>
+<table>
+<thead>
+<tr>
+<th>核心组件</th>
+<th>default</th>
+<th>demo</th>
+<th>minimal</th>
+<th>remote</th>
+<th>empty</th>
+<th>preview</th>
+<th>ambient</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>istio-egressgateway</td>
+<td></td>
+<td>✔</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>istio-ingressgateway</td>
+<td>✔</td>
+<td>✔</td>
+<td></td>
+<td></td>
+<td></td>
+<td>✔</td>
+<td></td>
+</tr>
+<tr>
+<td>istiod</td>
+<td>✔</td>
+<td>✔</td>
+<td>✔</td>
+<td></td>
+<td></td>
+<td>✔</td>
+<td>✔</td>
+</tr>
+<tr>
+<td>CNI</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>✔</td>
+</tr>
+<tr>
+<td>Ztunnel</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>✔</td>
+</tr>
+</tbody>
+</table>
 <p>有时候安装istio会失败，主要报错为istio-egressgateway或者istio-ingressgateway的istio-proxy容器起不来，看日志报错为</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">istio-proxy warn sds failed to warm certificate: failed to generate workload
 ……
 Readiness probe failed: Get <span class="token string">"http://10.233.113.10:15021/healthz/ready"</span><span class="token builtin class-name">:</span> dial tcp <span class="token number">10.233</span>.113.10:15021: connect: connection refused
 ……
-lookup istiod.istio-system.svc on <span class="token number">10.96</span>.0.10:53: <span class="token builtin class-name">read</span> udp <span class="token number">10.244</span>.153.113:41187-<span class="token operator">></span><span class="token number">10.96</span>.0.10:53: i/o timeout"<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+lookup istiod.istio-system.svc on <span class="token number">10.96</span>.0.10:53: <span class="token builtin class-name">read</span> udp <span class="token number">10.244</span>.153.113:41187-<span class="token operator">&gt;</span><span class="token number">10.96</span>.0.10:53: i/o timeout"<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>猜测为宿主机的dns没配好，解决办法：</p>
 <ul>
 <li>k8s所有节点/etc/resolve.conf里配置正确的dns</li>
@@ -480,9 +547,9 @@ lookup istiod.istio-system.svc on <span class="token number">10.96</span>.0.10:5
 <li>装好以后验证istio的版本</li>
 </ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">istioctl version
-client version: <span class="token number">1.12</span>.1
-control plane version: <span class="token number">1.12</span>.1
-data plane version: <span class="token number">1.12</span>.1 <span class="token punctuation">(</span><span class="token number">7</span> proxies<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+client version: <span class="token number">1.17</span>.0
+control plane version: <span class="token number">1.17</span>.0
+data plane version: <span class="token number">1.17</span>.0 <span class="token punctuation">(</span><span class="token number">2</span> proxies<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <ol start="5">
 <li>验证istio各个pod状态</li>
 </ol>
@@ -598,7 +665,7 @@ istiod-76d66d9876-w4wpv                 <span class="token number">1</span>/1   
                         <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
                     </ul>
                     <div id="alipay">
-                        <img src="/blog/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                        <img src="/blog/medias/reward/alipay.png" class="reward-img" alt="支付宝打赏二维码">
                     </div>
                     <div id="wechat">
                         <img src="/blog/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
@@ -626,6 +693,273 @@ istiod-76d66d9876-w4wpv                 <span class="token number">1</span>/1   
     
 
     
+
+    
+        <style>
+    .valine-card {
+        margin: 1.5rem auto;
+    }
+
+    .valine-card .card-content {
+        padding: 20px 20px 5px 20px;
+    }
+
+    #vcomments textarea {
+        box-sizing: border-box;
+        background: url("/blog/medias/comment_bg.png") 100% 100% no-repeat;
+    }
+
+    #vcomments p {
+        margin: 2px 2px 10px;
+        font-size: 1.05rem;
+        line-height: 1.78rem;
+    }
+
+    #vcomments blockquote p {
+        text-indent: 0.2rem;
+    }
+
+    #vcomments a {
+        padding: 0 2px;
+        color: #4cbf30;
+        font-weight: 500;
+        text-decoration: none;
+    }
+
+    #vcomments img {
+        max-width: 100%;
+        height: auto;
+        cursor: pointer;
+    }
+
+    #vcomments ol li {
+        list-style-type: decimal;
+    }
+
+    #vcomments ol,
+    ul {
+        display: block;
+        padding-left: 2em;
+        word-spacing: 0.05rem;
+    }
+
+    #vcomments ul li,
+    ol li {
+        display: list-item;
+        line-height: 1.8rem;
+        font-size: 1rem;
+    }
+
+    #vcomments ul li {
+        list-style-type: disc;
+    }
+
+    #vcomments ul ul li {
+        list-style-type: circle;
+    }
+
+    #vcomments table, th, td {
+        padding: 12px 13px;
+        border: 1px solid #dfe2e5;
+    }
+
+    #vcomments table, th, td {
+        border: 0;
+    }
+
+    table tr:nth-child(2n), thead {
+        background-color: #fafafa;
+    }
+
+    #vcomments table th {
+        background-color: #f2f2f2;
+        min-width: 80px;
+    }
+
+    #vcomments table td {
+        min-width: 80px;
+    }
+
+    #vcomments h1 {
+        font-size: 1.85rem;
+        font-weight: bold;
+        line-height: 2.2rem;
+    }
+
+    #vcomments h2 {
+        font-size: 1.65rem;
+        font-weight: bold;
+        line-height: 1.9rem;
+    }
+
+    #vcomments h3 {
+        font-size: 1.45rem;
+        font-weight: bold;
+        line-height: 1.7rem;
+    }
+
+    #vcomments h4 {
+        font-size: 1.25rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    #vcomments h5 {
+        font-size: 1.1rem;
+        font-weight: bold;
+        line-height: 1.4rem;
+    }
+
+    #vcomments h6 {
+        font-size: 1rem;
+        line-height: 1.3rem;
+    }
+
+    #vcomments p {
+        font-size: 1rem;
+        line-height: 1.5rem;
+    }
+
+    #vcomments hr {
+        margin: 12px 0;
+        border: 0;
+        border-top: 1px solid #ccc;
+    }
+
+    #vcomments blockquote {
+        margin: 15px 0;
+        border-left: 5px solid #42b983;
+        padding: 1rem 0.8rem 0.3rem 0.8rem;
+        color: #666;
+        background-color: rgba(66, 185, 131, .1);
+    }
+
+    #vcomments pre {
+        font-family: monospace, monospace;
+        padding: 1.2em;
+        margin: .5em 0;
+        background: #272822;
+        overflow: auto;
+        border-radius: 0.3em;
+        tab-size: 4;
+    }
+
+    #vcomments code {
+        font-family: monospace, monospace;
+        padding: 1px 3px;
+        font-size: 0.92rem;
+        color: #e96900;
+        background-color: #f8f8f8;
+        border-radius: 2px;
+    }
+
+    #vcomments pre code {
+        font-family: monospace, monospace;
+        padding: 0;
+        color: #e8eaf6;
+        background-color: #272822;
+    }
+
+    #vcomments pre[class*="language-"] {
+        padding: 1.2em;
+        margin: .5em 0;
+    }
+
+    #vcomments code[class*="language-"],
+    pre[class*="language-"] {
+        color: #e8eaf6;
+    }
+
+    #vcomments [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+        position: inherit;
+        margin-left: -1.3rem;
+        margin-right: 0.4rem;
+        margin-top: -1px;
+        vertical-align: middle;
+        left: unset;
+        visibility: visible;
+    }
+
+    #vcomments b,
+    strong {
+        font-weight: bold;
+    }
+
+    #vcomments dfn {
+        font-style: italic;
+    }
+
+    #vcomments small {
+        font-size: 85%;
+    }
+
+    #vcomments cite {
+        font-style: normal;
+    }
+
+    #vcomments mark {
+        background-color: #fcf8e3;
+        padding: .2em;
+    }
+
+    #vcomments table, th, td {
+        padding: 12px 13px;
+        border: 1px solid #dfe2e5;
+    }
+
+    table tr:nth-child(2n), thead {
+        background-color: #fafafa;
+    }
+
+    #vcomments table th {
+        background-color: #f2f2f2;
+        min-width: 80px;
+    }
+
+    #vcomments table td {
+        min-width: 80px;
+    }
+
+    #vcomments [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+        position: inherit;
+        margin-left: -1.3rem;
+        margin-right: 0.4rem;
+        margin-top: -1px;
+        vertical-align: middle;
+        left: unset;
+        visibility: visible;
+    }
+</style>
+
+<div class="card valine-card" data-aos="fade-up">
+    <div class="comment_headling" style="font-size: 20px; font-weight: 700; position: relative; padding-left: 20px; top: 15px; padding-bottom: 5px;">
+        <i class="fas fa-comments fa-fw" aria-hidden="true"></i>
+        <span>评论</span>
+    </div>
+    <div id="vcomments" class="card-content" style="display: grid">
+    </div>
+</div>
+
+<script src="/blog/libs/valine/av-min.js"></script>
+<script src="https://unpkg.com/valine/dist/Valine.min.js"></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        appId: 'lrUDzoXHA8J9LL4P55q2Vt2N-gzGzoHsz',
+        appKey: '6ClQluKY0m4zPsu6ghTkaMPp',
+        serverURLs: 'https://lrudzoxh.lc-cn-n1-shared.com',
+        notify: 'true' === 'true',
+        verify: 'false' === 'true',
+        visitor: 'true' === 'true',
+        avatar: 'mm',
+        pageSize: '10',
+        lang: 'zh-cn',
+        placeholder: 'just go go'
+    });
+</script>
+
+<!--酷Q推送-->
+
 
     
 
@@ -940,7 +1274,7 @@ istiod-76d66d9876-w4wpv                 <span class="token number">1</span>/1   
             <br>
             
                 &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                        class="white-color">45.5k</span>
+                        class="white-color">51.9k</span>
             
             
             

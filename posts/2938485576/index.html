@@ -52,7 +52,9 @@
 
     <script src="/blog/libs/jquery/jquery-3.6.0.min.js"></script>
 
-<meta name="generator" content="Hexo 6.3.0"></head>
+<meta name="generator" content="Hexo 6.3.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
 
 
 <body>
@@ -405,14 +407,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    3.9k
+                    3.8k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    17 分
+                    16 分
                 </div>
                 
 
@@ -457,21 +459,21 @@ postman --&gt; bkcmdb(go-zero) --&gt; 蓝鲸接口</p>
   <span class="token key atrule">Sampler</span><span class="token punctuation">:</span> <span class="token number">1.0</span>
   <span class="token key atrule">Batcher</span><span class="token punctuation">:</span> jaeger<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>只需在配置文件中增加<code>Telemetry</code>配置块即可，无需修改任何代码。其中<code>Name</code>是该链路上的ServiceName，将会在jaeger（或zipkin）上显示为Service。Endpoint是链路跟踪工具（jaeger或zipkin）的collector地址。<code>Batcher</code>这里指定链路跟踪工具为jaeger。</p>
-<blockquote><p>注意：默认配置了Telemetry后，只能在链路中采集到客户端（比如postman）访问bkcmdb服务端这前半条链路，bkcmdb通过imroc/req访问蓝鲸CMDB的后半条链路现在还采集不到。</p>
-</blockquote>
+<div class="note success no-icon"><p>注意：默认配置了Telemetry后，只能在链路中采集到客户端（比如postman）访问bkcmdb服务端这前半条链路，bkcmdb通过imroc/req访问蓝鲸CMDB的后半条链路现在还采集不到。</p>
+</div>
 <p>现在用postman访问bkcmdb</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">curl</span> <span class="token parameter variable">--location</span> <span class="token string">'http://&lt;bkcmdb-url>/v1/project/search'</span> <span class="token punctuation">\</span>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">curl</span> <span class="token parameter variable">--location</span> <span class="token string">'http://&lt;bkcmdb-url&gt;/v1/project/search'</span> <span class="token punctuation">\</span>
 <span class="token parameter variable">--header</span> <span class="token string">'Content-Type: application/json'</span> <span class="token punctuation">\</span>
-<span class="token parameter variable">--data</span> <span class="token string">'&#123;
-    "condition": &#123;
+<span class="token parameter variable">--data</span> <span class="token string">'{
+    "condition": {
         "project": [ ]
-    &#125;,
-    "page": &#123;
+    },
+    "page": {
         "limit": 100,
         "sort": "-bk_inst_id",
         "start": 0
-    &#125;
-&#125;'</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+    }
+}'</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>打开jaeger前端页面，Service搜索fiops-bkcmdb，可以看到出现了一条链路，且链路中只有一个span，这个span就是客户端访问bkcmdb服务端的链路。<br>
 <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2F2.png" alt=""></p>
 <p>点击这条链路进入详情页，展开trace，地址栏url红框内是traceId，右下角红框是spanId<br>
@@ -494,7 +496,7 @@ postman --&gt; bkcmdb(go-zero) --&gt; 蓝鲸接口</p>
       <span class="token operator">|</span>             <span class="token operator">|</span>
   <span class="token punctuation">[</span>Span D<span class="token punctuation">]</span>      +---+-------+
                <span class="token operator">|</span>           <span class="token operator">|</span>
-           <span class="token punctuation">[</span>Span E<span class="token punctuation">]</span>    <span class="token punctuation">[</span>Span F<span class="token punctuation">]</span> <span class="token operator">>></span><span class="token operator">></span> <span class="token punctuation">[</span>Span G<span class="token punctuation">]</span> <span class="token operator">>></span><span class="token operator">></span> <span class="token punctuation">[</span>Span H<span class="token punctuation">]</span>
+           <span class="token punctuation">[</span>Span E<span class="token punctuation">]</span>    <span class="token punctuation">[</span>Span F<span class="token punctuation">]</span> <span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> <span class="token punctuation">[</span>Span G<span class="token punctuation">]</span> <span class="token operator">&gt;&gt;</span><span class="token operator">&gt;</span> <span class="token punctuation">[</span>Span H<span class="token punctuation">]</span>
                                        ↑
                                        ↑
                                        ↑
@@ -504,22 +506,22 @@ postman --&gt; bkcmdb(go-zero) --&gt; 蓝鲸接口</p>
 <li>Trace：调用链，一次HTTP调用或者一次RPC调用（从起始到最后终止），一个调用链会分配一个全局唯一的TraceID</li>
 <li>Span：每个调用链由多个Span组成。Span的含义是范围，可以理解为一个处理阶段（例如一次HTTP调用、一次数据库访问）。Span是一个分布式追踪的最小单位。Span和Span的关系称为Reference。下面是一个Span的结构。</li>
 </ul>
-<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> Span <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> Span <span class="token keyword">struct</span> <span class="token punctuation">{</span>
   ctx           spanContext
   serviceName   <span class="token builtin">string</span>
   operationName <span class="token builtin">string</span>
   startTime     time<span class="token punctuation">.</span>Time
   flag          <span class="token builtin">string</span>
   children      <span class="token builtin">int</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Span会封装一组零个或多个key:value的Tags，用于标识一些想在链路中展示的数据</p>
 <ul>
 <li>SpanContext：保存链路的上下文信息[TraceID,SpanID,或者是其它想要传递的内容]实现了tracer接口</li>
 </ul>
-<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> spanContext <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> spanContext <span class="token keyword">struct</span> <span class="token punctuation">{</span>
   traceId <span class="token builtin">string</span>
   spanId  <span class="token builtin">string</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="Span之间的关系">Span之间的关系</h3>
 <ul>
 <li>ChildOf：两个Span可以组成父子关系</li>
@@ -559,56 +561,56 @@ postman --&gt; bkcmdb(go-zero) --&gt; 蓝鲸接口</p>
 <p>有了基本概念以后，下来看看如何使用imroc/req在发送HTTP的时候加入tracing。</p>
 <h3 id="自定义imroc-req中间件实现发送HTTP的trace跟踪">自定义imroc/req中间件实现发送HTTP的trace跟踪</h3>
 <p>这里我们建一个HttpClient封装一下req。在svc目录下新建httpclient.go，并在里面新建一个结构体：</p>
-<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> HttpClient <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> HttpClient <span class="token keyword">struct</span> <span class="token punctuation">{</span>
     <span class="token operator">*</span>req<span class="token punctuation">.</span>Client
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>定义NewHttpClient函数用于返回一个实例化的HttpClient，在OnBeforeRequest里定义请求发送前的动作，在OnAfterResponse里定义请求返回后的动作。到此为止都是常规操作，还没涉及到任何tracing动作。</p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// 需要传入go-zero的Config对象</span>
-<span class="token keyword">func</span> <span class="token function">NewHttpClient</span><span class="token punctuation">(</span>conf config<span class="token punctuation">.</span>Config<span class="token punctuation">)</span> <span class="token operator">*</span>HttpClient <span class="token punctuation">&#123;</span>
-  headers <span class="token operator">:=</span> <span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">string</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">&#123;</span>
+<span class="token keyword">func</span> <span class="token function">NewHttpClient</span><span class="token punctuation">(</span>conf config<span class="token punctuation">.</span>Config<span class="token punctuation">)</span> <span class="token operator">*</span>HttpClient <span class="token punctuation">{</span>
+  headers <span class="token operator">:=</span> <span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">string</span><span class="token punctuation">]</span><span class="token builtin">string</span><span class="token punctuation">{</span>
     <span class="token string">"BK_USER"</span><span class="token punctuation">:</span>                   <span class="token string">"admin"</span><span class="token punctuation">,</span>
     <span class="token string">"HTTP_BLUEKING_SUPPLIER_ID"</span><span class="token punctuation">:</span> <span class="token string">"0"</span><span class="token punctuation">,</span>
-  <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">}</span>
   c <span class="token operator">:=</span> req<span class="token punctuation">.</span><span class="token function">C</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>
     <span class="token function">SetCommonHeaders</span><span class="token punctuation">(</span>headers<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">SetBaseURL</span><span class="token punctuation">(</span>fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"http://%s"</span><span class="token punctuation">,</span> conf<span class="token punctuation">.</span>BkcmdbUrl<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span>
-    <span class="token function">OnBeforeRequest</span><span class="token punctuation">(</span><span class="token keyword">func</span><span class="token punctuation">(</span>client <span class="token operator">*</span>req<span class="token punctuation">.</span>Client<span class="token punctuation">,</span> req <span class="token operator">*</span>req<span class="token punctuation">.</span>Request<span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">&#123;</span>
-      <span class="token keyword">if</span> req<span class="token punctuation">.</span>RetryAttempt <span class="token operator">></span> <span class="token number">0</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">OnBeforeRequest</span><span class="token punctuation">(</span><span class="token keyword">func</span><span class="token punctuation">(</span>client <span class="token operator">*</span>req<span class="token punctuation">.</span>Client<span class="token punctuation">,</span> req <span class="token operator">*</span>req<span class="token punctuation">.</span>Request<span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">{</span>
+      <span class="token keyword">if</span> req<span class="token punctuation">.</span>RetryAttempt <span class="token operator">&gt;</span> <span class="token number">0</span> <span class="token punctuation">{</span>
         <span class="token keyword">return</span> <span class="token boolean">nil</span>
-      <span class="token punctuation">&#125;</span>
+      <span class="token punctuation">}</span>
       req<span class="token punctuation">.</span><span class="token function">EnableDump</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
       <span class="token keyword">return</span> <span class="token boolean">nil</span>
-    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">.</span>
-    <span class="token function">OnAfterResponse</span><span class="token punctuation">(</span><span class="token keyword">func</span><span class="token punctuation">(</span>client <span class="token operator">*</span>req<span class="token punctuation">.</span>Client<span class="token punctuation">,</span> res <span class="token operator">*</span>req<span class="token punctuation">.</span>Response<span class="token punctuation">)</span> <span class="token punctuation">(</span>err <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">.</span>
+    <span class="token function">OnAfterResponse</span><span class="token punctuation">(</span><span class="token keyword">func</span><span class="token punctuation">(</span>client <span class="token operator">*</span>req<span class="token punctuation">.</span>Client<span class="token punctuation">,</span> res <span class="token operator">*</span>req<span class="token punctuation">.</span>Response<span class="token punctuation">)</span> <span class="token punctuation">(</span>err <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
       responseCode <span class="token operator">:=</span> strconv<span class="token punctuation">.</span><span class="token function">Itoa</span><span class="token punctuation">(</span>res<span class="token punctuation">.</span>StatusCode<span class="token punctuation">)</span>
-      <span class="token keyword">if</span> <span class="token operator">!</span>strings<span class="token punctuation">.</span><span class="token function">HasPrefix</span><span class="token punctuation">(</span>responseCode<span class="token punctuation">,</span> <span class="token string">"2"</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>strings<span class="token punctuation">.</span><span class="token function">HasPrefix</span><span class="token punctuation">(</span>responseCode<span class="token punctuation">,</span> <span class="token string">"3"</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-        <span class="token keyword">defer</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-          <span class="token keyword">if</span> e <span class="token operator">:=</span> <span class="token function">recover</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> e <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">if</span> <span class="token operator">!</span>strings<span class="token punctuation">.</span><span class="token function">HasPrefix</span><span class="token punctuation">(</span>responseCode<span class="token punctuation">,</span> <span class="token string">"2"</span><span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>strings<span class="token punctuation">.</span><span class="token function">HasPrefix</span><span class="token punctuation">(</span>responseCode<span class="token punctuation">,</span> <span class="token string">"3"</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">defer</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          <span class="token keyword">if</span> e <span class="token operator">:=</span> <span class="token function">recover</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> e <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
             err <span class="token operator">=</span> errorx<span class="token punctuation">.</span><span class="token function">NewError</span><span class="token punctuation">(</span>res<span class="token punctuation">.</span>StatusCode<span class="token punctuation">,</span> res<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token boolean">nil</span><span class="token punctuation">)</span>
-          <span class="token punctuation">&#125;</span>
-        <span class="token punctuation">&#125;</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-        ress <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">string</span><span class="token punctuation">]</span><span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+          <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        ress <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">string</span><span class="token punctuation">]</span><span class="token keyword">interface</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
         res<span class="token punctuation">.</span><span class="token function">UnmarshalJson</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>ress<span class="token punctuation">)</span>
         err <span class="token operator">=</span> errorx<span class="token punctuation">.</span><span class="token function">NewError</span><span class="token punctuation">(</span>res<span class="token punctuation">.</span>StatusCode<span class="token punctuation">,</span> ress<span class="token punctuation">[</span><span class="token string">"message"</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token builtin">string</span><span class="token punctuation">)</span><span class="token punctuation">,</span> ress<span class="token punctuation">[</span><span class="token string">"data"</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
-      <span class="token punctuation">&#125;</span>
-      <span class="token keyword">if</span> res<span class="token punctuation">.</span>Err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+      <span class="token punctuation">}</span>
+      <span class="token keyword">if</span> res<span class="token punctuation">.</span>Err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
         err <span class="token operator">=</span> errorx<span class="token punctuation">.</span><span class="token function">NewError</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>StatusInternalServerError<span class="token punctuation">,</span> res<span class="token punctuation">.</span>Err<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token boolean">nil</span><span class="token punctuation">)</span>
-      <span class="token punctuation">&#125;</span>
+      <span class="token punctuation">}</span>
       <span class="token keyword">return</span>
-    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
   logx<span class="token punctuation">.</span><span class="token function">Infof</span><span class="token punctuation">(</span><span class="token string">"init req client %s success"</span><span class="token punctuation">,</span> c<span class="token punctuation">.</span>BaseURL<span class="token punctuation">)</span>
-  <span class="token keyword">return</span> <span class="token operator">&amp;</span>HttpClient<span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> <span class="token operator">&amp;</span>HttpClient<span class="token punctuation">{</span>
     Client<span class="token punctuation">:</span> c<span class="token punctuation">,</span>
-  <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>接下来给结构体定义一个<code>SetTracer</code>方法用于设置tracing，这里用到了req的<code>WrapRoundTripFunc</code>用来给req自定义一个中间件，该中间件类似一个拦截器，可在请求发送前和响应后做一些集中处理的工作。</p>
-<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>c <span class="token operator">*</span>HttpClient<span class="token punctuation">)</span> <span class="token function">SetTracer</span><span class="token punctuation">(</span>tracer trace<span class="token punctuation">.</span>Tracer<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-  c<span class="token punctuation">.</span><span class="token function">WrapRoundTripFunc</span><span class="token punctuation">(</span><span class="token keyword">func</span><span class="token punctuation">(</span>rt req<span class="token punctuation">.</span>RoundTripper<span class="token punctuation">)</span> req<span class="token punctuation">.</span>RoundTripFunc <span class="token punctuation">&#123;</span>
-    <span class="token keyword">return</span> <span class="token keyword">func</span><span class="token punctuation">(</span>req <span class="token operator">*</span>req<span class="token punctuation">.</span>Request<span class="token punctuation">)</span> <span class="token punctuation">(</span>resp <span class="token operator">*</span>req<span class="token punctuation">.</span>Response<span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>c <span class="token operator">*</span>HttpClient<span class="token punctuation">)</span> <span class="token function">SetTracer</span><span class="token punctuation">(</span>tracer trace<span class="token punctuation">.</span>Tracer<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  c<span class="token punctuation">.</span><span class="token function">WrapRoundTripFunc</span><span class="token punctuation">(</span><span class="token keyword">func</span><span class="token punctuation">(</span>rt req<span class="token punctuation">.</span>RoundTripper<span class="token punctuation">)</span> req<span class="token punctuation">.</span>RoundTripFunc <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token keyword">func</span><span class="token punctuation">(</span>req <span class="token operator">*</span>req<span class="token punctuation">.</span>Request<span class="token punctuation">)</span> <span class="token punctuation">(</span>resp <span class="token operator">*</span>req<span class="token punctuation">.</span>Response<span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
       <span class="token comment">// Context().Value(key)可以从context中提取预先设定的值</span>
       spanName<span class="token punctuation">,</span> ok <span class="token operator">:=</span> req<span class="token punctuation">.</span><span class="token function">Context</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Value</span><span class="token punctuation">(</span><span class="token string">"SpanName"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token builtin">string</span><span class="token punctuation">)</span>
-      <span class="token keyword">if</span> <span class="token operator">!</span>ok <span class="token punctuation">&#123;</span>
+      <span class="token keyword">if</span> <span class="token operator">!</span>ok <span class="token punctuation">{</span>
         spanName <span class="token operator">=</span> req<span class="token punctuation">.</span>URL<span class="token punctuation">.</span>Path <span class="token comment">// 如果没有预先设定SpanName，就以请求url作为SpanName</span>
-      <span class="token punctuation">&#125;</span>
+      <span class="token punctuation">}</span>
       <span class="token comment">// 最关键的一步，启动span，并传入上下文context(来自于*req.Request)，会返回一个加入了span的context和一个span对象</span>
       <span class="token boolean">_</span><span class="token punctuation">,</span> span <span class="token operator">:=</span> tracer<span class="token punctuation">.</span><span class="token function">Start</span><span class="token punctuation">(</span>req<span class="token punctuation">.</span><span class="token function">Context</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> spanName<span class="token punctuation">)</span> 
       <span class="token keyword">defer</span> span<span class="token punctuation">.</span><span class="token function">End</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// 无论成功与否这里需要用End将span发射出去(发射到jaeger或zipkin)</span>
@@ -618,18 +620,18 @@ postman --&gt; bkcmdb(go-zero) --&gt; 蓝鲸接口</p>
         attribute<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token string">"http.method"</span><span class="token punctuation">,</span> req<span class="token punctuation">.</span>Method<span class="token punctuation">)</span><span class="token punctuation">,</span>
         attribute<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token string">"http.request.header"</span><span class="token punctuation">,</span> req<span class="token punctuation">.</span><span class="token function">HeaderToString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
       <span class="token punctuation">)</span>
-      <span class="token keyword">if</span> <span class="token function">len</span><span class="token punctuation">(</span>req<span class="token punctuation">.</span>Body<span class="token punctuation">)</span> <span class="token operator">></span> <span class="token number">0</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">if</span> <span class="token function">len</span><span class="token punctuation">(</span>req<span class="token punctuation">.</span>Body<span class="token punctuation">)</span> <span class="token operator">&gt;</span> <span class="token number">0</span> <span class="token punctuation">{</span>
         span<span class="token punctuation">.</span><span class="token function">SetAttributes</span><span class="token punctuation">(</span>
           attribute<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token string">"http.request.body"</span><span class="token punctuation">,</span> <span class="token function">string</span><span class="token punctuation">(</span>req<span class="token punctuation">.</span>Body<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
         <span class="token punctuation">)</span>
-      <span class="token punctuation">&#125;</span>
+      <span class="token punctuation">}</span>
       <span class="token comment">// 下面这句话将流程交还给req去执行发送请求动作</span>
       resp<span class="token punctuation">,</span> err <span class="token operator">=</span> rt<span class="token punctuation">.</span><span class="token function">RoundTrip</span><span class="token punctuation">(</span>req<span class="token punctuation">)</span>
-      <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span> <span class="token comment">// 失败了记录在span里</span>
+      <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span> <span class="token comment">// 失败了记录在span里</span>
         span<span class="token punctuation">.</span><span class="token function">RecordError</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
         span<span class="token punctuation">.</span><span class="token function">SetStatus</span><span class="token punctuation">(</span>codes<span class="token punctuation">.</span>Error<span class="token punctuation">,</span> err<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
         <span class="token keyword">return</span>
-      <span class="token punctuation">&#125;</span>
+      <span class="token punctuation">}</span>
       <span class="token comment">// 添加一些响应tags</span>
       span<span class="token punctuation">.</span><span class="token function">SetAttributes</span><span class="token punctuation">(</span>
         attribute<span class="token punctuation">.</span><span class="token function">Int</span><span class="token punctuation">(</span><span class="token string">"http.status_code"</span><span class="token punctuation">,</span> resp<span class="token punctuation">.</span>StatusCode<span class="token punctuation">)</span><span class="token punctuation">,</span>
@@ -637,76 +639,76 @@ postman --&gt; bkcmdb(go-zero) --&gt; 蓝鲸接口</p>
         attribute<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token string">"http.response.body"</span><span class="token punctuation">,</span> resp<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
       <span class="token punctuation">)</span>
       <span class="token keyword">return</span>
-    <span class="token punctuation">&#125;</span>
-  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>封装好了HttpClient，接下来把它放入servicecontext方便被调用，并在servicecontext中实例化它</p>
-<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> ServiceContext <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> ServiceContext <span class="token keyword">struct</span> <span class="token punctuation">{</span>
   Config        config<span class="token punctuation">.</span>Config
   Client_bkcmdb <span class="token operator">*</span>HttpClient
-<span class="token punctuation">&#125;</span>
+<span class="token punctuation">}</span>
  
-<span class="token keyword">func</span> <span class="token function">NewServiceContext</span><span class="token punctuation">(</span>c config<span class="token punctuation">.</span>Config<span class="token punctuation">)</span> <span class="token operator">*</span>ServiceContext <span class="token punctuation">&#123;</span>
+<span class="token keyword">func</span> <span class="token function">NewServiceContext</span><span class="token punctuation">(</span>c config<span class="token punctuation">.</span>Config<span class="token punctuation">)</span> <span class="token operator">*</span>ServiceContext <span class="token punctuation">{</span>
   client <span class="token operator">:=</span> <span class="token function">NewHttpClient</span><span class="token punctuation">(</span>c<span class="token punctuation">)</span> <span class="token comment">// 实例化HttpClient</span>
   client<span class="token punctuation">.</span><span class="token function">SetTracer</span><span class="token punctuation">(</span>otel<span class="token punctuation">.</span><span class="token function">Tracer</span><span class="token punctuation">(</span><span class="token string">"imroc/req"</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// 设置开启Trace，并用otel.Tracer("imroc/req")设置otel.library</span>
-  <span class="token keyword">return</span> <span class="token operator">&amp;</span>ServiceContext<span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> <span class="token operator">&amp;</span>ServiceContext<span class="token punctuation">{</span>
     Config<span class="token punctuation">:</span>        c<span class="token punctuation">,</span>
     Client_bkcmdb<span class="token punctuation">:</span> client<span class="token punctuation">,</span>
-  <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>接下来封装一个蓝鲸CMDB接口的结构体</p>
-<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> BkcmdbUtil <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> BkcmdbUtil <span class="token keyword">struct</span> <span class="token punctuation">{</span>
   logx<span class="token punctuation">.</span>Logger
   ctx    context<span class="token punctuation">.</span>Context
   svcCtx <span class="token operator">*</span>ServiceContext
-<span class="token punctuation">&#125;</span>
+<span class="token punctuation">}</span>
 
-<span class="token keyword">func</span> <span class="token function">GetBkcmdbUtil</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">,</span> svcCtx <span class="token operator">*</span>ServiceContext<span class="token punctuation">)</span> <span class="token operator">*</span>BkcmdbUtil <span class="token punctuation">&#123;</span>
-  <span class="token keyword">return</span> <span class="token operator">&amp;</span>BkcmdbUtil<span class="token punctuation">&#123;</span>
+<span class="token keyword">func</span> <span class="token function">GetBkcmdbUtil</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">,</span> svcCtx <span class="token operator">*</span>ServiceContext<span class="token punctuation">)</span> <span class="token operator">*</span>BkcmdbUtil <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token operator">&amp;</span>BkcmdbUtil<span class="token punctuation">{</span>
     Logger<span class="token punctuation">:</span> logx<span class="token punctuation">.</span><span class="token function">WithContext</span><span class="token punctuation">(</span>ctx<span class="token punctuation">)</span><span class="token punctuation">,</span>
     ctx<span class="token punctuation">:</span>    ctx<span class="token punctuation">,</span>
     svcCtx<span class="token punctuation">:</span> svcCtx<span class="token punctuation">,</span>
-  <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>然后以一个蓝鲸添加模型实例的接口为例</p>
-<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>b <span class="token operator">*</span>BkcmdbUtil<span class="token punctuation">)</span> <span class="token function">AddInstance</span><span class="token punctuation">(</span>tablename <span class="token builtin">string</span><span class="token punctuation">,</span> v <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>resp <span class="token operator">*</span>types<span class="token punctuation">.</span>BkcmdbRes<span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>b <span class="token operator">*</span>BkcmdbUtil<span class="token punctuation">)</span> <span class="token function">AddInstance</span><span class="token punctuation">(</span>tablename <span class="token builtin">string</span><span class="token punctuation">,</span> v <span class="token keyword">interface</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>resp <span class="token operator">*</span>types<span class="token punctuation">.</span>BkcmdbRes<span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   <span class="token comment">// 下面这句话的核心是.Do(context.WithValue(b.ctx, "SpanName", "AddInstance"))</span>
   <span class="token comment">// 通过调用context.WithValue给ctx设置SpanName，然后就可以在前文定义的中间件中用req.Context().Value("SpanName").(string)把SpanName取出来了</span>
   err <span class="token operator">=</span> b<span class="token punctuation">.</span>svcCtx<span class="token punctuation">.</span>Client_bkcmdb<span class="token punctuation">.</span><span class="token function">Post</span><span class="token punctuation">(</span>fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"/api/v3/create/instance/object/%s"</span><span class="token punctuation">,</span> tablename<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">SetBody</span><span class="token punctuation">(</span>v<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">SetResult</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>resp<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Do</span><span class="token punctuation">(</span>context<span class="token punctuation">.</span><span class="token function">WithValue</span><span class="token punctuation">(</span>b<span class="token punctuation">.</span>ctx<span class="token punctuation">,</span> <span class="token string">"SpanName"</span><span class="token punctuation">,</span> <span class="token string">"AddInstance"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span>Err
-  <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
     b<span class="token punctuation">.</span>Logger<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
     <span class="token keyword">return</span>
-  <span class="token punctuation">&#125;</span>
-  <span class="token keyword">if</span> resp<span class="token punctuation">.</span>Code <span class="token operator">!=</span> <span class="token number">0</span> <span class="token punctuation">&#123;</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">if</span> resp<span class="token punctuation">.</span>Code <span class="token operator">!=</span> <span class="token number">0</span> <span class="token punctuation">{</span>
     b<span class="token punctuation">.</span>Logger<span class="token punctuation">.</span><span class="token function">Errorf</span><span class="token punctuation">(</span><span class="token string">"add %s instance failed: %v"</span><span class="token punctuation">,</span> tablename<span class="token punctuation">,</span> resp<span class="token punctuation">.</span>Message<span class="token punctuation">)</span>
     <span class="token comment">// errorx是自定义的错误处理类</span>
     err <span class="token operator">=</span> errorx<span class="token punctuation">.</span><span class="token function">NewDefaultError</span><span class="token punctuation">(</span>fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"add %s instance failed: %v"</span><span class="token punctuation">,</span> tablename<span class="token punctuation">,</span> resp<span class="token punctuation">.</span>Message<span class="token punctuation">)</span><span class="token punctuation">)</span>
-  <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">}</span>
   <span class="token keyword">return</span> <span class="token comment">// 返回值types.BkcmdbRes是自定义的返回结构体</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>示例代码写到这就可以了，接下来再用postman发起一次调用，打开jaeger页面，会发现一个链路里现在出现了两个span，其中一个是postman访问go-zero接口的span，第二个就是go-zero通过req访问蓝鲸CMDB的span。<br>
 <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2F4.png" alt=""><br>
 <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2F5.png" alt=""></p>
 <h3 id="其它通用操作的trace跟踪">其它通用操作的trace跟踪</h3>
 <p>有了如上示例，我们其实可以在任意操作前后打埋点（开启一个span），比如访问数据库、MongoDB、Redis、Elasticsearch、调用其它平台SDK（比如kubernetes client-go）等等，下来以Elasticsearch为例说明。</p>
 <p>封装一个<code>EsUtil</code>用来操作elasticsearch</p>
-<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> EsUtil <span class="token keyword">struct</span> <span class="token punctuation">&#123;</span>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> EsUtil <span class="token keyword">struct</span> <span class="token punctuation">{</span>
   logx<span class="token punctuation">.</span>Logger
   ctx    context<span class="token punctuation">.</span>Context
   svcCtx <span class="token operator">*</span>ServiceContext
   tracer trace<span class="token punctuation">.</span>Tracer
-<span class="token punctuation">&#125;</span>
+<span class="token punctuation">}</span>
 
-<span class="token keyword">func</span> <span class="token function">GetEsUtil</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">,</span> svcCtx <span class="token operator">*</span>ServiceContext<span class="token punctuation">)</span> <span class="token operator">*</span>EsUtil <span class="token punctuation">&#123;</span>
-  <span class="token keyword">return</span> <span class="token operator">&amp;</span>EsUtil<span class="token punctuation">&#123;</span>
+<span class="token keyword">func</span> <span class="token function">GetEsUtil</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">,</span> svcCtx <span class="token operator">*</span>ServiceContext<span class="token punctuation">)</span> <span class="token operator">*</span>EsUtil <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token operator">&amp;</span>EsUtil<span class="token punctuation">{</span>
     Logger<span class="token punctuation">:</span> logx<span class="token punctuation">.</span><span class="token function">WithContext</span><span class="token punctuation">(</span>ctx<span class="token punctuation">)</span><span class="token punctuation">,</span>
     ctx<span class="token punctuation">:</span>    ctx<span class="token punctuation">,</span>
     svcCtx<span class="token punctuation">:</span> svcCtx<span class="token punctuation">,</span>
     tracer<span class="token punctuation">:</span> otel<span class="token punctuation">.</span><span class="token function">Tracer</span><span class="token punctuation">(</span><span class="token string">"go-elasticsearch"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
-  <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>在发起一个ES操作（例如插入一个文档）的前后打入埋点<code>startTracer</code>、<code>endTracer</code></p>
-<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>es <span class="token operator">*</span>EsUtil<span class="token punctuation">)</span> <span class="token function">EsIndex</span><span class="token punctuation">(</span>index <span class="token builtin">string</span><span class="token punctuation">,</span> body <span class="token keyword">interface</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span> id <span class="token builtin">string</span><span class="token punctuation">,</span> ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token operator">*</span>types<span class="token punctuation">.</span>EsAddResponse<span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>es <span class="token operator">*</span>EsUtil<span class="token punctuation">)</span> <span class="token function">EsIndex</span><span class="token punctuation">(</span>index <span class="token builtin">string</span><span class="token punctuation">,</span> body <span class="token keyword">interface</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span> id <span class="token builtin">string</span><span class="token punctuation">,</span> ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token operator">*</span>types<span class="token punctuation">.</span>EsAddResponse<span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
   b<span class="token punctuation">,</span> <span class="token boolean">_</span> <span class="token operator">:=</span> json<span class="token punctuation">.</span><span class="token function">Marshal</span><span class="token punctuation">(</span>body<span class="token punctuation">)</span>
   es<span class="token punctuation">.</span>Logger<span class="token punctuation">.</span><span class="token function">Debugf</span><span class="token punctuation">(</span><span class="token string">"es index request=%v"</span><span class="token punctuation">,</span> <span class="token function">string</span><span class="token punctuation">(</span>b<span class="token punctuation">)</span><span class="token punctuation">)</span>
   span <span class="token operator">:=</span> es<span class="token punctuation">.</span><span class="token function">newSpan</span><span class="token punctuation">(</span>ctx<span class="token punctuation">,</span> index<span class="token punctuation">)</span> <span class="token comment">// 创建一个span</span>
@@ -719,65 +721,65 @@ postman --&gt; bkcmdb(go-zero) --&gt; 蓝鲸接口</p>
     es<span class="token punctuation">.</span>svcCtx<span class="token punctuation">.</span>Esclient<span class="token punctuation">.</span>Index<span class="token punctuation">.</span><span class="token function">WithContext</span><span class="token punctuation">(</span>ctx<span class="token punctuation">)</span><span class="token punctuation">,</span>
   <span class="token punctuation">)</span>
   <span class="token keyword">defer</span> res<span class="token punctuation">.</span>Body<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-  <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
     <span class="token keyword">return</span> <span class="token boolean">nil</span><span class="token punctuation">,</span> err
-  <span class="token punctuation">&#125;</span>
-  <span class="token keyword">if</span> res<span class="token punctuation">.</span><span class="token function">IsError</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">if</span> res<span class="token punctuation">.</span><span class="token function">IsError</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     err <span class="token operator">=</span> errorx<span class="token punctuation">.</span><span class="token function">NewDefaultError</span><span class="token punctuation">(</span>fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"[%s] error indexing document ID=%v"</span><span class="token punctuation">,</span> res<span class="token punctuation">.</span><span class="token function">Status</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> id<span class="token punctuation">)</span><span class="token punctuation">)</span>
     es<span class="token punctuation">.</span><span class="token function">endTracer</span><span class="token punctuation">(</span>err<span class="token punctuation">,</span> res<span class="token punctuation">.</span>StatusCode<span class="token punctuation">,</span> <span class="token boolean">nil</span><span class="token punctuation">,</span> span<span class="token punctuation">)</span> <span class="token comment">// 出错后结束span并写入错误信息</span>
     <span class="token keyword">return</span> <span class="token boolean">nil</span><span class="token punctuation">,</span> err
-  <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+  <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
     <span class="token keyword">var</span> r types<span class="token punctuation">.</span>EsAddResponse <span class="token comment">// 自定义了es返回结构体</span>
     json<span class="token punctuation">.</span><span class="token function">NewDecoder</span><span class="token punctuation">(</span>res<span class="token punctuation">.</span>Body<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Decode</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>r<span class="token punctuation">)</span>
     b<span class="token punctuation">,</span> <span class="token boolean">_</span> <span class="token operator">=</span> json<span class="token punctuation">.</span><span class="token function">Marshal</span><span class="token punctuation">(</span>r<span class="token punctuation">)</span>
     es<span class="token punctuation">.</span>Logger<span class="token punctuation">.</span><span class="token function">Debugf</span><span class="token punctuation">(</span><span class="token string">"es index response=%v"</span><span class="token punctuation">,</span> <span class="token function">string</span><span class="token punctuation">(</span>b<span class="token punctuation">)</span><span class="token punctuation">)</span>
     es<span class="token punctuation">.</span><span class="token function">endTracer</span><span class="token punctuation">(</span><span class="token boolean">nil</span><span class="token punctuation">,</span> res<span class="token punctuation">.</span>StatusCode<span class="token punctuation">,</span> b<span class="token punctuation">,</span> span<span class="token punctuation">)</span> <span class="token comment">// 正常返回结束span并写入返回值</span>
     <span class="token keyword">return</span> <span class="token operator">&amp;</span>r<span class="token punctuation">,</span> <span class="token boolean">nil</span>
-  <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 
-<span class="token keyword">func</span> <span class="token punctuation">(</span>es <span class="token operator">*</span>EsUtil<span class="token punctuation">)</span> <span class="token function">newSpan</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">,</span> name <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>span trace<span class="token punctuation">.</span>Span<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span>es <span class="token operator">*</span>EsUtil<span class="token punctuation">)</span> <span class="token function">newSpan</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">,</span> name <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">(</span>span trace<span class="token punctuation">.</span>Span<span class="token punctuation">)</span> <span class="token punctuation">{</span>
   spanName<span class="token punctuation">,</span> ok <span class="token operator">:=</span> ctx<span class="token punctuation">.</span><span class="token function">Value</span><span class="token punctuation">(</span><span class="token string">"SpanName"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token punctuation">(</span><span class="token builtin">string</span><span class="token punctuation">)</span>
-  <span class="token keyword">if</span> <span class="token operator">!</span>ok <span class="token punctuation">&#123;</span>
+  <span class="token keyword">if</span> <span class="token operator">!</span>ok <span class="token punctuation">{</span>
       spanName <span class="token operator">=</span> name
-  <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">}</span>
   <span class="token boolean">_</span><span class="token punctuation">,</span> span <span class="token operator">=</span> es<span class="token punctuation">.</span>tracer<span class="token punctuation">.</span><span class="token function">Start</span><span class="token punctuation">(</span>ctx<span class="token punctuation">,</span> spanName<span class="token punctuation">)</span>
   <span class="token keyword">return</span>
-<span class="token punctuation">&#125;</span>
+<span class="token punctuation">}</span>
 
-<span class="token keyword">func</span> <span class="token punctuation">(</span>es <span class="token operator">*</span>EsUtil<span class="token punctuation">)</span> <span class="token function">startTracer</span><span class="token punctuation">(</span>index<span class="token punctuation">,</span> id<span class="token punctuation">,</span> action <span class="token builtin">string</span><span class="token punctuation">,</span> body <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span> span trace<span class="token punctuation">.</span>Span<span class="token punctuation">,</span> ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span>es <span class="token operator">*</span>EsUtil<span class="token punctuation">)</span> <span class="token function">startTracer</span><span class="token punctuation">(</span>index<span class="token punctuation">,</span> id<span class="token punctuation">,</span> action <span class="token builtin">string</span><span class="token punctuation">,</span> body <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span> span trace<span class="token punctuation">.</span>Span<span class="token punctuation">,</span> ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">)</span> <span class="token punctuation">{</span>
   span<span class="token punctuation">.</span><span class="token function">SetAttributes</span><span class="token punctuation">(</span>
     attribute<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token string">"elastic._index"</span><span class="token punctuation">,</span> index<span class="token punctuation">)</span><span class="token punctuation">,</span>
     attribute<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token string">"elastic._id"</span><span class="token punctuation">,</span> id<span class="token punctuation">)</span><span class="token punctuation">,</span>
     attribute<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token string">"elastic.action"</span><span class="token punctuation">,</span> action<span class="token punctuation">)</span><span class="token punctuation">,</span>
     attribute<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token string">"elastic.client.version"</span><span class="token punctuation">,</span> elasticsearch<span class="token punctuation">.</span>Version<span class="token punctuation">)</span><span class="token punctuation">,</span>
   <span class="token punctuation">)</span>
-  <span class="token keyword">if</span> <span class="token function">len</span><span class="token punctuation">(</span>body<span class="token punctuation">)</span> <span class="token operator">></span> <span class="token number">0</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">if</span> <span class="token function">len</span><span class="token punctuation">(</span>body<span class="token punctuation">)</span> <span class="token operator">&gt;</span> <span class="token number">0</span> <span class="token punctuation">{</span>
     span<span class="token punctuation">.</span><span class="token function">SetAttributes</span><span class="token punctuation">(</span>
         attribute<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token string">"elastic.request.body"</span><span class="token punctuation">,</span> <span class="token function">string</span><span class="token punctuation">(</span>body<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
     <span class="token punctuation">)</span>
-  <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
 
-<span class="token keyword">func</span> <span class="token punctuation">(</span>es <span class="token operator">*</span>EsUtil<span class="token punctuation">)</span> <span class="token function">endTracer</span><span class="token punctuation">(</span>err <span class="token builtin">error</span><span class="token punctuation">,</span> status_code <span class="token builtin">int</span><span class="token punctuation">,</span> body <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span> span trace<span class="token punctuation">.</span>Span<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-  <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">&#123;</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span>es <span class="token operator">*</span>EsUtil<span class="token punctuation">)</span> <span class="token function">endTracer</span><span class="token punctuation">(</span>err <span class="token builtin">error</span><span class="token punctuation">,</span> status_code <span class="token builtin">int</span><span class="token punctuation">,</span> body <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">byte</span><span class="token punctuation">,</span> span trace<span class="token punctuation">.</span>Span<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
     span<span class="token punctuation">.</span><span class="token function">RecordError</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
     span<span class="token punctuation">.</span><span class="token function">SetStatus</span><span class="token punctuation">(</span>codes<span class="token punctuation">.</span>Error<span class="token punctuation">,</span> err<span class="token punctuation">.</span><span class="token function">Error</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
     <span class="token keyword">return</span>
-  <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">}</span>
   span<span class="token punctuation">.</span><span class="token function">SetAttributes</span><span class="token punctuation">(</span>
     attribute<span class="token punctuation">.</span><span class="token function">Int</span><span class="token punctuation">(</span><span class="token string">"elastic.status"</span><span class="token punctuation">,</span> status_code<span class="token punctuation">)</span><span class="token punctuation">,</span>
     attribute<span class="token punctuation">.</span><span class="token function">String</span><span class="token punctuation">(</span><span class="token string">"elastic.response.body"</span><span class="token punctuation">,</span> <span class="token function">string</span><span class="token punctuation">(</span>body<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
   <span class="token punctuation">)</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>到此，从go-zero的服务A接收到一个请求，到由当前服务A发送出去的第一跳操作（HTTP、Elasticsearch、数据库等）都可以在jaerger里看到trace了，大概长这样：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">microserviceA
   <span class="token operator">|</span>
-  <span class="token operator">|</span>--<span class="token operator">></span> HTTP<span class="token punctuation">(</span>蓝鲸CMDB<span class="token punctuation">)</span>
-  <span class="token operator">|</span>--<span class="token operator">></span> Elasticsearch
-  <span class="token operator">|</span>--<span class="token operator">></span> PostgreSQL
-  <span class="token operator">|</span>--<span class="token operator">></span> HTTP<span class="token punctuation">(</span>蓝鲸CMDB<span class="token punctuation">)</span>
-  <span class="token operator">|</span>--<span class="token operator">></span> HTTP<span class="token punctuation">(</span>蓝鲸CMDB<span class="token punctuation">)</span>
+  <span class="token operator">|</span>--<span class="token operator">&gt;</span> HTTP<span class="token punctuation">(</span>蓝鲸CMDB<span class="token punctuation">)</span>
+  <span class="token operator">|</span>--<span class="token operator">&gt;</span> Elasticsearch
+  <span class="token operator">|</span>--<span class="token operator">&gt;</span> PostgreSQL
+  <span class="token operator">|</span>--<span class="token operator">&gt;</span> HTTP<span class="token punctuation">(</span>蓝鲸CMDB<span class="token punctuation">)</span>
+  <span class="token operator">|</span>--<span class="token operator">&gt;</span> HTTP<span class="token punctuation">(</span>蓝鲸CMDB<span class="token punctuation">)</span>
   <span class="token operator">|</span> ……<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>此时我们发现，跨服务（A服务调用B服务）现在还是没有链路，单独看服务A的链路也有，服务B的链路也有，但AB没连起来。原因在于我们在链路传递参数的过程中，并没有把traceId、spanId传递到下一跳。自然下一跳和上一跳就没法连接起来了。</p>
 <p>改造代码之前还是先看原理。</p>
@@ -785,15 +787,15 @@ postman --&gt; bkcmdb(go-zero) --&gt; 蓝鲸接口</p>
 <p>先看一张在HTTP通信下，trace如何进行链路传递参数<br>
 <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2F6.jpg" alt=""></p>
 <p>链路传递数据时用到一个载体叫做propagators，什么是 Propagator？OpenTelemetry 是这样定义的</p>
-<blockquote><p>Cross-cutting concerns send their state to the next process using Propagators, which are defined as objects used to read and write context data to and from messages exchanged by the applications.</p>
-</blockquote>
+<div class="note success no-icon"><p>Cross-cutting concerns send their state to the next process using Propagators, which are defined as objects used to read and write context data to and from messages exchanged by the applications.</p>
+</div>
 <p>大概意思就是：从系统的横向切入面看，通过定义一个可读可写的context对象，在应用间进行状态的传递。<br>
 <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2Fopentelemetry.png" alt=""></p>
 <p>这里还有一个Baggage的概念，但是本文暂未涉及到，因此不再赘述，示例代码只需要propagator就可以满足需求了</p>
 <h3 id="Propagator注入trace实现链路信息传递">Propagator注入trace实现链路信息传递</h3>
 <p>服务A通过imroc/req调用服务B（HTTP调用），需要在服务A端HTTP发起之前给propagator注入载体(carrier)，并写入HTTP headers，如下代码</p>
-<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>c <span class="token operator">*</span>HttpClient<span class="token punctuation">)</span> <span class="token function">roundTripFunc</span><span class="token punctuation">(</span>rt req<span class="token punctuation">.</span>RoundTripper<span class="token punctuation">)</span> req<span class="token punctuation">.</span>RoundTripFunc <span class="token punctuation">&#123;</span>
-  <span class="token keyword">return</span> <span class="token keyword">func</span><span class="token punctuation">(</span>req <span class="token operator">*</span>req<span class="token punctuation">.</span>Request<span class="token punctuation">)</span> <span class="token punctuation">(</span>resp <span class="token operator">*</span>req<span class="token punctuation">.</span>Response<span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>c <span class="token operator">*</span>HttpClient<span class="token punctuation">)</span> <span class="token function">roundTripFunc</span><span class="token punctuation">(</span>rt req<span class="token punctuation">.</span>RoundTripper<span class="token punctuation">)</span> req<span class="token punctuation">.</span>RoundTripFunc <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token keyword">func</span><span class="token punctuation">(</span>req <span class="token operator">*</span>req<span class="token punctuation">.</span>Request<span class="token punctuation">)</span> <span class="token punctuation">(</span>resp <span class="token operator">*</span>req<span class="token punctuation">.</span>Response<span class="token punctuation">,</span> err <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
     <span class="token comment">// 省略……</span>
     spanCtx<span class="token punctuation">,</span> span <span class="token operator">:=</span> c<span class="token punctuation">.</span>Tracer<span class="token punctuation">.</span><span class="token function">Start</span><span class="token punctuation">(</span>req<span class="token punctuation">.</span><span class="token function">Context</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> spanName<span class="token punctuation">)</span> <span class="token comment">// 拿到关键的spanCtx</span>
     <span class="token keyword">defer</span> span<span class="token punctuation">.</span><span class="token function">End</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
@@ -802,33 +804,33 @@ postman --&gt; bkcmdb(go-zero) --&gt; 蓝鲸接口</p>
     span<span class="token punctuation">.</span><span class="token function">SetAttributes</span><span class="token punctuation">(</span>
       <span class="token comment">// 省略……</span>
     <span class="token punctuation">)</span>
-  <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>然后在服务B端，从HTTP headers中提取trace信息到载体(<code>carrier</code>)，并放入<code>context</code>里，这样就完成了应用之间的链路传递。这部分功能go-zero已经默认实现了，当开启了<code>Telemetry</code>后，go-zero会通过内置的trace中间件从载体中提取trace信息，这部分源码如下（<a target="_blank" rel="noopener" href="https://github.com/zeromicro/go-zero/blob/v1.5.2/rest/handler/tracehandler.go%EF%BC%89%EF%BC%9A">https://github.com/zeromicro/go-zero/blob/v1.5.2/rest/handler/tracehandler.go）：</a></p>
 <pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// TraceHandler return a middleware that process the opentelemetry.</span>
-<span class="token keyword">func</span> <span class="token function">TraceHandler</span><span class="token punctuation">(</span>serviceName<span class="token punctuation">,</span> path <span class="token builtin">string</span><span class="token punctuation">,</span> opts <span class="token operator">...</span>TraceOption<span class="token punctuation">)</span> <span class="token keyword">func</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>Handler<span class="token punctuation">)</span> http<span class="token punctuation">.</span>Handler <span class="token punctuation">&#123;</span>
+<span class="token keyword">func</span> <span class="token function">TraceHandler</span><span class="token punctuation">(</span>serviceName<span class="token punctuation">,</span> path <span class="token builtin">string</span><span class="token punctuation">,</span> opts <span class="token operator">...</span>TraceOption<span class="token punctuation">)</span> <span class="token keyword">func</span><span class="token punctuation">(</span>http<span class="token punctuation">.</span>Handler<span class="token punctuation">)</span> http<span class="token punctuation">.</span>Handler <span class="token punctuation">{</span>
   <span class="token keyword">var</span> options traceOptions
-  <span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span> opt <span class="token operator">:=</span> <span class="token keyword">range</span> opts <span class="token punctuation">&#123;</span>
+  <span class="token keyword">for</span> <span class="token boolean">_</span><span class="token punctuation">,</span> opt <span class="token operator">:=</span> <span class="token keyword">range</span> opts <span class="token punctuation">{</span>
     <span class="token function">opt</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>options<span class="token punctuation">)</span>
-  <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">}</span>
 
   ignorePaths <span class="token operator">:=</span> collection<span class="token punctuation">.</span><span class="token function">NewSet</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
   ignorePaths<span class="token punctuation">.</span><span class="token function">AddStr</span><span class="token punctuation">(</span>options<span class="token punctuation">.</span>traceIgnorePaths<span class="token operator">...</span><span class="token punctuation">)</span>
 
-  <span class="token keyword">return</span> <span class="token keyword">func</span><span class="token punctuation">(</span>next http<span class="token punctuation">.</span>Handler<span class="token punctuation">)</span> http<span class="token punctuation">.</span>Handler <span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> <span class="token keyword">func</span><span class="token punctuation">(</span>next http<span class="token punctuation">.</span>Handler<span class="token punctuation">)</span> http<span class="token punctuation">.</span>Handler <span class="token punctuation">{</span>
     tracer <span class="token operator">:=</span> otel<span class="token punctuation">.</span><span class="token function">Tracer</span><span class="token punctuation">(</span>trace<span class="token punctuation">.</span>TraceName<span class="token punctuation">)</span>
     propagator <span class="token operator">:=</span> otel<span class="token punctuation">.</span><span class="token function">GetTextMapPropagator</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 
-    <span class="token keyword">return</span> http<span class="token punctuation">.</span><span class="token function">HandlerFunc</span><span class="token punctuation">(</span><span class="token keyword">func</span><span class="token punctuation">(</span>w http<span class="token punctuation">.</span>ResponseWriter<span class="token punctuation">,</span> r <span class="token operator">*</span>http<span class="token punctuation">.</span>Request<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> http<span class="token punctuation">.</span><span class="token function">HandlerFunc</span><span class="token punctuation">(</span><span class="token keyword">func</span><span class="token punctuation">(</span>w http<span class="token punctuation">.</span>ResponseWriter<span class="token punctuation">,</span> r <span class="token operator">*</span>http<span class="token punctuation">.</span>Request<span class="token punctuation">)</span> <span class="token punctuation">{</span>
       spanName <span class="token operator">:=</span> path
-      <span class="token keyword">if</span> <span class="token function">len</span><span class="token punctuation">(</span>spanName<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">if</span> <span class="token function">len</span><span class="token punctuation">(</span>spanName<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span> <span class="token punctuation">{</span>
         spanName <span class="token operator">=</span> r<span class="token punctuation">.</span>URL<span class="token punctuation">.</span>Path
-      <span class="token punctuation">&#125;</span>
+      <span class="token punctuation">}</span>
 
-      <span class="token keyword">if</span> ignorePaths<span class="token punctuation">.</span><span class="token function">Contains</span><span class="token punctuation">(</span>spanName<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">if</span> ignorePaths<span class="token punctuation">.</span><span class="token function">Contains</span><span class="token punctuation">(</span>spanName<span class="token punctuation">)</span> <span class="token punctuation">{</span>
         next<span class="token punctuation">.</span><span class="token function">ServeHTTP</span><span class="token punctuation">(</span>w<span class="token punctuation">,</span> r<span class="token punctuation">)</span>
         <span class="token keyword">return</span>
-      <span class="token punctuation">&#125;</span>
+      <span class="token punctuation">}</span>
 
       ctx <span class="token operator">:=</span> propagator<span class="token punctuation">.</span><span class="token function">Extract</span><span class="token punctuation">(</span>r<span class="token punctuation">.</span><span class="token function">Context</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> propagation<span class="token punctuation">.</span><span class="token function">HeaderCarrier</span><span class="token punctuation">(</span>r<span class="token punctuation">.</span>Header<span class="token punctuation">)</span><span class="token punctuation">)</span>
       spanCtx<span class="token punctuation">,</span> span <span class="token operator">:=</span> tracer<span class="token punctuation">.</span><span class="token function">Start</span><span class="token punctuation">(</span>
@@ -843,15 +845,15 @@ postman --&gt; bkcmdb(go-zero) --&gt; 蓝鲸接口</p>
       <span class="token comment">// convenient for tracking error messages</span>
       propagator<span class="token punctuation">.</span><span class="token function">Inject</span><span class="token punctuation">(</span>spanCtx<span class="token punctuation">,</span> propagation<span class="token punctuation">.</span><span class="token function">HeaderCarrier</span><span class="token punctuation">(</span>w<span class="token punctuation">.</span><span class="token function">Header</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
 
-      trw <span class="token operator">:=</span> <span class="token operator">&amp;</span>response<span class="token punctuation">.</span>WithCodeResponseWriter<span class="token punctuation">&#123;</span>Writer<span class="token punctuation">:</span> w<span class="token punctuation">,</span> Code<span class="token punctuation">:</span> http<span class="token punctuation">.</span>StatusOK<span class="token punctuation">&#125;</span>
+      trw <span class="token operator">:=</span> <span class="token operator">&amp;</span>response<span class="token punctuation">.</span>WithCodeResponseWriter<span class="token punctuation">{</span>Writer<span class="token punctuation">:</span> w<span class="token punctuation">,</span> Code<span class="token punctuation">:</span> http<span class="token punctuation">.</span>StatusOK<span class="token punctuation">}</span>
       next<span class="token punctuation">.</span><span class="token function">ServeHTTP</span><span class="token punctuation">(</span>trw<span class="token punctuation">,</span> r<span class="token punctuation">.</span><span class="token function">WithContext</span><span class="token punctuation">(</span>spanCtx<span class="token punctuation">)</span><span class="token punctuation">)</span>
 
       span<span class="token punctuation">.</span><span class="token function">SetAttributes</span><span class="token punctuation">(</span>semconv<span class="token punctuation">.</span><span class="token function">HTTPAttributesFromHTTPStatusCode</span><span class="token punctuation">(</span>trw<span class="token punctuation">.</span>Code<span class="token punctuation">)</span><span class="token operator">...</span><span class="token punctuation">)</span>
       span<span class="token punctuation">.</span><span class="token function">SetStatus</span><span class="token punctuation">(</span>semconv<span class="token punctuation">.</span><span class="token function">SpanStatusFromHTTPStatusCodeAndSpanKind</span><span class="token punctuation">(</span>
         trw<span class="token punctuation">.</span>Code<span class="token punctuation">,</span> oteltrace<span class="token punctuation">.</span>SpanKindServer<span class="token punctuation">)</span><span class="token punctuation">)</span>
-    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
-  <span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>现在打开jaeger页面，可以看到两个服务之间的链路已经连起来了<br>
 <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fgozerojaeger%2F7.jpg" alt=""></p>
 <p>展开GetProjects，可以看到注入的header长这样<br>
@@ -962,7 +964,7 @@ postman --&gt; bkcmdb(go-zero) --&gt; 蓝鲸接口</p>
                         <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
                     </ul>
                     <div id="alipay">
-                        <img src="/blog/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                        <img src="/blog/medias/reward/alipay.png" class="reward-img" alt="支付宝打赏二维码">
                     </div>
                     <div id="wechat">
                         <img src="/blog/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
@@ -990,6 +992,273 @@ postman --&gt; bkcmdb(go-zero) --&gt; 蓝鲸接口</p>
     
 
     
+
+    
+        <style>
+    .valine-card {
+        margin: 1.5rem auto;
+    }
+
+    .valine-card .card-content {
+        padding: 20px 20px 5px 20px;
+    }
+
+    #vcomments textarea {
+        box-sizing: border-box;
+        background: url("/blog/medias/comment_bg.png") 100% 100% no-repeat;
+    }
+
+    #vcomments p {
+        margin: 2px 2px 10px;
+        font-size: 1.05rem;
+        line-height: 1.78rem;
+    }
+
+    #vcomments blockquote p {
+        text-indent: 0.2rem;
+    }
+
+    #vcomments a {
+        padding: 0 2px;
+        color: #4cbf30;
+        font-weight: 500;
+        text-decoration: none;
+    }
+
+    #vcomments img {
+        max-width: 100%;
+        height: auto;
+        cursor: pointer;
+    }
+
+    #vcomments ol li {
+        list-style-type: decimal;
+    }
+
+    #vcomments ol,
+    ul {
+        display: block;
+        padding-left: 2em;
+        word-spacing: 0.05rem;
+    }
+
+    #vcomments ul li,
+    ol li {
+        display: list-item;
+        line-height: 1.8rem;
+        font-size: 1rem;
+    }
+
+    #vcomments ul li {
+        list-style-type: disc;
+    }
+
+    #vcomments ul ul li {
+        list-style-type: circle;
+    }
+
+    #vcomments table, th, td {
+        padding: 12px 13px;
+        border: 1px solid #dfe2e5;
+    }
+
+    #vcomments table, th, td {
+        border: 0;
+    }
+
+    table tr:nth-child(2n), thead {
+        background-color: #fafafa;
+    }
+
+    #vcomments table th {
+        background-color: #f2f2f2;
+        min-width: 80px;
+    }
+
+    #vcomments table td {
+        min-width: 80px;
+    }
+
+    #vcomments h1 {
+        font-size: 1.85rem;
+        font-weight: bold;
+        line-height: 2.2rem;
+    }
+
+    #vcomments h2 {
+        font-size: 1.65rem;
+        font-weight: bold;
+        line-height: 1.9rem;
+    }
+
+    #vcomments h3 {
+        font-size: 1.45rem;
+        font-weight: bold;
+        line-height: 1.7rem;
+    }
+
+    #vcomments h4 {
+        font-size: 1.25rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    #vcomments h5 {
+        font-size: 1.1rem;
+        font-weight: bold;
+        line-height: 1.4rem;
+    }
+
+    #vcomments h6 {
+        font-size: 1rem;
+        line-height: 1.3rem;
+    }
+
+    #vcomments p {
+        font-size: 1rem;
+        line-height: 1.5rem;
+    }
+
+    #vcomments hr {
+        margin: 12px 0;
+        border: 0;
+        border-top: 1px solid #ccc;
+    }
+
+    #vcomments blockquote {
+        margin: 15px 0;
+        border-left: 5px solid #42b983;
+        padding: 1rem 0.8rem 0.3rem 0.8rem;
+        color: #666;
+        background-color: rgba(66, 185, 131, .1);
+    }
+
+    #vcomments pre {
+        font-family: monospace, monospace;
+        padding: 1.2em;
+        margin: .5em 0;
+        background: #272822;
+        overflow: auto;
+        border-radius: 0.3em;
+        tab-size: 4;
+    }
+
+    #vcomments code {
+        font-family: monospace, monospace;
+        padding: 1px 3px;
+        font-size: 0.92rem;
+        color: #e96900;
+        background-color: #f8f8f8;
+        border-radius: 2px;
+    }
+
+    #vcomments pre code {
+        font-family: monospace, monospace;
+        padding: 0;
+        color: #e8eaf6;
+        background-color: #272822;
+    }
+
+    #vcomments pre[class*="language-"] {
+        padding: 1.2em;
+        margin: .5em 0;
+    }
+
+    #vcomments code[class*="language-"],
+    pre[class*="language-"] {
+        color: #e8eaf6;
+    }
+
+    #vcomments [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+        position: inherit;
+        margin-left: -1.3rem;
+        margin-right: 0.4rem;
+        margin-top: -1px;
+        vertical-align: middle;
+        left: unset;
+        visibility: visible;
+    }
+
+    #vcomments b,
+    strong {
+        font-weight: bold;
+    }
+
+    #vcomments dfn {
+        font-style: italic;
+    }
+
+    #vcomments small {
+        font-size: 85%;
+    }
+
+    #vcomments cite {
+        font-style: normal;
+    }
+
+    #vcomments mark {
+        background-color: #fcf8e3;
+        padding: .2em;
+    }
+
+    #vcomments table, th, td {
+        padding: 12px 13px;
+        border: 1px solid #dfe2e5;
+    }
+
+    table tr:nth-child(2n), thead {
+        background-color: #fafafa;
+    }
+
+    #vcomments table th {
+        background-color: #f2f2f2;
+        min-width: 80px;
+    }
+
+    #vcomments table td {
+        min-width: 80px;
+    }
+
+    #vcomments [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+        position: inherit;
+        margin-left: -1.3rem;
+        margin-right: 0.4rem;
+        margin-top: -1px;
+        vertical-align: middle;
+        left: unset;
+        visibility: visible;
+    }
+</style>
+
+<div class="card valine-card" data-aos="fade-up">
+    <div class="comment_headling" style="font-size: 20px; font-weight: 700; position: relative; padding-left: 20px; top: 15px; padding-bottom: 5px;">
+        <i class="fas fa-comments fa-fw" aria-hidden="true"></i>
+        <span>评论</span>
+    </div>
+    <div id="vcomments" class="card-content" style="display: grid">
+    </div>
+</div>
+
+<script src="/blog/libs/valine/av-min.js"></script>
+<script src="https://unpkg.com/valine/dist/Valine.min.js"></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        appId: 'lrUDzoXHA8J9LL4P55q2Vt2N-gzGzoHsz',
+        appKey: '6ClQluKY0m4zPsu6ghTkaMPp',
+        serverURLs: 'https://lrudzoxh.lc-cn-n1-shared.com',
+        notify: 'true' === 'true',
+        verify: 'false' === 'true',
+        visitor: 'true' === 'true',
+        avatar: 'mm',
+        pageSize: '10',
+        lang: 'zh-cn',
+        placeholder: 'just go go'
+    });
+</script>
+
+<!--酷Q推送-->
+
 
     
 
@@ -1308,7 +1577,7 @@ postman --&gt; bkcmdb(go-zero) --&gt; 蓝鲸接口</p>
             <br>
             
                 &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                        class="white-color">45.5k</span>
+                        class="white-color">51.9k</span>
             
             
             

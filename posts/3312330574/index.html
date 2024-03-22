@@ -52,7 +52,9 @@
 
     <script src="/blog/libs/jquery/jquery-3.6.0.min.js"></script>
 
-<meta name="generator" content="Hexo 6.3.0"></head>
+<meta name="generator" content="Hexo 6.3.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
 
 
 <body>
@@ -684,8 +686,8 @@ EOF</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span>
 <ol start="5">
 <li>这时候应该看到1秒钟就会返回，而不是之前的2秒钟，但reviews是不可用的。</li>
 </ol>
-<blockquote><p>即使超时配置为半秒，响应仍需要1秒，是因为productpage服务中存在硬编码重试，因此它在返回之前调用reviews服务超时两次。</p>
-</blockquote>
+<div class="note success no-icon"><p>即使超时配置为半秒，响应仍需要1秒，是因为productpage服务中存在硬编码重试，因此它在返回之前调用reviews服务超时两次。</p>
+</div>
 <p>可以观察到，Bookinfo的页面（调用reviews服务来生成页面）没显示评论，而是显示了消息：<code>Sorry, product reviews are currently unavailable for this book.</code>这就是它收到了来自 reviews 服务的超时错误信息。</p>
 <h3 id="清除环境-4">清除环境</h3>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl delete <span class="token parameter variable">-f</span> samples/bookinfo/networking/virtual-service-all-v1.yaml<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
@@ -726,7 +728,7 @@ EOF</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span>
 <ol start="2">
 <li>登入客户端 Pod 并使用 Fortio 工具调用 httpbin 服务。-curl 参数表明发送一次调用：</li>
 </ol>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## export FORTIO_POD=$(kubectl get pods -l app=fortio -o 'jsonpath=&#123;.items[0].metadata.name&#125;')</span>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## export FORTIO_POD=$(kubectl get pods -l app=fortio -o 'jsonpath={.items[0].metadata.name}')</span>
 <span class="token comment">## kubectl exec "$FORTIO_POD" -c fortio -- /usr/bin/fortio curl -quiet http://httpbin:8000/get</span>
 HTTP/1.1 <span class="token number">200</span> OK
 server: envoy
@@ -737,9 +739,9 @@ access-control-allow-origin: *
 access-control-allow-credentials: <span class="token boolean">true</span>
 x-envoy-upstream-service-time: <span class="token number">37</span>
 
-<span class="token punctuation">&#123;</span>
-  <span class="token string">"args"</span><span class="token builtin class-name">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>,
-  <span class="token string">"headers"</span><span class="token builtin class-name">:</span> <span class="token punctuation">&#123;</span>
+<span class="token punctuation">{</span>
+  <span class="token string">"args"</span><span class="token builtin class-name">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>,
+  <span class="token string">"headers"</span><span class="token builtin class-name">:</span> <span class="token punctuation">{</span>
     <span class="token string">"Host"</span><span class="token builtin class-name">:</span> <span class="token string">"httpbin:8000"</span>,
     <span class="token string">"User-Agent"</span><span class="token builtin class-name">:</span> <span class="token string">"fortio.org/fortio-1.17.1"</span>,
     <span class="token string">"X-B3-Parentspanid"</span><span class="token builtin class-name">:</span> <span class="token string">"4fe31703ae3e116c"</span>,
@@ -748,10 +750,10 @@ x-envoy-upstream-service-time: <span class="token number">37</span>
     <span class="token string">"X-B3-Traceid"</span><span class="token builtin class-name">:</span> <span class="token string">"eb54b298e3a056414fe31703ae3e116c"</span>,
     <span class="token string">"X-Envoy-Attempt-Count"</span><span class="token builtin class-name">:</span> <span class="token string">"1"</span>,
     <span class="token string">"X-Forwarded-Client-Cert"</span><span class="token builtin class-name">:</span> <span class="token string">"By=spiffe://cluster.local/ns/ficc-ofa-dev/sa/httpbin;Hash=c76311278aaa076b14ab1497090ed974a9d79a70e6c9b4e8373d4a9570a5b044;Subject=<span class="token entity" title="\&quot;">\"</span><span class="token entity" title="\&quot;">\"</span>;URI=spiffe://cluster.local/ns/ficc-ofa-dev/sa/default"</span>
-  <span class="token punctuation">&#125;</span>,
+  <span class="token punctuation">}</span>,
   <span class="token string">"origin"</span><span class="token builtin class-name">:</span> <span class="token string">"127.0.0.6"</span>,
   <span class="token string">"url"</span><span class="token builtin class-name">:</span> <span class="token string">"http://httpbin:8000/get"</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>可以看到调用后端服务的请求已经成功！接下来，可以测试熔断。</p>
 <h3 id="触发熔断器">触发熔断器</h3>
 <p>在DestinationRule配置中定义 maxConnections: 1和http1MaxPendingRequests: 1。这些规则意味着，如果并发的连接和请求数超过一个，在istio-proxy进行进一步的请求和连接时，后续请求或连接将被阻止。</p>
@@ -760,31 +762,31 @@ x-envoy-upstream-service-time: <span class="token number">37</span>
 </ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## kubectl exec "$FORTIO_POD" -c fortio -- /usr/bin/fortio load -c 2 -qps 0 -n 20 -loglevel Warning http://httpbin:8000/get</span>
 level warning http://httpbin:8000/get
-02:36:45 I logger.go:12<span class="token operator"><span class="token file-descriptor important">7</span>></span> Log level is now <span class="token number">3</span> Warning <span class="token punctuation">(</span>was <span class="token number">2</span> Info<span class="token punctuation">)</span>
-Fortio <span class="token number">1.17</span>.1 running at <span class="token number">0</span> queries per second, <span class="token number">2</span>-<span class="token operator">></span><span class="token number">2</span> procs, <span class="token keyword">for</span> <span class="token number">20</span> calls: http://httpbin:8000/get
+02:36:45 I logger.go:12<span class="token operator"><span class="token file-descriptor important">7</span>&gt;</span> Log level is now <span class="token number">3</span> Warning <span class="token punctuation">(</span>was <span class="token number">2</span> Info<span class="token punctuation">)</span>
+Fortio <span class="token number">1.17</span>.1 running at <span class="token number">0</span> queries per second, <span class="token number">2</span>-<span class="token operator">&gt;</span><span class="token number">2</span> procs, <span class="token keyword">for</span> <span class="token number">20</span> calls: http://httpbin:8000/get
 Starting at max qps with <span class="token number">2</span> thread<span class="token punctuation">(</span>s<span class="token punctuation">)</span> <span class="token punctuation">[</span>gomax <span class="token number">2</span><span class="token punctuation">]</span> <span class="token keyword">for</span> exactly <span class="token number">20</span> calls <span class="token punctuation">(</span><span class="token number">10</span> per thread + <span class="token number">0</span><span class="token punctuation">)</span>
-02:36:45 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>></span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
-02:36:45 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>></span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
-02:36:45 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>></span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
-02:36:45 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>></span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
-02:36:45 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>></span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
-02:36:45 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>></span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
+02:36:45 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>&gt;</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
+02:36:45 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>&gt;</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
+02:36:45 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>&gt;</span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
+02:36:45 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>&gt;</span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
+02:36:45 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>&gt;</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
+02:36:45 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>&gt;</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
 Ended after <span class="token number">225</span>.072865ms <span class="token builtin class-name">:</span> <span class="token number">20</span> calls. <span class="token assign-left variable">qps</span><span class="token operator">=</span><span class="token number">88.86</span>
 Aggregated Function Time <span class="token builtin class-name">:</span> count <span class="token number">20</span> avg <span class="token number">0.022105607</span> +/- <span class="token number">0.01845</span> min <span class="token number">0.001268616</span> max <span class="token number">0.074273631</span> <span class="token function">sum</span> <span class="token number">0.442112137</span>
 <span class="token comment">## range, mid point, percentile, count</span>
-<span class="token operator">>=</span> <span class="token number">0.00126862</span> <span class="token operator">&lt;=</span> <span class="token number">0.002</span> , <span class="token number">0.00163431</span> , <span class="token number">10.00</span>, <span class="token number">2</span>
-<span class="token operator">></span> <span class="token number">0.003</span> <span class="token operator">&lt;=</span> <span class="token number">0.004</span> , <span class="token number">0.0035</span> , <span class="token number">15.00</span>, <span class="token number">1</span>
-<span class="token operator">></span> <span class="token number">0.007</span> <span class="token operator">&lt;=</span> <span class="token number">0.008</span> , <span class="token number">0.0075</span> , <span class="token number">20.00</span>, <span class="token number">1</span>
-<span class="token operator">></span> <span class="token number">0.011</span> <span class="token operator">&lt;=</span> <span class="token number">0.012</span> , <span class="token number">0.0115</span> , <span class="token number">25.00</span>, <span class="token number">1</span>
-<span class="token operator">></span> <span class="token number">0.012</span> <span class="token operator">&lt;=</span> <span class="token number">0.014</span> , <span class="token number">0.013</span> , <span class="token number">35.00</span>, <span class="token number">2</span>
-<span class="token operator">></span> <span class="token number">0.014</span> <span class="token operator">&lt;=</span> <span class="token number">0.016</span> , <span class="token number">0.015</span> , <span class="token number">55.00</span>, <span class="token number">4</span>
-<span class="token operator">></span> <span class="token number">0.016</span> <span class="token operator">&lt;=</span> <span class="token number">0.018</span> , <span class="token number">0.017</span> , <span class="token number">60.00</span>, <span class="token number">1</span>
-<span class="token operator">></span> <span class="token number">0.018</span> <span class="token operator">&lt;=</span> <span class="token number">0.02</span> , <span class="token number">0.019</span> , <span class="token number">70.00</span>, <span class="token number">2</span>
-<span class="token operator">></span> <span class="token number">0.03</span> <span class="token operator">&lt;=</span> <span class="token number">0.035</span> , <span class="token number">0.0325</span> , <span class="token number">80.00</span>, <span class="token number">2</span>
-<span class="token operator">></span> <span class="token number">0.035</span> <span class="token operator">&lt;=</span> <span class="token number">0.04</span> , <span class="token number">0.0375</span> , <span class="token number">85.00</span>, <span class="token number">1</span>
-<span class="token operator">></span> <span class="token number">0.045</span> <span class="token operator">&lt;=</span> <span class="token number">0.05</span> , <span class="token number">0.0475</span> , <span class="token number">90.00</span>, <span class="token number">1</span>
-<span class="token operator">></span> <span class="token number">0.05</span> <span class="token operator">&lt;=</span> <span class="token number">0.06</span> , <span class="token number">0.055</span> , <span class="token number">95.00</span>, <span class="token number">1</span>
-<span class="token operator">></span> <span class="token number">0.07</span> <span class="token operator">&lt;=</span> <span class="token number">0.0742736</span> , <span class="token number">0.0721368</span> , <span class="token number">100.00</span>, <span class="token number">1</span>
+<span class="token operator">&gt;=</span> <span class="token number">0.00126862</span> <span class="token operator">&lt;=</span> <span class="token number">0.002</span> , <span class="token number">0.00163431</span> , <span class="token number">10.00</span>, <span class="token number">2</span>
+<span class="token operator">&gt;</span> <span class="token number">0.003</span> <span class="token operator">&lt;=</span> <span class="token number">0.004</span> , <span class="token number">0.0035</span> , <span class="token number">15.00</span>, <span class="token number">1</span>
+<span class="token operator">&gt;</span> <span class="token number">0.007</span> <span class="token operator">&lt;=</span> <span class="token number">0.008</span> , <span class="token number">0.0075</span> , <span class="token number">20.00</span>, <span class="token number">1</span>
+<span class="token operator">&gt;</span> <span class="token number">0.011</span> <span class="token operator">&lt;=</span> <span class="token number">0.012</span> , <span class="token number">0.0115</span> , <span class="token number">25.00</span>, <span class="token number">1</span>
+<span class="token operator">&gt;</span> <span class="token number">0.012</span> <span class="token operator">&lt;=</span> <span class="token number">0.014</span> , <span class="token number">0.013</span> , <span class="token number">35.00</span>, <span class="token number">2</span>
+<span class="token operator">&gt;</span> <span class="token number">0.014</span> <span class="token operator">&lt;=</span> <span class="token number">0.016</span> , <span class="token number">0.015</span> , <span class="token number">55.00</span>, <span class="token number">4</span>
+<span class="token operator">&gt;</span> <span class="token number">0.016</span> <span class="token operator">&lt;=</span> <span class="token number">0.018</span> , <span class="token number">0.017</span> , <span class="token number">60.00</span>, <span class="token number">1</span>
+<span class="token operator">&gt;</span> <span class="token number">0.018</span> <span class="token operator">&lt;=</span> <span class="token number">0.02</span> , <span class="token number">0.019</span> , <span class="token number">70.00</span>, <span class="token number">2</span>
+<span class="token operator">&gt;</span> <span class="token number">0.03</span> <span class="token operator">&lt;=</span> <span class="token number">0.035</span> , <span class="token number">0.0325</span> , <span class="token number">80.00</span>, <span class="token number">2</span>
+<span class="token operator">&gt;</span> <span class="token number">0.035</span> <span class="token operator">&lt;=</span> <span class="token number">0.04</span> , <span class="token number">0.0375</span> , <span class="token number">85.00</span>, <span class="token number">1</span>
+<span class="token operator">&gt;</span> <span class="token number">0.045</span> <span class="token operator">&lt;=</span> <span class="token number">0.05</span> , <span class="token number">0.0475</span> , <span class="token number">90.00</span>, <span class="token number">1</span>
+<span class="token operator">&gt;</span> <span class="token number">0.05</span> <span class="token operator">&lt;=</span> <span class="token number">0.06</span> , <span class="token number">0.055</span> , <span class="token number">95.00</span>, <span class="token number">1</span>
+<span class="token operator">&gt;</span> <span class="token number">0.07</span> <span class="token operator">&lt;=</span> <span class="token number">0.0742736</span> , <span class="token number">0.0721368</span> , <span class="token number">100.00</span>, <span class="token number">1</span>
 <span class="token comment">## target 50% 0.0155</span>
 <span class="token comment">## target 75% 0.0325</span>
 <span class="token comment">## target 90% 0.05</span>
@@ -804,51 +806,51 @@ Code 503 : 6 (30.0 %)<span aria-hidden="true" class="line-numbers-rows"><span></
 <li>将并发连接数提高到 3 个：</li>
 </ol>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## kubectl exec "$FORTIO_POD" -c fortio -- /usr/bin/fortio load -c 3 -qps 0 -n 30 -loglevel Warning http://httpbin:8000/get</span>
-02:55:56 I logger.go:12<span class="token operator"><span class="token file-descriptor important">7</span>></span> Log level is now <span class="token number">3</span> Warning <span class="token punctuation">(</span>was <span class="token number">2</span> Info<span class="token punctuation">)</span>
-Fortio <span class="token number">1.17</span>.1 running at <span class="token number">0</span> queries per second, <span class="token number">2</span>-<span class="token operator">></span><span class="token number">2</span> procs, <span class="token keyword">for</span> <span class="token number">30</span> calls: http://httpbin:8000/get
+02:55:56 I logger.go:12<span class="token operator"><span class="token file-descriptor important">7</span>&gt;</span> Log level is now <span class="token number">3</span> Warning <span class="token punctuation">(</span>was <span class="token number">2</span> Info<span class="token punctuation">)</span>
+Fortio <span class="token number">1.17</span>.1 running at <span class="token number">0</span> queries per second, <span class="token number">2</span>-<span class="token operator">&gt;</span><span class="token number">2</span> procs, <span class="token keyword">for</span> <span class="token number">30</span> calls: http://httpbin:8000/get
 Starting at max qps with <span class="token number">3</span> thread<span class="token punctuation">(</span>s<span class="token punctuation">)</span> <span class="token punctuation">[</span>gomax <span class="token number">2</span><span class="token punctuation">]</span> <span class="token keyword">for</span> exactly <span class="token number">30</span> calls <span class="token punctuation">(</span><span class="token number">10</span> per thread + <span class="token number">0</span><span class="token punctuation">)</span>
-02:55:56 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>></span> <span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
-02:55:56 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>></span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
-02:55:56 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>></span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
-02:55:56 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>></span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
-02:55:56 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>></span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
-02:55:56 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>></span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
-02:55:56 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>></span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
-02:55:56 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>></span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
-02:55:56 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>></span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
-02:55:56 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>></span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
-02:55:56 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>></span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
-02:55:56 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>></span> <span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
-02:55:56 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>></span> <span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
-02:55:56 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>></span> <span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
-02:55:56 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>></span> <span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
-02:55:57 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>></span> <span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
-02:55:57 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>></span> <span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
-02:55:57 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>></span> <span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
-02:55:57 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>></span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
+02:55:56 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>&gt;</span> <span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
+02:55:56 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>&gt;</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
+02:55:56 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>&gt;</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
+02:55:56 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>&gt;</span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
+02:55:56 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>&gt;</span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
+02:55:56 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>&gt;</span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
+02:55:56 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>&gt;</span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
+02:55:56 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>&gt;</span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
+02:55:56 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>&gt;</span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
+02:55:56 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>&gt;</span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
+02:55:56 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>&gt;</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
+02:55:56 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>&gt;</span> <span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
+02:55:56 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>&gt;</span> <span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
+02:55:56 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>&gt;</span> <span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
+02:55:56 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>&gt;</span> <span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
+02:55:57 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>&gt;</span> <span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
+02:55:57 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>&gt;</span> <span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
+02:55:57 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>&gt;</span> <span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
+02:55:57 W http_client.go:80<span class="token operator"><span class="token file-descriptor important">6</span>&gt;</span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> Non ok http code <span class="token number">503</span> <span class="token punctuation">(</span>HTTP/1.1 <span class="token number">503</span><span class="token punctuation">)</span>
 Ended after <span class="token number">1</span>.10855232s <span class="token builtin class-name">:</span> <span class="token number">30</span> calls. <span class="token assign-left variable">qps</span><span class="token operator">=</span><span class="token number">27.062</span>
 Aggregated Function Time <span class="token builtin class-name">:</span> count <span class="token number">30</span> avg <span class="token number">0.091949974</span> +/- <span class="token number">0.1241</span> min <span class="token number">0.002178128</span> max <span class="token number">0.468933898</span> <span class="token function">sum</span> <span class="token number">2.75849922</span>
 <span class="token comment">## range, mid point, percentile, count</span>
-<span class="token operator">>=</span> <span class="token number">0.00217813</span> <span class="token operator">&lt;=</span> <span class="token number">0.003</span> , <span class="token number">0.00258906</span> , <span class="token number">3.33</span>, <span class="token number">1</span>
-<span class="token operator">></span> <span class="token number">0.004</span> <span class="token operator">&lt;=</span> <span class="token number">0.005</span> , <span class="token number">0.0045</span> , <span class="token number">6.67</span>, <span class="token number">1</span>
-<span class="token operator">></span> <span class="token number">0.007</span> <span class="token operator">&lt;=</span> <span class="token number">0.008</span> , <span class="token number">0.0075</span> , <span class="token number">10.00</span>, <span class="token number">1</span>
-<span class="token operator">></span> <span class="token number">0.008</span> <span class="token operator">&lt;=</span> <span class="token number">0.009</span> , <span class="token number">0.0085</span> , <span class="token number">13.33</span>, <span class="token number">1</span>
-<span class="token operator">></span> <span class="token number">0.009</span> <span class="token operator">&lt;=</span> <span class="token number">0.01</span> , <span class="token number">0.0095</span> , <span class="token number">16.67</span>, <span class="token number">1</span>
-<span class="token operator">></span> <span class="token number">0.012</span> <span class="token operator">&lt;=</span> <span class="token number">0.014</span> , <span class="token number">0.013</span> , <span class="token number">33.33</span>, <span class="token number">5</span>
-<span class="token operator">></span> <span class="token number">0.014</span> <span class="token operator">&lt;=</span> <span class="token number">0.016</span> , <span class="token number">0.015</span> , <span class="token number">36.67</span>, <span class="token number">1</span>
-<span class="token operator">></span> <span class="token number">0.018</span> <span class="token operator">&lt;=</span> <span class="token number">0.02</span> , <span class="token number">0.019</span> , <span class="token number">40.00</span>, <span class="token number">1</span>
-<span class="token operator">></span> <span class="token number">0.02</span> <span class="token operator">&lt;=</span> <span class="token number">0.025</span> , <span class="token number">0.0225</span> , <span class="token number">50.00</span>, <span class="token number">3</span>
-<span class="token operator">></span> <span class="token number">0.035</span> <span class="token operator">&lt;=</span> <span class="token number">0.04</span> , <span class="token number">0.0375</span> , <span class="token number">53.33</span>, <span class="token number">1</span>
-<span class="token operator">></span> <span class="token number">0.04</span> <span class="token operator">&lt;=</span> <span class="token number">0.045</span> , <span class="token number">0.0425</span> , <span class="token number">56.67</span>, <span class="token number">1</span>
-<span class="token operator">></span> <span class="token number">0.045</span> <span class="token operator">&lt;=</span> <span class="token number">0.05</span> , <span class="token number">0.0475</span> , <span class="token number">60.00</span>, <span class="token number">1</span>
-<span class="token operator">></span> <span class="token number">0.05</span> <span class="token operator">&lt;=</span> <span class="token number">0.06</span> , <span class="token number">0.055</span> , <span class="token number">66.67</span>, <span class="token number">2</span>
-<span class="token operator">></span> <span class="token number">0.06</span> <span class="token operator">&lt;=</span> <span class="token number">0.07</span> , <span class="token number">0.065</span> , <span class="token number">70.00</span>, <span class="token number">1</span>
-<span class="token operator">></span> <span class="token number">0.07</span> <span class="token operator">&lt;=</span> <span class="token number">0.08</span> , <span class="token number">0.075</span> , <span class="token number">73.33</span>, <span class="token number">1</span>
-<span class="token operator">></span> <span class="token number">0.1</span> <span class="token operator">&lt;=</span> <span class="token number">0.12</span> , <span class="token number">0.11</span> , <span class="token number">76.67</span>, <span class="token number">1</span>
-<span class="token operator">></span> <span class="token number">0.2</span> <span class="token operator">&lt;=</span> <span class="token number">0.25</span> , <span class="token number">0.225</span> , <span class="token number">86.67</span>, <span class="token number">3</span>
-<span class="token operator">></span> <span class="token number">0.25</span> <span class="token operator">&lt;=</span> <span class="token number">0.3</span> , <span class="token number">0.275</span> , <span class="token number">90.00</span>, <span class="token number">1</span>
-<span class="token operator">></span> <span class="token number">0.35</span> <span class="token operator">&lt;=</span> <span class="token number">0.4</span> , <span class="token number">0.375</span> , <span class="token number">96.67</span>, <span class="token number">2</span>
-<span class="token operator">></span> <span class="token number">0.45</span> <span class="token operator">&lt;=</span> <span class="token number">0.468934</span> , <span class="token number">0.459467</span> , <span class="token number">100.00</span>, <span class="token number">1</span>
+<span class="token operator">&gt;=</span> <span class="token number">0.00217813</span> <span class="token operator">&lt;=</span> <span class="token number">0.003</span> , <span class="token number">0.00258906</span> , <span class="token number">3.33</span>, <span class="token number">1</span>
+<span class="token operator">&gt;</span> <span class="token number">0.004</span> <span class="token operator">&lt;=</span> <span class="token number">0.005</span> , <span class="token number">0.0045</span> , <span class="token number">6.67</span>, <span class="token number">1</span>
+<span class="token operator">&gt;</span> <span class="token number">0.007</span> <span class="token operator">&lt;=</span> <span class="token number">0.008</span> , <span class="token number">0.0075</span> , <span class="token number">10.00</span>, <span class="token number">1</span>
+<span class="token operator">&gt;</span> <span class="token number">0.008</span> <span class="token operator">&lt;=</span> <span class="token number">0.009</span> , <span class="token number">0.0085</span> , <span class="token number">13.33</span>, <span class="token number">1</span>
+<span class="token operator">&gt;</span> <span class="token number">0.009</span> <span class="token operator">&lt;=</span> <span class="token number">0.01</span> , <span class="token number">0.0095</span> , <span class="token number">16.67</span>, <span class="token number">1</span>
+<span class="token operator">&gt;</span> <span class="token number">0.012</span> <span class="token operator">&lt;=</span> <span class="token number">0.014</span> , <span class="token number">0.013</span> , <span class="token number">33.33</span>, <span class="token number">5</span>
+<span class="token operator">&gt;</span> <span class="token number">0.014</span> <span class="token operator">&lt;=</span> <span class="token number">0.016</span> , <span class="token number">0.015</span> , <span class="token number">36.67</span>, <span class="token number">1</span>
+<span class="token operator">&gt;</span> <span class="token number">0.018</span> <span class="token operator">&lt;=</span> <span class="token number">0.02</span> , <span class="token number">0.019</span> , <span class="token number">40.00</span>, <span class="token number">1</span>
+<span class="token operator">&gt;</span> <span class="token number">0.02</span> <span class="token operator">&lt;=</span> <span class="token number">0.025</span> , <span class="token number">0.0225</span> , <span class="token number">50.00</span>, <span class="token number">3</span>
+<span class="token operator">&gt;</span> <span class="token number">0.035</span> <span class="token operator">&lt;=</span> <span class="token number">0.04</span> , <span class="token number">0.0375</span> , <span class="token number">53.33</span>, <span class="token number">1</span>
+<span class="token operator">&gt;</span> <span class="token number">0.04</span> <span class="token operator">&lt;=</span> <span class="token number">0.045</span> , <span class="token number">0.0425</span> , <span class="token number">56.67</span>, <span class="token number">1</span>
+<span class="token operator">&gt;</span> <span class="token number">0.045</span> <span class="token operator">&lt;=</span> <span class="token number">0.05</span> , <span class="token number">0.0475</span> , <span class="token number">60.00</span>, <span class="token number">1</span>
+<span class="token operator">&gt;</span> <span class="token number">0.05</span> <span class="token operator">&lt;=</span> <span class="token number">0.06</span> , <span class="token number">0.055</span> , <span class="token number">66.67</span>, <span class="token number">2</span>
+<span class="token operator">&gt;</span> <span class="token number">0.06</span> <span class="token operator">&lt;=</span> <span class="token number">0.07</span> , <span class="token number">0.065</span> , <span class="token number">70.00</span>, <span class="token number">1</span>
+<span class="token operator">&gt;</span> <span class="token number">0.07</span> <span class="token operator">&lt;=</span> <span class="token number">0.08</span> , <span class="token number">0.075</span> , <span class="token number">73.33</span>, <span class="token number">1</span>
+<span class="token operator">&gt;</span> <span class="token number">0.1</span> <span class="token operator">&lt;=</span> <span class="token number">0.12</span> , <span class="token number">0.11</span> , <span class="token number">76.67</span>, <span class="token number">1</span>
+<span class="token operator">&gt;</span> <span class="token number">0.2</span> <span class="token operator">&lt;=</span> <span class="token number">0.25</span> , <span class="token number">0.225</span> , <span class="token number">86.67</span>, <span class="token number">3</span>
+<span class="token operator">&gt;</span> <span class="token number">0.25</span> <span class="token operator">&lt;=</span> <span class="token number">0.3</span> , <span class="token number">0.275</span> , <span class="token number">90.00</span>, <span class="token number">1</span>
+<span class="token operator">&gt;</span> <span class="token number">0.35</span> <span class="token operator">&lt;=</span> <span class="token number">0.4</span> , <span class="token number">0.375</span> , <span class="token number">96.67</span>, <span class="token number">2</span>
+<span class="token operator">&gt;</span> <span class="token number">0.45</span> <span class="token operator">&lt;=</span> <span class="token number">0.468934</span> , <span class="token number">0.459467</span> , <span class="token number">100.00</span>, <span class="token number">1</span>
 <span class="token comment">## target 50% 0.025</span>
 <span class="token comment">## target 75% 0.11</span>
 <span class="token comment">## target 90% 0.3</span>
@@ -919,8 +921,8 @@ EOF<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span>
 <ol start="2">
 <li>现在所有流量都转到httpbin:v 服务，并向此服务发送请求：</li>
 </ol>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">export</span> <span class="token assign-left variable">SLEEP_POD</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span>kubectl get pod <span class="token parameter variable">-l</span> <span class="token assign-left variable">app</span><span class="token operator">=</span>sleep <span class="token parameter variable">-o</span> <span class="token assign-left variable">jsonpath</span><span class="token operator">=</span><span class="token punctuation">&#123;</span>.items<span class="token punctuation">..</span>metadata.name<span class="token punctuation">&#125;</span><span class="token variable">)</span></span>
-kubectl <span class="token builtin class-name">exec</span> <span class="token string">"<span class="token variable">$&#123;SLEEP_POD&#125;</span>"</span> <span class="token parameter variable">-c</span> <span class="token function">sleep</span> -- <span class="token function">curl</span> <span class="token parameter variable">-sS</span> http://httpbin:8000/headers<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">export</span> <span class="token assign-left variable">SLEEP_POD</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span>kubectl get pod <span class="token parameter variable">-l</span> <span class="token assign-left variable">app</span><span class="token operator">=</span>sleep <span class="token parameter variable">-o</span> <span class="token assign-left variable">jsonpath</span><span class="token operator">=</span><span class="token punctuation">{</span>.items<span class="token punctuation">..</span>metadata.name<span class="token punctuation">}</span><span class="token variable">)</span></span>
+kubectl <span class="token builtin class-name">exec</span> <span class="token string">"<span class="token variable">${SLEEP_POD}</span>"</span> <span class="token parameter variable">-c</span> <span class="token function">sleep</span> -- <span class="token function">curl</span> <span class="token parameter variable">-sS</span> http://httpbin:8000/headers<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <ol start="3">
 <li>分别查看httpbin Pod的v1和v2两个版本的日志。您可以看到v1版本的访问日志条目，而v2版本没有日志</li>
 </ol>
@@ -954,7 +956,7 @@ EOF<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span>
 <ol start="2">
 <li>发送流量：</li>
 </ol>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl <span class="token builtin class-name">exec</span> <span class="token string">"<span class="token variable">$&#123;SLEEP_POD&#125;</span>"</span> <span class="token parameter variable">-c</span> <span class="token function">sleep</span> -- <span class="token function">curl</span> <span class="token parameter variable">-sS</span> http://httpbin:8000/headers<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl <span class="token builtin class-name">exec</span> <span class="token string">"<span class="token variable">${SLEEP_POD}</span>"</span> <span class="token parameter variable">-c</span> <span class="token function">sleep</span> -- <span class="token function">curl</span> <span class="token parameter variable">-sS</span> http://httpbin:8000/headers<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>现在就可以看到v1和v2版本中都有了访问日志。v2版本中的访问日志就是由镜像流量产生的，这些请求的实际目标是v1版本。</p>
 
                 
@@ -1062,7 +1064,7 @@ EOF<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span>
                         <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
                     </ul>
                     <div id="alipay">
-                        <img src="/blog/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                        <img src="/blog/medias/reward/alipay.png" class="reward-img" alt="支付宝打赏二维码">
                     </div>
                     <div id="wechat">
                         <img src="/blog/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
@@ -1090,6 +1092,273 @@ EOF<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span>
     
 
     
+
+    
+        <style>
+    .valine-card {
+        margin: 1.5rem auto;
+    }
+
+    .valine-card .card-content {
+        padding: 20px 20px 5px 20px;
+    }
+
+    #vcomments textarea {
+        box-sizing: border-box;
+        background: url("/blog/medias/comment_bg.png") 100% 100% no-repeat;
+    }
+
+    #vcomments p {
+        margin: 2px 2px 10px;
+        font-size: 1.05rem;
+        line-height: 1.78rem;
+    }
+
+    #vcomments blockquote p {
+        text-indent: 0.2rem;
+    }
+
+    #vcomments a {
+        padding: 0 2px;
+        color: #4cbf30;
+        font-weight: 500;
+        text-decoration: none;
+    }
+
+    #vcomments img {
+        max-width: 100%;
+        height: auto;
+        cursor: pointer;
+    }
+
+    #vcomments ol li {
+        list-style-type: decimal;
+    }
+
+    #vcomments ol,
+    ul {
+        display: block;
+        padding-left: 2em;
+        word-spacing: 0.05rem;
+    }
+
+    #vcomments ul li,
+    ol li {
+        display: list-item;
+        line-height: 1.8rem;
+        font-size: 1rem;
+    }
+
+    #vcomments ul li {
+        list-style-type: disc;
+    }
+
+    #vcomments ul ul li {
+        list-style-type: circle;
+    }
+
+    #vcomments table, th, td {
+        padding: 12px 13px;
+        border: 1px solid #dfe2e5;
+    }
+
+    #vcomments table, th, td {
+        border: 0;
+    }
+
+    table tr:nth-child(2n), thead {
+        background-color: #fafafa;
+    }
+
+    #vcomments table th {
+        background-color: #f2f2f2;
+        min-width: 80px;
+    }
+
+    #vcomments table td {
+        min-width: 80px;
+    }
+
+    #vcomments h1 {
+        font-size: 1.85rem;
+        font-weight: bold;
+        line-height: 2.2rem;
+    }
+
+    #vcomments h2 {
+        font-size: 1.65rem;
+        font-weight: bold;
+        line-height: 1.9rem;
+    }
+
+    #vcomments h3 {
+        font-size: 1.45rem;
+        font-weight: bold;
+        line-height: 1.7rem;
+    }
+
+    #vcomments h4 {
+        font-size: 1.25rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    #vcomments h5 {
+        font-size: 1.1rem;
+        font-weight: bold;
+        line-height: 1.4rem;
+    }
+
+    #vcomments h6 {
+        font-size: 1rem;
+        line-height: 1.3rem;
+    }
+
+    #vcomments p {
+        font-size: 1rem;
+        line-height: 1.5rem;
+    }
+
+    #vcomments hr {
+        margin: 12px 0;
+        border: 0;
+        border-top: 1px solid #ccc;
+    }
+
+    #vcomments blockquote {
+        margin: 15px 0;
+        border-left: 5px solid #42b983;
+        padding: 1rem 0.8rem 0.3rem 0.8rem;
+        color: #666;
+        background-color: rgba(66, 185, 131, .1);
+    }
+
+    #vcomments pre {
+        font-family: monospace, monospace;
+        padding: 1.2em;
+        margin: .5em 0;
+        background: #272822;
+        overflow: auto;
+        border-radius: 0.3em;
+        tab-size: 4;
+    }
+
+    #vcomments code {
+        font-family: monospace, monospace;
+        padding: 1px 3px;
+        font-size: 0.92rem;
+        color: #e96900;
+        background-color: #f8f8f8;
+        border-radius: 2px;
+    }
+
+    #vcomments pre code {
+        font-family: monospace, monospace;
+        padding: 0;
+        color: #e8eaf6;
+        background-color: #272822;
+    }
+
+    #vcomments pre[class*="language-"] {
+        padding: 1.2em;
+        margin: .5em 0;
+    }
+
+    #vcomments code[class*="language-"],
+    pre[class*="language-"] {
+        color: #e8eaf6;
+    }
+
+    #vcomments [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+        position: inherit;
+        margin-left: -1.3rem;
+        margin-right: 0.4rem;
+        margin-top: -1px;
+        vertical-align: middle;
+        left: unset;
+        visibility: visible;
+    }
+
+    #vcomments b,
+    strong {
+        font-weight: bold;
+    }
+
+    #vcomments dfn {
+        font-style: italic;
+    }
+
+    #vcomments small {
+        font-size: 85%;
+    }
+
+    #vcomments cite {
+        font-style: normal;
+    }
+
+    #vcomments mark {
+        background-color: #fcf8e3;
+        padding: .2em;
+    }
+
+    #vcomments table, th, td {
+        padding: 12px 13px;
+        border: 1px solid #dfe2e5;
+    }
+
+    table tr:nth-child(2n), thead {
+        background-color: #fafafa;
+    }
+
+    #vcomments table th {
+        background-color: #f2f2f2;
+        min-width: 80px;
+    }
+
+    #vcomments table td {
+        min-width: 80px;
+    }
+
+    #vcomments [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+        position: inherit;
+        margin-left: -1.3rem;
+        margin-right: 0.4rem;
+        margin-top: -1px;
+        vertical-align: middle;
+        left: unset;
+        visibility: visible;
+    }
+</style>
+
+<div class="card valine-card" data-aos="fade-up">
+    <div class="comment_headling" style="font-size: 20px; font-weight: 700; position: relative; padding-left: 20px; top: 15px; padding-bottom: 5px;">
+        <i class="fas fa-comments fa-fw" aria-hidden="true"></i>
+        <span>评论</span>
+    </div>
+    <div id="vcomments" class="card-content" style="display: grid">
+    </div>
+</div>
+
+<script src="/blog/libs/valine/av-min.js"></script>
+<script src="https://unpkg.com/valine/dist/Valine.min.js"></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        appId: 'lrUDzoXHA8J9LL4P55q2Vt2N-gzGzoHsz',
+        appKey: '6ClQluKY0m4zPsu6ghTkaMPp',
+        serverURLs: 'https://lrudzoxh.lc-cn-n1-shared.com',
+        notify: 'true' === 'true',
+        verify: 'false' === 'true',
+        visitor: 'true' === 'true',
+        avatar: 'mm',
+        pageSize: '10',
+        lang: 'zh-cn',
+        placeholder: 'just go go'
+    });
+</script>
+
+<!--酷Q推送-->
+
 
     
 
@@ -1159,9 +1428,9 @@ EOF<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span>
                 <a href="/blog/posts/3232336614/">
                     <div class="card-image">
                         
-                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fexpired%2Fexpired_banner.jpg" class="responsive-img" alt="K8S系列文章之五：集群证书过期续签">
+                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fexpired%2Fexpired_banner.jpg" class="responsive-img" alt="K8S入门系列之六：集群证书过期续签">
                         
-                        <span class="card-title">K8S系列文章之五：集群证书过期续签</span>
+                        <span class="card-title">K8S入门系列之六：集群证书过期续签</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1184,6 +1453,10 @@ EOF<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span>
                             
                             <a href="/blog/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/kubernetes/" class="post-category">
                                     kubernetes
+                                </a>
+                            
+                            <a href="/blog/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/kubernetes/K8S%E5%85%A5%E9%97%A8%E7%B3%BB%E5%88%97/" class="post-category">
+                                    K8S入门系列
                                 </a>
                             
                             
@@ -1396,7 +1669,7 @@ EOF<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span>
             <br>
             
                 &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                        class="white-color">45.5k</span>
+                        class="white-color">51.9k</span>
             
             
             

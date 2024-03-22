@@ -52,7 +52,9 @@
 
     <script src="/blog/libs/jquery/jquery-3.6.0.min.js"></script>
 
-<meta name="generator" content="Hexo 6.3.0"></head>
+<meta name="generator" content="Hexo 6.3.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
 
 
 <body>
@@ -412,7 +414,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    14 分
+                    13 分
                 </div>
                 
 
@@ -435,8 +437,8 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <blockquote><p>提到链路跟踪，或者叫全链路监控，或者叫APM(Application Performance Management)，具体含义和原理不赘述，开源方案有skywalking、zipkin、elasticapm等工具，商业产品有基调听云等等，但在云原生领域，也有一个CNCF已毕业项目jaeger同样发展迅速。</p>
-</blockquote>
+                <div class="note primary no-icon"><p>提到链路跟踪，或者叫全链路监控，或者叫APM(Application Performance Management)，具体含义和原理不赘述，开源方案有skywalking、zipkin、elasticapm等工具，商业产品有基调听云等等，但在云原生领域，也有一个CNCF已毕业项目jaeger同样发展迅速。</p>
+</div>
 <p><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmonitor%2Fjaeger%2Fcncf_landscape.PNG" alt=""></p>
 <p>本文将详细讲述如何在K8S环境部署一整套jaeger工具以实现链路跟踪。同时由于jaeger-ui里的monitor功能需要使用到OpenTelemetry Collector，因此本文将一并部署并讲解原理。</p>
 <h2 id="Jaeger架构">Jaeger架构</h2>
@@ -491,7 +493,7 @@
             <span class="token key atrule">defaultMode</span><span class="token punctuation">:</span> <span class="token number">420</span>
       <span class="token key atrule">containers</span><span class="token punctuation">:</span>
         <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> jaeger<span class="token punctuation">-</span>collector
-          <span class="token key atrule">image</span><span class="token punctuation">:</span> <span class="token punctuation">></span><span class="token punctuation">-</span>
+          <span class="token key atrule">image</span><span class="token punctuation">:</span> <span class="token punctuation">&gt;</span><span class="token punctuation">-</span>
             jaegertracing/jaeger<span class="token punctuation">-</span>collector<span class="token punctuation">:</span><span class="token number">1.43</span>
           <span class="token key atrule">args</span><span class="token punctuation">:</span>
             <span class="token punctuation">-</span> <span class="token string">'--config-file=/conf/collector.yaml'</span>
@@ -510,7 +512,7 @@
                 <span class="token key atrule">configMapKeyRef</span><span class="token punctuation">:</span>
                   <span class="token key atrule">name</span><span class="token punctuation">:</span> jaeger<span class="token punctuation">-</span>configuration
                   <span class="token key atrule">key</span><span class="token punctuation">:</span> span<span class="token punctuation">-</span>storage<span class="token punctuation">-</span>type
-          <span class="token key atrule">resources</span><span class="token punctuation">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+          <span class="token key atrule">resources</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
           <span class="token key atrule">volumeMounts</span><span class="token punctuation">:</span>
             <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> jaeger<span class="token punctuation">-</span>configuration<span class="token punctuation">-</span>volume
               <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /conf
@@ -522,7 +524,7 @@
       <span class="token key atrule">dnsPolicy</span><span class="token punctuation">:</span> ClusterFirst
       <span class="token key atrule">serviceAccountName</span><span class="token punctuation">:</span> default
       <span class="token key atrule">serviceAccount</span><span class="token punctuation">:</span> default
-      <span class="token key atrule">securityContext</span><span class="token punctuation">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+      <span class="token key atrule">securityContext</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
       <span class="token key atrule">schedulerName</span><span class="token punctuation">:</span> default<span class="token punctuation">-</span>scheduler
   <span class="token key atrule">strategy</span><span class="token punctuation">:</span>
     <span class="token key atrule">type</span><span class="token punctuation">:</span> RollingUpdate
@@ -618,7 +620,7 @@
             <span class="token key atrule">defaultMode</span><span class="token punctuation">:</span> <span class="token number">420</span>
       <span class="token key atrule">containers</span><span class="token punctuation">:</span>
         <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> jaeger<span class="token punctuation">-</span>query
-          <span class="token key atrule">image</span><span class="token punctuation">:</span> <span class="token punctuation">></span><span class="token punctuation">-</span>
+          <span class="token key atrule">image</span><span class="token punctuation">:</span> <span class="token punctuation">&gt;</span><span class="token punctuation">-</span>
             jaegertracing/jaeger<span class="token punctuation">-</span>query<span class="token punctuation">:</span><span class="token number">1.43</span>
           <span class="token key atrule">args</span><span class="token punctuation">:</span>
             <span class="token punctuation">-</span> <span class="token string">'--config-file=/conf/query.yaml'</span>
@@ -639,7 +641,7 @@
               <span class="token key atrule">value</span><span class="token punctuation">:</span> prometheus
             <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> PROMETHEUS_SERVER_URL
               <span class="token key atrule">value</span><span class="token punctuation">:</span> <span class="token string">'http://10.50.89.17:8080'</span>
-          <span class="token key atrule">resources</span><span class="token punctuation">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+          <span class="token key atrule">resources</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
           <span class="token key atrule">volumeMounts</span><span class="token punctuation">:</span>
             <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> jaeger<span class="token punctuation">-</span>configuration<span class="token punctuation">-</span>volume
               <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /conf
@@ -649,7 +651,7 @@
       <span class="token key atrule">restartPolicy</span><span class="token punctuation">:</span> Always
       <span class="token key atrule">terminationGracePeriodSeconds</span><span class="token punctuation">:</span> <span class="token number">30</span>
       <span class="token key atrule">dnsPolicy</span><span class="token punctuation">:</span> ClusterFirst
-      <span class="token key atrule">securityContext</span><span class="token punctuation">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+      <span class="token key atrule">securityContext</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
       <span class="token key atrule">schedulerName</span><span class="token punctuation">:</span> default<span class="token punctuation">-</span>scheduler
   <span class="token key atrule">strategy</span><span class="token punctuation">:</span>
     <span class="token key atrule">type</span><span class="token punctuation">:</span> RollingUpdate
@@ -742,50 +744,50 @@ PROMETHEUS_SERVER_URL：设置prometheus地址，monitor数据将从该prometheu
 <p>jaeger提供两种方式的索引管理，一个是rollover、一个是ILM</p>
 <h3 id="rollover方式（默认方式）">rollover方式（默认方式）</h3>
 <p>该方式jaeger默认每天创建一个带日期后缀的索引，如：jaeger-span-2023-04-04，可查看其数据：</p>
-<pre class="line-numbers language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
+<pre class="line-numbers language-json" data-language="json"><code class="language-json"><span class="token punctuation">{</span>
     <span class="token property">"_index"</span> <span class="token operator">:</span> <span class="token string">"jaeger-span-2023-04-04"</span><span class="token punctuation">,</span>
     <span class="token property">"_type"</span> <span class="token operator">:</span> <span class="token string">"_doc"</span><span class="token punctuation">,</span>
     <span class="token property">"_id"</span> <span class="token operator">:</span> <span class="token string">"mu72SocBT2RQOvh7w_S0"</span><span class="token punctuation">,</span>
     <span class="token property">"_score"</span> <span class="token operator">:</span> <span class="token number">1.0</span><span class="token punctuation">,</span>
-    <span class="token property">"_source"</span> <span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token property">"_source"</span> <span class="token operator">:</span> <span class="token punctuation">{</span>
       <span class="token property">"traceID"</span> <span class="token operator">:</span> <span class="token string">"8323e388f8a172e5e404e6873906f4e4"</span><span class="token punctuation">,</span>
       <span class="token property">"spanID"</span> <span class="token operator">:</span> <span class="token string">"229debb8161b9693"</span><span class="token punctuation">,</span>
       <span class="token property">"operationName"</span> <span class="token operator">:</span> <span class="token string">"/shelltrade/(authenticate jwttokenfilterwithoutobject)/loadbycriteria"</span><span class="token punctuation">,</span>
       <span class="token property">"references"</span> <span class="token operator">:</span> <span class="token punctuation">[</span>
-        <span class="token punctuation">&#123;</span>
+        <span class="token punctuation">{</span>
           <span class="token property">"refType"</span> <span class="token operator">:</span> <span class="token string">"CHILD_OF"</span><span class="token punctuation">,</span>
           <span class="token property">"traceID"</span> <span class="token operator">:</span> <span class="token string">"8323e388f8a172e5e404e6873906f4e4"</span><span class="token punctuation">,</span>
           <span class="token property">"spanID"</span> <span class="token operator">:</span> <span class="token string">"453b0488ff74aca4"</span>
-        <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">}</span>
       <span class="token punctuation">]</span><span class="token punctuation">,</span>
       <span class="token property">"startTime"</span> <span class="token operator">:</span> <span class="token number">1680589895699132</span><span class="token punctuation">,</span>
       <span class="token property">"startTimeMillis"</span> <span class="token operator">:</span> <span class="token number">1680589895699</span><span class="token punctuation">,</span>
       <span class="token property">"duration"</span> <span class="token operator">:</span> <span class="token number">26024</span><span class="token punctuation">,</span>
       <span class="token property">"tags"</span> <span class="token operator">:</span> <span class="token punctuation">[</span>
-        <span class="token punctuation">&#123;</span>
+        <span class="token punctuation">{</span>
           <span class="token property">"key"</span> <span class="token operator">:</span> <span class="token string">"http.user_agent"</span><span class="token punctuation">,</span>
           <span class="token property">"type"</span> <span class="token operator">:</span> <span class="token string">"string"</span><span class="token punctuation">,</span>
           <span class="token property">"value"</span> <span class="token operator">:</span> <span class="token string">"Ktor client"</span>
-        <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
-        <span class="token punctuation">&#123;</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token punctuation">{</span>
           <span class="token property">"key"</span> <span class="token operator">:</span> <span class="token string">"net.host.name"</span><span class="token punctuation">,</span>
           <span class="token property">"type"</span> <span class="token operator">:</span> <span class="token string">"string"</span><span class="token punctuation">,</span>
           <span class="token property">"value"</span> <span class="token operator">:</span> <span class="token string">"trd-http-server-6644f77644-gdx4x"</span>
-        <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">}</span>
       <span class="token punctuation">]</span><span class="token punctuation">,</span>
       <span class="token property">"logs"</span> <span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">]</span><span class="token punctuation">,</span>
-      <span class="token property">"process"</span> <span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+      <span class="token property">"process"</span> <span class="token operator">:</span> <span class="token punctuation">{</span>
         <span class="token property">"serviceName"</span> <span class="token operator">:</span> <span class="token string">"trd-http-server"</span><span class="token punctuation">,</span>
         <span class="token property">"tags"</span> <span class="token operator">:</span> <span class="token punctuation">[</span>
-          <span class="token punctuation">&#123;</span>
+          <span class="token punctuation">{</span>
             <span class="token property">"key"</span> <span class="token operator">:</span> <span class="token string">"ip"</span><span class="token punctuation">,</span>
             <span class="token property">"type"</span> <span class="token operator">:</span> <span class="token string">"int64"</span><span class="token punctuation">,</span>
             <span class="token property">"value"</span> <span class="token operator">:</span> <span class="token string">"168464409"</span>
-          <span class="token punctuation">&#125;</span>
+          <span class="token punctuation">}</span>
         <span class="token punctuation">]</span>
-      <span class="token punctuation">&#125;</span>
-    <span class="token punctuation">&#125;</span>
-  <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>关于rollover配置参考：<br>
 <a target="_blank" rel="noopener" href="https://www.jaegertracing.io/docs/1.43/deployment/#elasticsearch-rollover">https://www.jaegertracing.io/docs/1.43/deployment/#elasticsearch-rollover</a></p>
 <h3 id="ILM方式（推荐）">ILM方式（推荐）</h3>
@@ -794,29 +796,29 @@ PROMETHEUS_SERVER_URL：设置prometheus地址，monitor数据将从该prometheu
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">curl</span> <span class="token parameter variable">-X</span> PUT http://ESHOST:9200/_ilm/policy/jaeger-ilm-policy <span class="token punctuation">\</span>
 <span class="token parameter variable">-H</span> <span class="token string">'Content-Type: application/json; charset=utf-8'</span> <span class="token punctuation">\</span>
 --data-binary @- <span class="token operator">&lt;&lt;</span> <span class="token string">EOF
-&#123;
-  "policy": &#123;
-    "phases": &#123;
-      "hot": &#123;
+{
+  "policy": {
+    "phases": {
+      "hot": {
         "min_age": "0ms",
-        "actions": &#123;
-          "rollover": &#123;
+        "actions": {
+          "rollover": {
             "max_age": "1d"
-          &#125;,
-          "set_priority": &#123;
+          },
+          "set_priority": {
             "priority": 100
-          &#125;
-        &#125;
-      &#125;,
-      "delete": &#123;
+          }
+        }
+      },
+      "delete": {
         "min_age": "3d",
-        "actions": &#123;
-          "delete": &#123;&#125;
-        &#125;
-      &#125;
-    &#125;
-  &#125;
-&#125;
+        "actions": {
+          "delete": {}
+        }
+      }
+    }
+  }
+}
 EOF</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h4 id="初始化索引">初始化索引</h4>
 <p>在K8S创建Job，配置如下：</p>
@@ -854,7 +856,7 @@ EOF</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span>
       <span class="token key atrule">dnsPolicy</span><span class="token punctuation">:</span> ClusterFirst
       <span class="token key atrule">serviceAccountName</span><span class="token punctuation">:</span> default
       <span class="token key atrule">serviceAccount</span><span class="token punctuation">:</span> default
-      <span class="token key atrule">securityContext</span><span class="token punctuation">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+      <span class="token key atrule">securityContext</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
       <span class="token key atrule">schedulerName</span><span class="token punctuation">:</span> default<span class="token punctuation">-</span>scheduler
   <span class="token key atrule">parallelism</span><span class="token punctuation">:</span> <span class="token number">1</span>
   <span class="token key atrule">completions</span><span class="token punctuation">:</span> <span class="token number">1</span>
@@ -906,7 +908,7 @@ EOF</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span>
             <span class="token key atrule">defaultMode</span><span class="token punctuation">:</span> <span class="token number">420</span>
       <span class="token key atrule">containers</span><span class="token punctuation">:</span>
         <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> otel<span class="token punctuation">-</span>collector<span class="token punctuation">-</span>container
-          <span class="token key atrule">image</span><span class="token punctuation">:</span> <span class="token punctuation">></span><span class="token punctuation">-</span>
+          <span class="token key atrule">image</span><span class="token punctuation">:</span> <span class="token punctuation">&gt;</span><span class="token punctuation">-</span>
             otel/opentelemetry<span class="token punctuation">-</span>collector<span class="token punctuation">-</span>contrib<span class="token punctuation">:</span>0.74.0
           <span class="token key atrule">args</span><span class="token punctuation">:</span>
             <span class="token punctuation">-</span> <span class="token string">'--config'</span>
@@ -946,7 +948,7 @@ EOF</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span>
       <span class="token key atrule">dnsPolicy</span><span class="token punctuation">:</span> ClusterFirst
       <span class="token key atrule">serviceAccountName</span><span class="token punctuation">:</span> default
       <span class="token key atrule">serviceAccount</span><span class="token punctuation">:</span> default
-      <span class="token key atrule">securityContext</span><span class="token punctuation">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+      <span class="token key atrule">securityContext</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
       <span class="token key atrule">schedulerName</span><span class="token punctuation">:</span> default<span class="token punctuation">-</span>scheduler
   <span class="token key atrule">strategy</span><span class="token punctuation">:</span>
     <span class="token key atrule">type</span><span class="token punctuation">:</span> RollingUpdate
@@ -1047,19 +1049,19 @@ EOF</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">curl</span> http:/otel-collector:8889/metrics
 <span class="token comment">## HELP calls_total </span>
 <span class="token comment">## TYPE calls_total counter</span>
-calls_total<span class="token punctuation">&#123;</span>operation<span class="token operator">=</span><span class="token string">"/callback"</span>,service_name<span class="token operator">=</span><span class="token string">"auth-http-server"</span>,span_kind<span class="token operator">=</span><span class="token string">"SPAN_KIND_SERVER"</span>,status_code<span class="token operator">=</span><span class="token string">"STATUS_CODE_UNSET"</span><span class="token punctuation">&#125;</span> <span class="token number">1</span>
-calls_total<span class="token punctuation">&#123;</span>operation<span class="token operator">=</span><span class="token string">"/checkjwtinredis"</span>,service_name<span class="token operator">=</span><span class="token string">"auth-http-server"</span>,span_kind<span class="token operator">=</span><span class="token string">"SPAN_KIND_SERVER"</span>,status_code<span class="token operator">=</span><span class="token string">"STATUS_CODE_UNSET"</span><span class="token punctuation">&#125;</span> <span class="token number">840</span>
-calls_total<span class="token punctuation">&#123;</span>operation<span class="token operator">=</span><span class="token string">"/getobjectlist"</span>,service_name<span class="token operator">=</span><span class="token string">"auth-http-server"</span>,span_kind<span class="token operator">=</span><span class="token string">"SPAN_KIND_SERVER"</span>,status_code<span class="token operator">=</span><span class="token string">"STATUS_CODE_UNSET"</span><span class="token punctuation">&#125;</span> <span class="token number">74</span>
+calls_total<span class="token punctuation">{</span>operation<span class="token operator">=</span><span class="token string">"/callback"</span>,service_name<span class="token operator">=</span><span class="token string">"auth-http-server"</span>,span_kind<span class="token operator">=</span><span class="token string">"SPAN_KIND_SERVER"</span>,status_code<span class="token operator">=</span><span class="token string">"STATUS_CODE_UNSET"</span><span class="token punctuation">}</span> <span class="token number">1</span>
+calls_total<span class="token punctuation">{</span>operation<span class="token operator">=</span><span class="token string">"/checkjwtinredis"</span>,service_name<span class="token operator">=</span><span class="token string">"auth-http-server"</span>,span_kind<span class="token operator">=</span><span class="token string">"SPAN_KIND_SERVER"</span>,status_code<span class="token operator">=</span><span class="token string">"STATUS_CODE_UNSET"</span><span class="token punctuation">}</span> <span class="token number">840</span>
+calls_total<span class="token punctuation">{</span>operation<span class="token operator">=</span><span class="token string">"/getobjectlist"</span>,service_name<span class="token operator">=</span><span class="token string">"auth-http-server"</span>,span_kind<span class="token operator">=</span><span class="token string">"SPAN_KIND_SERVER"</span>,status_code<span class="token operator">=</span><span class="token string">"STATUS_CODE_UNSET"</span><span class="token punctuation">}</span> <span class="token number">74</span>
 <span class="token comment">## HELP latency </span>
 <span class="token comment">## TYPE latency histogram</span>
-latency_bucket<span class="token punctuation">&#123;</span>operation<span class="token operator">=</span><span class="token string">"/callback"</span>,service_name<span class="token operator">=</span><span class="token string">"auth-http-server"</span>,span_kind<span class="token operator">=</span><span class="token string">"SPAN_KIND_SERVER"</span>,status_code<span class="token operator">=</span><span class="token string">"STATUS_CODE_UNSET"</span>,le<span class="token operator">=</span><span class="token string">"2"</span><span class="token punctuation">&#125;</span> <span class="token number">0</span>
-latency_bucket<span class="token punctuation">&#123;</span>operation<span class="token operator">=</span><span class="token string">"/callback"</span>,service_name<span class="token operator">=</span><span class="token string">"auth-http-server"</span>,span_kind<span class="token operator">=</span><span class="token string">"SPAN_KIND_SERVER"</span>,status_code<span class="token operator">=</span><span class="token string">"STATUS_CODE_UNSET"</span>,le<span class="token operator">=</span><span class="token string">"4"</span><span class="token punctuation">&#125;</span> <span class="token number">0</span>
-latency_bucket<span class="token punctuation">&#123;</span>operation<span class="token operator">=</span><span class="token string">"/callback"</span>,service_name<span class="token operator">=</span><span class="token string">"auth-http-server"</span>,span_kind<span class="token operator">=</span><span class="token string">"SPAN_KIND_SERVER"</span>,status_code<span class="token operator">=</span><span class="token string">"STATUS_CODE_UNSET"</span>,le<span class="token operator">=</span><span class="token string">"6"</span><span class="token punctuation">&#125;</span> <span class="token number">0</span>
-latency_sum<span class="token punctuation">&#123;</span>operation<span class="token operator">=</span><span class="token string">"/callback"</span>,service_name<span class="token operator">=</span><span class="token string">"auth-http-server"</span>,span_kind<span class="token operator">=</span><span class="token string">"SPAN_KIND_SERVER"</span>,status_code<span class="token operator">=</span><span class="token string">"STATUS_CODE_UNSET"</span><span class="token punctuation">&#125;</span> <span class="token number">192.146</span>
-latency_count<span class="token punctuation">&#123;</span>operation<span class="token operator">=</span><span class="token string">"/callback"</span>,service_name<span class="token operator">=</span><span class="token string">"auth-http-server"</span>,span_kind<span class="token operator">=</span><span class="token string">"SPAN_KIND_SERVER"</span>,status_code<span class="token operator">=</span><span class="token string">"STATUS_CODE_UNSET"</span><span class="token punctuation">&#125;</span> <span class="token number">1</span>
-latency_bucket<span class="token punctuation">&#123;</span>operation<span class="token operator">=</span><span class="token string">"/checkjwtinredis"</span>,service_name<span class="token operator">=</span><span class="token string">"auth-http-server"</span>,span_kind<span class="token operator">=</span><span class="token string">"SPAN_KIND_SERVER"</span>,status_code<span class="token operator">=</span><span class="token string">"STATUS_CODE_UNSET"</span>,le<span class="token operator">=</span><span class="token string">"2"</span><span class="token punctuation">&#125;</span> <span class="token number">816</span>
-latency_bucket<span class="token punctuation">&#123;</span>operation<span class="token operator">=</span><span class="token string">"/checkjwtinredis"</span>,service_name<span class="token operator">=</span><span class="token string">"auth-http-server"</span>,span_kind<span class="token operator">=</span><span class="token string">"SPAN_KIND_SERVER"</span>,status_code<span class="token operator">=</span><span class="token string">"STATUS_CODE_UNSET"</span>,le<span class="token operator">=</span><span class="token string">"4"</span><span class="token punctuation">&#125;</span> <span class="token number">832</span>
-latency_bucket<span class="token punctuation">&#123;</span>operation<span class="token operator">=</span><span class="token string">"/checkjwtinredis"</span>,service_name<span class="token operator">=</span><span class="token string">"auth-http-server"</span>,span_kind<span class="token operator">=</span><span class="token string">"SPAN_KIND_SERVER"</span>,status_code<span class="token operator">=</span><span class="token string">"STATUS_CODE_UNSET"</span>,le<span class="token operator">=</span><span class="token string">"6"</span><span class="token punctuation">&#125;</span> <span class="token number">834</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+latency_bucket<span class="token punctuation">{</span>operation<span class="token operator">=</span><span class="token string">"/callback"</span>,service_name<span class="token operator">=</span><span class="token string">"auth-http-server"</span>,span_kind<span class="token operator">=</span><span class="token string">"SPAN_KIND_SERVER"</span>,status_code<span class="token operator">=</span><span class="token string">"STATUS_CODE_UNSET"</span>,le<span class="token operator">=</span><span class="token string">"2"</span><span class="token punctuation">}</span> <span class="token number">0</span>
+latency_bucket<span class="token punctuation">{</span>operation<span class="token operator">=</span><span class="token string">"/callback"</span>,service_name<span class="token operator">=</span><span class="token string">"auth-http-server"</span>,span_kind<span class="token operator">=</span><span class="token string">"SPAN_KIND_SERVER"</span>,status_code<span class="token operator">=</span><span class="token string">"STATUS_CODE_UNSET"</span>,le<span class="token operator">=</span><span class="token string">"4"</span><span class="token punctuation">}</span> <span class="token number">0</span>
+latency_bucket<span class="token punctuation">{</span>operation<span class="token operator">=</span><span class="token string">"/callback"</span>,service_name<span class="token operator">=</span><span class="token string">"auth-http-server"</span>,span_kind<span class="token operator">=</span><span class="token string">"SPAN_KIND_SERVER"</span>,status_code<span class="token operator">=</span><span class="token string">"STATUS_CODE_UNSET"</span>,le<span class="token operator">=</span><span class="token string">"6"</span><span class="token punctuation">}</span> <span class="token number">0</span>
+latency_sum<span class="token punctuation">{</span>operation<span class="token operator">=</span><span class="token string">"/callback"</span>,service_name<span class="token operator">=</span><span class="token string">"auth-http-server"</span>,span_kind<span class="token operator">=</span><span class="token string">"SPAN_KIND_SERVER"</span>,status_code<span class="token operator">=</span><span class="token string">"STATUS_CODE_UNSET"</span><span class="token punctuation">}</span> <span class="token number">192.146</span>
+latency_count<span class="token punctuation">{</span>operation<span class="token operator">=</span><span class="token string">"/callback"</span>,service_name<span class="token operator">=</span><span class="token string">"auth-http-server"</span>,span_kind<span class="token operator">=</span><span class="token string">"SPAN_KIND_SERVER"</span>,status_code<span class="token operator">=</span><span class="token string">"STATUS_CODE_UNSET"</span><span class="token punctuation">}</span> <span class="token number">1</span>
+latency_bucket<span class="token punctuation">{</span>operation<span class="token operator">=</span><span class="token string">"/checkjwtinredis"</span>,service_name<span class="token operator">=</span><span class="token string">"auth-http-server"</span>,span_kind<span class="token operator">=</span><span class="token string">"SPAN_KIND_SERVER"</span>,status_code<span class="token operator">=</span><span class="token string">"STATUS_CODE_UNSET"</span>,le<span class="token operator">=</span><span class="token string">"2"</span><span class="token punctuation">}</span> <span class="token number">816</span>
+latency_bucket<span class="token punctuation">{</span>operation<span class="token operator">=</span><span class="token string">"/checkjwtinredis"</span>,service_name<span class="token operator">=</span><span class="token string">"auth-http-server"</span>,span_kind<span class="token operator">=</span><span class="token string">"SPAN_KIND_SERVER"</span>,status_code<span class="token operator">=</span><span class="token string">"STATUS_CODE_UNSET"</span>,le<span class="token operator">=</span><span class="token string">"4"</span><span class="token punctuation">}</span> <span class="token number">832</span>
+latency_bucket<span class="token punctuation">{</span>operation<span class="token operator">=</span><span class="token string">"/checkjwtinredis"</span>,service_name<span class="token operator">=</span><span class="token string">"auth-http-server"</span>,span_kind<span class="token operator">=</span><span class="token string">"SPAN_KIND_SERVER"</span>,status_code<span class="token operator">=</span><span class="token string">"STATUS_CODE_UNSET"</span>,le<span class="token operator">=</span><span class="token string">"6"</span><span class="token punctuation">}</span> <span class="token number">834</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>现在可在prometheus.yaml配置job：</p>
 <pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token comment">## prometheus.yaml</span>
 <span class="token key atrule">scrape_configs</span><span class="token punctuation">:</span>
@@ -1175,7 +1177,7 @@ latency_bucket<span class="token punctuation">&#123;</span>operation<span class=
                         <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
                     </ul>
                     <div id="alipay">
-                        <img src="/blog/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                        <img src="/blog/medias/reward/alipay.png" class="reward-img" alt="支付宝打赏二维码">
                     </div>
                     <div id="wechat">
                         <img src="/blog/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
@@ -1203,6 +1205,273 @@ latency_bucket<span class="token punctuation">&#123;</span>operation<span class=
     
 
     
+
+    
+        <style>
+    .valine-card {
+        margin: 1.5rem auto;
+    }
+
+    .valine-card .card-content {
+        padding: 20px 20px 5px 20px;
+    }
+
+    #vcomments textarea {
+        box-sizing: border-box;
+        background: url("/blog/medias/comment_bg.png") 100% 100% no-repeat;
+    }
+
+    #vcomments p {
+        margin: 2px 2px 10px;
+        font-size: 1.05rem;
+        line-height: 1.78rem;
+    }
+
+    #vcomments blockquote p {
+        text-indent: 0.2rem;
+    }
+
+    #vcomments a {
+        padding: 0 2px;
+        color: #4cbf30;
+        font-weight: 500;
+        text-decoration: none;
+    }
+
+    #vcomments img {
+        max-width: 100%;
+        height: auto;
+        cursor: pointer;
+    }
+
+    #vcomments ol li {
+        list-style-type: decimal;
+    }
+
+    #vcomments ol,
+    ul {
+        display: block;
+        padding-left: 2em;
+        word-spacing: 0.05rem;
+    }
+
+    #vcomments ul li,
+    ol li {
+        display: list-item;
+        line-height: 1.8rem;
+        font-size: 1rem;
+    }
+
+    #vcomments ul li {
+        list-style-type: disc;
+    }
+
+    #vcomments ul ul li {
+        list-style-type: circle;
+    }
+
+    #vcomments table, th, td {
+        padding: 12px 13px;
+        border: 1px solid #dfe2e5;
+    }
+
+    #vcomments table, th, td {
+        border: 0;
+    }
+
+    table tr:nth-child(2n), thead {
+        background-color: #fafafa;
+    }
+
+    #vcomments table th {
+        background-color: #f2f2f2;
+        min-width: 80px;
+    }
+
+    #vcomments table td {
+        min-width: 80px;
+    }
+
+    #vcomments h1 {
+        font-size: 1.85rem;
+        font-weight: bold;
+        line-height: 2.2rem;
+    }
+
+    #vcomments h2 {
+        font-size: 1.65rem;
+        font-weight: bold;
+        line-height: 1.9rem;
+    }
+
+    #vcomments h3 {
+        font-size: 1.45rem;
+        font-weight: bold;
+        line-height: 1.7rem;
+    }
+
+    #vcomments h4 {
+        font-size: 1.25rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    #vcomments h5 {
+        font-size: 1.1rem;
+        font-weight: bold;
+        line-height: 1.4rem;
+    }
+
+    #vcomments h6 {
+        font-size: 1rem;
+        line-height: 1.3rem;
+    }
+
+    #vcomments p {
+        font-size: 1rem;
+        line-height: 1.5rem;
+    }
+
+    #vcomments hr {
+        margin: 12px 0;
+        border: 0;
+        border-top: 1px solid #ccc;
+    }
+
+    #vcomments blockquote {
+        margin: 15px 0;
+        border-left: 5px solid #42b983;
+        padding: 1rem 0.8rem 0.3rem 0.8rem;
+        color: #666;
+        background-color: rgba(66, 185, 131, .1);
+    }
+
+    #vcomments pre {
+        font-family: monospace, monospace;
+        padding: 1.2em;
+        margin: .5em 0;
+        background: #272822;
+        overflow: auto;
+        border-radius: 0.3em;
+        tab-size: 4;
+    }
+
+    #vcomments code {
+        font-family: monospace, monospace;
+        padding: 1px 3px;
+        font-size: 0.92rem;
+        color: #e96900;
+        background-color: #f8f8f8;
+        border-radius: 2px;
+    }
+
+    #vcomments pre code {
+        font-family: monospace, monospace;
+        padding: 0;
+        color: #e8eaf6;
+        background-color: #272822;
+    }
+
+    #vcomments pre[class*="language-"] {
+        padding: 1.2em;
+        margin: .5em 0;
+    }
+
+    #vcomments code[class*="language-"],
+    pre[class*="language-"] {
+        color: #e8eaf6;
+    }
+
+    #vcomments [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+        position: inherit;
+        margin-left: -1.3rem;
+        margin-right: 0.4rem;
+        margin-top: -1px;
+        vertical-align: middle;
+        left: unset;
+        visibility: visible;
+    }
+
+    #vcomments b,
+    strong {
+        font-weight: bold;
+    }
+
+    #vcomments dfn {
+        font-style: italic;
+    }
+
+    #vcomments small {
+        font-size: 85%;
+    }
+
+    #vcomments cite {
+        font-style: normal;
+    }
+
+    #vcomments mark {
+        background-color: #fcf8e3;
+        padding: .2em;
+    }
+
+    #vcomments table, th, td {
+        padding: 12px 13px;
+        border: 1px solid #dfe2e5;
+    }
+
+    table tr:nth-child(2n), thead {
+        background-color: #fafafa;
+    }
+
+    #vcomments table th {
+        background-color: #f2f2f2;
+        min-width: 80px;
+    }
+
+    #vcomments table td {
+        min-width: 80px;
+    }
+
+    #vcomments [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+        position: inherit;
+        margin-left: -1.3rem;
+        margin-right: 0.4rem;
+        margin-top: -1px;
+        vertical-align: middle;
+        left: unset;
+        visibility: visible;
+    }
+</style>
+
+<div class="card valine-card" data-aos="fade-up">
+    <div class="comment_headling" style="font-size: 20px; font-weight: 700; position: relative; padding-left: 20px; top: 15px; padding-bottom: 5px;">
+        <i class="fas fa-comments fa-fw" aria-hidden="true"></i>
+        <span>评论</span>
+    </div>
+    <div id="vcomments" class="card-content" style="display: grid">
+    </div>
+</div>
+
+<script src="/blog/libs/valine/av-min.js"></script>
+<script src="https://unpkg.com/valine/dist/Valine.min.js"></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        appId: 'lrUDzoXHA8J9LL4P55q2Vt2N-gzGzoHsz',
+        appKey: '6ClQluKY0m4zPsu6ghTkaMPp',
+        serverURLs: 'https://lrudzoxh.lc-cn-n1-shared.com',
+        notify: 'true' === 'true',
+        verify: 'false' === 'true',
+        visitor: 'true' === 'true',
+        avatar: 'mm',
+        pageSize: '10',
+        lang: 'zh-cn',
+        placeholder: 'just go go'
+    });
+</script>
+
+<!--酷Q推送-->
+
 
     
 
@@ -1517,7 +1786,7 @@ latency_bucket<span class="token punctuation">&#123;</span>operation<span class=
             <br>
             
                 &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                        class="white-color">45.5k</span>
+                        class="white-color">51.9k</span>
             
             
             

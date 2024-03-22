@@ -52,7 +52,9 @@
 
     <script src="/blog/libs/jquery/jquery-3.6.0.min.js"></script>
 
-<meta name="generator" content="Hexo 6.3.0"></head>
+<meta name="generator" content="Hexo 6.3.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
 
 
 <body>
@@ -435,8 +437,8 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <blockquote><p>本文用一个小例子演示如何将一个微服务接入istio，以及使用istio进行流量管理</p>
-</blockquote>
+                <div class="note info no-icon"><p>本文用一个小例子演示如何将一个微服务接入istio，以及使用istio进行流量管理</p>
+</div>
 <h2 id="环境准备">环境准备</h2>
 <p>本文使用环境为 kubernetes v1.23.0 + istio 1.17.0</p>
 <h2 id="部署简易程序">部署简易程序</h2>
@@ -453,7 +455,7 @@ app <span class="token operator">=</span> Flask<span class="token punctuation">(
 <span class="token keyword">def</span> <span class="token function">i_am_fine</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
     <span class="token keyword">return</span> <span class="token string">"I am FINE!"</span>
 
-<span class="token decorator annotation punctuation">@app<span class="token punctuation">.</span>route</span><span class="token punctuation">(</span><span class="token string">'/env/&lt;env>'</span><span class="token punctuation">)</span>
+<span class="token decorator annotation punctuation">@app<span class="token punctuation">.</span>route</span><span class="token punctuation">(</span><span class="token string">'/env/&lt;env&gt;'</span><span class="token punctuation">)</span>
 <span class="token keyword">def</span> <span class="token function">show_env</span><span class="token punctuation">(</span>env<span class="token punctuation">)</span><span class="token punctuation">:</span>
     <span class="token keyword">return</span> os<span class="token punctuation">.</span>environ<span class="token punctuation">.</span>get<span class="token punctuation">(</span>env<span class="token punctuation">)</span>
 
@@ -637,9 +639,9 @@ v2
 <p>提交该文件：</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl apply <span class="token parameter variable">-f</span> flaskapp-virtualservice-v2.yaml<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>现在进入sleep测试，看看重新定义的流量管理规则是否生效：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## kubectl exec -it sleep-6bf6676dcc-6nvnm /bin/bash</span>
-<span class="token comment">## kubectl exec [POD] [COMMAND] is DEPRECATED and will be removed in a future version. Use kubectl exec [POD] -- [COMMAND] instead.</span>
-bash-5.0<span class="token comment">## for((i=0; i&lt;100; i++)); do http --body http://flaskapp/env/version; done</span>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># kubectl exec -it sleep-6bf6676dcc-6nvnm /bin/bash</span>
+<span class="token comment"># kubectl exec [POD] [COMMAND] is DEPRECATED and will be removed in a future version. Use kubectl exec [POD] -- [COMMAND] instead.</span>
+bash-5.0<span class="token comment"># for((i=0; i&lt;100; i++)); do http --body http://flaskapp/env/version; done</span>
 v2
 v2
 v2
@@ -669,13 +671,13 @@ Available Commands:
 <p>注意新版的istio已经不再默认安装各类dashboard，必须自己手动部署</p>
 <h3 id="部署Prometheus">部署Prometheus</h3>
 <p>手动提交yaml到kubernetes</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## cd /opt/istio-1.12.1/samples/addons</span>
-<span class="token comment">## kubectl apply -f prometheus.yaml</span>
-<span class="token comment">## kubectl get pods -l app=prometheus -n istio-system</span>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># cd /opt/istio-1.12.1/samples/addons</span>
+<span class="token comment"># kubectl apply -f prometheus.yaml</span>
+<span class="token comment"># kubectl get pods -l app=prometheus -n istio-system</span>
 NAME                          READY   STATUS    RESTARTS   AGE
 prometheus-64fd8ccd65-6n6qt   <span class="token number">2</span>/2     Running   <span class="token number">0</span>          17h<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>启动prometheus dashboard监听</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## istioctl dashboard prometheus --address=192.168.91.10</span>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># istioctl dashboard prometheus --address=192.168.91.10</span>
 http://192.168.91.10:9090<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>打开prometheus页面的targets发现istiod的15014端口connection refused，编辑deployment istio-operator</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl edit deploy istio-operator <span class="token parameter variable">-n</span> istio-operator<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
@@ -684,87 +686,87 @@ http://192.168.91.10:9090<span aria-hidden="true" class="line-numbers-rows"><spa
 <p><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmicroservice%2Fistio%2F2.png" alt=""></p>
 <h3 id="部署Grafana">部署Grafana</h3>
 <p>手动提交yaml到kubernetes</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## cd /opt/istio-1.12.1/samples/addons</span>
-<span class="token comment">## kubectl apply -f grafana.yaml</span>
-<span class="token comment">## kubectl get pods -l app=grafana -n istio-system</span>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># cd /opt/istio-1.12.1/samples/addons</span>
+<span class="token comment"># kubectl apply -f grafana.yaml</span>
+<span class="token comment"># kubectl get pods -l app=grafana -n istio-system</span>
 NAME                       READY   STATUS    RESTARTS   AGE
 grafana-6ccd56f4b6-vz7k5   <span class="token number">1</span>/1     Running   <span class="token number">0</span>          16h<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>启动grafana dashboard监听</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## istioctl dashboard grafana --address=192.168.91.10</span>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># istioctl dashboard grafana --address=192.168.91.10</span>
 http://192.168.91.10:3000<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmicroservice%2Fistio%2F3.png" alt=""></p>
 <h3 id="部署Jaeger">部署Jaeger</h3>
 <p>手动提交yaml到kubernetes</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## cd /opt/istio-1.12.1/samples/addons</span>
-<span class="token comment">## kubectl apply -f jaeger.yaml</span>
-<span class="token comment">## kubectl get pods -l app=jaeger -n istio-system</span>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># cd /opt/istio-1.12.1/samples/addons</span>
+<span class="token comment"># kubectl apply -f jaeger.yaml</span>
+<span class="token comment"># kubectl get pods -l app=jaeger -n istio-system</span>
 NAME                      READY   STATUS    RESTARTS   AGE
 jaeger-5d44bc5c5d-fqtbr   <span class="token number">1</span>/1     Running   <span class="token number">0</span>          16h<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>启动jaeger dashboard监听</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## istioctl dashboard jaeger --address=192.168.91.10</span>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># istioctl dashboard jaeger --address=192.168.91.10</span>
 http://192.168.91.10:16686<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmicroservice%2Fistio%2F4.png" alt=""></p>
 <h3 id="部署Kiali">部署Kiali</h3>
 <p>手动提交yaml到kubernetes</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## cd /opt/istio-1.12.1/samples/addons</span>
-<span class="token comment">## kubectl apply -f kiali.yaml</span>
-<span class="token comment">## kubectl get pods -l app=kiali -n istio-system</span>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># cd /opt/istio-1.12.1/samples/addons</span>
+<span class="token comment"># kubectl apply -f kiali.yaml</span>
+<span class="token comment"># kubectl get pods -l app=kiali -n istio-system</span>
 NAME                     READY   STATUS    RESTARTS   AGE
 kiali-79b86ff5bc-skwp8   <span class="token number">1</span>/1     Running   <span class="token number">0</span>          16h<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>启动kiali dashboard监听</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## istioctl dashboard kiali --address=192.168.91.10</span>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># istioctl dashboard kiali --address=192.168.91.10</span>
 http://192.168.91.10:20001/kiali<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p><img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fmicroservice%2Fistio%2Fkiali.png" alt=""></p>
 <h2 id="部署Bookinfo示例程序">部署Bookinfo示例程序</h2>
 <ol>
 <li>进入istio-1.17.0/samples/bookinfo/目录部署应用</li>
 </ol>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## cd istio-1.17.0/</span>
-<span class="token comment">## kubectl apply -f samples/bookinfo/platform/kube/bookinfo.yaml</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># cd istio-1.17.0/</span>
+<span class="token comment"># kubectl apply -f samples/bookinfo/platform/kube/bookinfo.yaml</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>等待一段直到所有Pod都running。当每个Pod准备就绪时，Istio sidecar将伴随应用一起部署。</p>
 <ol start="2">
 <li>确认上面的操作都正确之后，运行下面命令，通过检查返回的页面标题来验证应用是否已在集群中运行，并已提供网页服务：</li>
 </ol>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## kubectl exec "$(kubectl get pod -l app=ratings -o jsonpath='&#123;.items[0].metadata.name&#125;')" -c ratings -- curl -sS productpage:9080/productpage | grep -o "&lt;title>.*&lt;/title>"</span>
-<span class="token operator">&lt;</span>title<span class="token operator">></span>Simple Bookstore App<span class="token operator">&lt;</span>/title<span class="token operator">></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># kubectl exec "$(kubectl get pod -l app=ratings -o jsonpath='{.items[0].metadata.name}')" -c ratings -- curl -sS productpage:9080/productpage | grep -o "&lt;title&gt;.*&lt;/title&gt;"</span>
+<span class="token operator">&lt;</span>title<span class="token operator">&gt;</span>Simple Bookstore App<span class="token operator">&lt;</span>/title<span class="token operator">&gt;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <ol start="3">
 <li>对外开放应用程序<br>
 此时，BookInfo应用已经部署，但还不能被外界访问。要开放访问，还需要创建Istio入站网关（Ingress Gateway），它会在网格边缘把一个路径映射到路由。</li>
 </ol>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## kubectl apply -f samples/bookinfo/networking/bookinfo-gateway.yaml</span>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># kubectl apply -f samples/bookinfo/networking/bookinfo-gateway.yaml</span>
 gateway.networking.istio.io/bookinfo-gateway created
 virtualservice.networking.istio.io/bookinfo created<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>可用下面命令确保配置文件没有问题</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">$ istioctl analyze
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># istioctl analyze</span>
 ✔ No validation issues found when analyzing namespace: default.<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <ol start="4">
 <li>确定入站IP和端口。查看service发现，默认ingressgateway使用的是LoadBalancer类型，而我们的集群暂不提供LoadBalancer，此时EXTERNAL-IP的地方显示的是pending，需要把它改成NodePort</li>
 </ol>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## kubectl get svc -n istio-system</span>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># kubectl get svc -n istio-system</span>
 NAME                   TYPE           CLUSTER-IP       EXTERNAL-IP   PORT<span class="token punctuation">(</span>S<span class="token punctuation">)</span>                                                                      AGE
-grafana                ClusterIP      <span class="token number">10.97</span>.23.53      <span class="token operator">&lt;</span>none<span class="token operator">></span>        <span class="token number">3000</span>/TCP                                                                     90m
-istio-egressgateway    ClusterIP      <span class="token number">10.99</span>.30.204     <span class="token operator">&lt;</span>none<span class="token operator">></span>        <span class="token number">80</span>/TCP,443/TCP                                                               44d
-istio-ingressgateway   LoadBalancer   <span class="token number">10.111</span>.102.172   <span class="token operator">&lt;</span>pending<span class="token operator">></span>     <span class="token number">15021</span>:31849/TCP,80:30464/TCP,443:31104/TCP,31400:30828/TCP,15443:30440/TCP   44d
-istiod                 NodePort       <span class="token number">10.108</span>.227.110   <span class="token operator">&lt;</span>none<span class="token operator">></span>        <span class="token number">15010</span>:32579/TCP,15012:32125/TCP,443:30219/TCP,15014:32647/TCP                44d
-jaeger-collector       ClusterIP      <span class="token number">10.105</span>.82.176    <span class="token operator">&lt;</span>none<span class="token operator">></span>        <span class="token number">14268</span>/TCP,14250/TCP,9411/TCP                                                 87m
-kiali                  ClusterIP      <span class="token number">10.106</span>.90.206    <span class="token operator">&lt;</span>none<span class="token operator">></span>        <span class="token number">20001</span>/TCP,9090/TCP                                                           85m
-prometheus             ClusterIP      <span class="token number">10.97</span>.146.99     <span class="token operator">&lt;</span>none<span class="token operator">></span>        <span class="token number">9090</span>/TCP                                                                     4h16m
-tracing                ClusterIP      <span class="token number">10.100</span>.227.136   <span class="token operator">&lt;</span>none<span class="token operator">></span>        <span class="token number">80</span>/TCP,16685/TCP                                                             87m
-zipkin                 ClusterIP      <span class="token number">10.110</span>.162.221   <span class="token operator">&lt;</span>none<span class="token operator">></span>        <span class="token number">9411</span>/TCP                                                                     87m<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+grafana                ClusterIP      <span class="token number">10.97</span>.23.53      <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>        <span class="token number">3000</span>/TCP                                                                     90m
+istio-egressgateway    ClusterIP      <span class="token number">10.99</span>.30.204     <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>        <span class="token number">80</span>/TCP,443/TCP                                                               44d
+istio-ingressgateway   LoadBalancer   <span class="token number">10.111</span>.102.172   <span class="token operator">&lt;</span>pending<span class="token operator">&gt;</span>     <span class="token number">15021</span>:31849/TCP,80:30464/TCP,443:31104/TCP,31400:30828/TCP,15443:30440/TCP   44d
+istiod                 NodePort       <span class="token number">10.108</span>.227.110   <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>        <span class="token number">15010</span>:32579/TCP,15012:32125/TCP,443:30219/TCP,15014:32647/TCP                44d
+jaeger-collector       ClusterIP      <span class="token number">10.105</span>.82.176    <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>        <span class="token number">14268</span>/TCP,14250/TCP,9411/TCP                                                 87m
+kiali                  ClusterIP      <span class="token number">10.106</span>.90.206    <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>        <span class="token number">20001</span>/TCP,9090/TCP                                                           85m
+prometheus             ClusterIP      <span class="token number">10.97</span>.146.99     <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>        <span class="token number">9090</span>/TCP                                                                     4h16m
+tracing                ClusterIP      <span class="token number">10.100</span>.227.136   <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>        <span class="token number">80</span>/TCP,16685/TCP                                                             87m
+zipkin                 ClusterIP      <span class="token number">10.110</span>.162.221   <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>        <span class="token number">9411</span>/TCP                                                                     87m<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>编辑service istio-ingressgateway，将<code>type: LoadBalancer</code>改为<code>type: NodePort</code></p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## kubectl edit svc istio-ingressgateway -n istio-system</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># kubectl edit svc istio-ingressgateway -n istio-system</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>改完以后</p>
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">NAME                   TYPE        CLUSTER-IP       EXTERNAL-IP   PORT<span class="token punctuation">(</span>S<span class="token punctuation">)</span>                                                                      AGE
-grafana                ClusterIP   <span class="token number">10.97</span>.23.53      <span class="token operator">&lt;</span>none<span class="token operator">></span>        <span class="token number">3000</span>/TCP                                                                     165m
-istio-ingressgateway   NodePort    <span class="token number">10.111</span>.102.172   <span class="token operator">&lt;</span>none<span class="token operator">></span>        <span class="token number">15021</span>:31849/TCP,80:30464/TCP,443:31104/TCP,31400:30828/TCP,15443:30440/TCP   44d<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+grafana                ClusterIP   <span class="token number">10.97</span>.23.53      <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>        <span class="token number">3000</span>/TCP                                                                     165m
+istio-ingressgateway   NodePort    <span class="token number">10.111</span>.102.172   <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>        <span class="token number">15021</span>:31849/TCP,80:30464/TCP,443:31104/TCP,31400:30828/TCP,15443:30440/TCP   44d<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>查看istio-ingressgateway的yaml，名称为http2的端口：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## kubectl get svc istio-ingressgateway -n istio-system -o jsonpath="&#123;.spec.ports[?(@.name=='http2')].nodePort&#125;";echo</span>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># kubectl get svc istio-ingressgateway -n istio-system -o jsonpath="{.spec.ports[?(@.name=='http2')].nodePort}";echo</span>
 <span class="token number">30464</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
 <p>于是gateway的访问地址是：<a target="_blank" rel="noopener" href="http://192.168.126.100:30464">http://192.168.126.100:30464</a></p>
 <ol start="5">
 <li>在K8S集群外，访问Bookinfo应用100次：</li>
 </ol>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment">## for i in $(seq 1 100); do curl -s -o /dev/null "http://192.168.126.100:30464/productpage"; done</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token comment"># for i in $(seq 1 100); do curl -s -o /dev/null "http://192.168.126.100:30464/productpage"; done</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <ol start="6">
 <li>
 <p>打开kiali，可以看到访问链路图<br>
@@ -881,7 +883,7 @@ istio-ingressgateway   NodePort    <span class="token number">10.111</span>.102.
                         <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
                     </ul>
                     <div id="alipay">
-                        <img src="/blog/medias/reward/alipay.jpg" class="reward-img" alt="支付宝打赏二维码">
+                        <img src="/blog/medias/reward/alipay.png" class="reward-img" alt="支付宝打赏二维码">
                     </div>
                     <div id="wechat">
                         <img src="/blog/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
@@ -911,6 +913,273 @@ istio-ingressgateway   NodePort    <span class="token number">10.111</span>.102.
     
 
     
+        <style>
+    .valine-card {
+        margin: 1.5rem auto;
+    }
+
+    .valine-card .card-content {
+        padding: 20px 20px 5px 20px;
+    }
+
+    #vcomments textarea {
+        box-sizing: border-box;
+        background: url("/blog/medias/comment_bg.png") 100% 100% no-repeat;
+    }
+
+    #vcomments p {
+        margin: 2px 2px 10px;
+        font-size: 1.05rem;
+        line-height: 1.78rem;
+    }
+
+    #vcomments blockquote p {
+        text-indent: 0.2rem;
+    }
+
+    #vcomments a {
+        padding: 0 2px;
+        color: #4cbf30;
+        font-weight: 500;
+        text-decoration: none;
+    }
+
+    #vcomments img {
+        max-width: 100%;
+        height: auto;
+        cursor: pointer;
+    }
+
+    #vcomments ol li {
+        list-style-type: decimal;
+    }
+
+    #vcomments ol,
+    ul {
+        display: block;
+        padding-left: 2em;
+        word-spacing: 0.05rem;
+    }
+
+    #vcomments ul li,
+    ol li {
+        display: list-item;
+        line-height: 1.8rem;
+        font-size: 1rem;
+    }
+
+    #vcomments ul li {
+        list-style-type: disc;
+    }
+
+    #vcomments ul ul li {
+        list-style-type: circle;
+    }
+
+    #vcomments table, th, td {
+        padding: 12px 13px;
+        border: 1px solid #dfe2e5;
+    }
+
+    #vcomments table, th, td {
+        border: 0;
+    }
+
+    table tr:nth-child(2n), thead {
+        background-color: #fafafa;
+    }
+
+    #vcomments table th {
+        background-color: #f2f2f2;
+        min-width: 80px;
+    }
+
+    #vcomments table td {
+        min-width: 80px;
+    }
+
+    #vcomments h1 {
+        font-size: 1.85rem;
+        font-weight: bold;
+        line-height: 2.2rem;
+    }
+
+    #vcomments h2 {
+        font-size: 1.65rem;
+        font-weight: bold;
+        line-height: 1.9rem;
+    }
+
+    #vcomments h3 {
+        font-size: 1.45rem;
+        font-weight: bold;
+        line-height: 1.7rem;
+    }
+
+    #vcomments h4 {
+        font-size: 1.25rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    #vcomments h5 {
+        font-size: 1.1rem;
+        font-weight: bold;
+        line-height: 1.4rem;
+    }
+
+    #vcomments h6 {
+        font-size: 1rem;
+        line-height: 1.3rem;
+    }
+
+    #vcomments p {
+        font-size: 1rem;
+        line-height: 1.5rem;
+    }
+
+    #vcomments hr {
+        margin: 12px 0;
+        border: 0;
+        border-top: 1px solid #ccc;
+    }
+
+    #vcomments blockquote {
+        margin: 15px 0;
+        border-left: 5px solid #42b983;
+        padding: 1rem 0.8rem 0.3rem 0.8rem;
+        color: #666;
+        background-color: rgba(66, 185, 131, .1);
+    }
+
+    #vcomments pre {
+        font-family: monospace, monospace;
+        padding: 1.2em;
+        margin: .5em 0;
+        background: #272822;
+        overflow: auto;
+        border-radius: 0.3em;
+        tab-size: 4;
+    }
+
+    #vcomments code {
+        font-family: monospace, monospace;
+        padding: 1px 3px;
+        font-size: 0.92rem;
+        color: #e96900;
+        background-color: #f8f8f8;
+        border-radius: 2px;
+    }
+
+    #vcomments pre code {
+        font-family: monospace, monospace;
+        padding: 0;
+        color: #e8eaf6;
+        background-color: #272822;
+    }
+
+    #vcomments pre[class*="language-"] {
+        padding: 1.2em;
+        margin: .5em 0;
+    }
+
+    #vcomments code[class*="language-"],
+    pre[class*="language-"] {
+        color: #e8eaf6;
+    }
+
+    #vcomments [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+        position: inherit;
+        margin-left: -1.3rem;
+        margin-right: 0.4rem;
+        margin-top: -1px;
+        vertical-align: middle;
+        left: unset;
+        visibility: visible;
+    }
+
+    #vcomments b,
+    strong {
+        font-weight: bold;
+    }
+
+    #vcomments dfn {
+        font-style: italic;
+    }
+
+    #vcomments small {
+        font-size: 85%;
+    }
+
+    #vcomments cite {
+        font-style: normal;
+    }
+
+    #vcomments mark {
+        background-color: #fcf8e3;
+        padding: .2em;
+    }
+
+    #vcomments table, th, td {
+        padding: 12px 13px;
+        border: 1px solid #dfe2e5;
+    }
+
+    table tr:nth-child(2n), thead {
+        background-color: #fafafa;
+    }
+
+    #vcomments table th {
+        background-color: #f2f2f2;
+        min-width: 80px;
+    }
+
+    #vcomments table td {
+        min-width: 80px;
+    }
+
+    #vcomments [type="checkbox"]:not(:checked), [type="checkbox"]:checked {
+        position: inherit;
+        margin-left: -1.3rem;
+        margin-right: 0.4rem;
+        margin-top: -1px;
+        vertical-align: middle;
+        left: unset;
+        visibility: visible;
+    }
+</style>
+
+<div class="card valine-card" data-aos="fade-up">
+    <div class="comment_headling" style="font-size: 20px; font-weight: 700; position: relative; padding-left: 20px; top: 15px; padding-bottom: 5px;">
+        <i class="fas fa-comments fa-fw" aria-hidden="true"></i>
+        <span>评论</span>
+    </div>
+    <div id="vcomments" class="card-content" style="display: grid">
+    </div>
+</div>
+
+<script src="/blog/libs/valine/av-min.js"></script>
+<script src="https://unpkg.com/valine/dist/Valine.min.js"></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        appId: 'lrUDzoXHA8J9LL4P55q2Vt2N-gzGzoHsz',
+        appKey: '6ClQluKY0m4zPsu6ghTkaMPp',
+        serverURLs: 'https://lrudzoxh.lc-cn-n1-shared.com',
+        notify: 'true' === 'true',
+        verify: 'false' === 'true',
+        visitor: 'true' === 'true',
+        avatar: 'mm',
+        pageSize: '10',
+        lang: 'zh-cn',
+        placeholder: 'just go go'
+    });
+</script>
+
+<!--酷Q推送-->
+
+
+    
 
     
 
@@ -930,9 +1199,9 @@ istio-ingressgateway   NodePort    <span class="token number">10.111</span>.102.
                 <a href="/blog/posts/3520104697/">
                     <div class="card-image">
                         
-                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fk8s_banner.png" class="responsive-img" alt="K8S系列文章之一：Kubernetes概览">
+                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fk8s_banner.png" class="responsive-img" alt="K8S入门系列之一：Kubernetes概览">
                         
-                        <span class="card-title">K8S系列文章之一：Kubernetes概览</span>
+                        <span class="card-title">K8S入门系列之一：Kubernetes概览</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -955,6 +1224,10 @@ istio-ingressgateway   NodePort    <span class="token number">10.111</span>.102.
                             
                             <a href="/blog/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/kubernetes/" class="post-category">
                                     kubernetes
+                                </a>
+                            
+                            <a href="/blog/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/kubernetes/K8S%E5%85%A5%E9%97%A8%E7%B3%BB%E5%88%97/" class="post-category">
+                                    K8S入门系列
                                 </a>
                             
                             
@@ -1223,7 +1496,7 @@ istio-ingressgateway   NodePort    <span class="token number">10.111</span>.102.
             <br>
             
                 &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                        class="white-color">45.5k</span>
+                        class="white-color">51.9k</span>
             
             
             
