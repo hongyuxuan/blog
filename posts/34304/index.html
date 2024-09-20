@@ -407,14 +407,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.6k
+                    1.8k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    5 分
+                    6 分
                 </div>
                 
 
@@ -471,18 +471,20 @@
 </ul>
 <h3 id="特性">特性</h3>
 <ul>
-<li>server-agent模式，适用于无kubeconfig、无apiserver、无clusterrole权限的三无用户，只有namespace级权限，可通过一个serviceaccount做CD</li>
-<li>agent启动后自动注册到服务注册中心，server从服务注册中心自动发现agent，并与agent建立grpc连接。用户的CD请求发送给server，由server寻址到对应的agent并下发任务</li>
-<li>支持多K8S集群，每个集群可部署1-n个agent，agent承担具体CD任务</li>
-<li>server、agent均为无状态服务，支持随意横向扩缩</li>
-<li>提供ui和cli两个访问入口</li>
-<li>提供Helm Charts一键部署（含服务注册中心），部署时注册中心、server、agent、ui、cli组件支持选装</li>
+<li>云原生应用部署，同时支持实体机以及通过HTTP接口对接第三方部署/自动化平台，理论上可支持任意提供HTTP接口的平台/系统，如 ArgoCD、Ansible/AWX</li>
+<li>无需 <code>kubeconfig</code>、<code>ClusterRole</code>，也无需知道 APIServer 地址、证书，agent 支持 <code>InCluster</code> 模式部署，特别适合于非容器集群管理员的普通用户进行应用部署</li>
+<li>支持多集群管理，通过统一的 <code>ui</code> 和 <code>cli</code> 集中查看、管理、操作多个集群的工作负载，并进行应用部署</li>
+<li>agent 可以在启动时自动地注册到服务注册中心，只要网络端口可达。之后 server 会自动发现已注册并且网络端口可达的 agent，就此完成纳管过程</li>
+<li>以应用为中心，提供完善的应用管理。无论应用部署于容器或是实体机，或是在第三方平台创建的一个部署对象，lizardcd 均支持对其进行持续交付</li>
+<li>对于部署了服务网格（如 <code>Istio</code>）的集群，Lizardcd 支持将其接入，并结合应用管理实现灰度发布、流量控制等操作（例如基于 header 或权重）</li>
+<li>支持完整的 <code>Helm Cli</code> 功能，包括 Repo 添加、删除，Release 安装、卸载、更新、历史记录，README 和 values 文件查看、编辑等</li>
+<li>内置 <code>Prometheus Metrics</code> 指标监控，以及基于 <code>Opentelemetry</code> 和 <code>Jaeger</code> 的链路跟踪功能</li>
 </ul>
 <h3 id="架构">架构</h3>
 <p><img src="https://project-1255547500.cos.ap-beijing.myqcloud.com/lizardcd%2Flizardcd%E6%9E%B6%E6%9E%84%E5%9B%BE.png" alt=""></p>
 <h3 id="使用方法">使用方法</h3>
 <p>项目地址：<a target="_blank" rel="noopener" href="https://github.com/hongyuxuan/lizardcd">https://github.com/hongyuxuan/lizardcd</a></p>
-<p>项目提供二进制文件和Helm Charts两种部署方式。使用二进制文件部署时必须提前准备好注册中心Consul，且Consul和agent、server网络端口可达。使用Helm Charts时可勾选是否同时安装Consul。具体用法详见 <a target="_blank" rel="noopener" href="https://github.com/hongyuxuan/lizardcd?tab=readme-ov-file#installation">Installation</a></p>
+<p>项目提供二进制文件和Helm Charts两种部署方式。使用二进制文件部署时必须提前准备好注册中心，支持etcd、nacos、consul，默认使用etcd。需要注册中心和agent、server网络端口可达。使用Helm Charts时可勾选是否同时安装注册中心。具体用法详见 <a target="_blank" rel="noopener" href="https://hongyuxuan.github.io/lizardcd-doc/">lizardcd官方文档</a></p>
 <p>欢迎各路云原生大神指正，并提出你们新的需求~</p>
 
                 
@@ -899,46 +901,45 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="far fa-dot-circle"></i>&nbsp;本篇
-            </div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
-                <a href="/blog/posts/34304/">
+                <a href="/blog/posts/19384/">
                     <div class="card-image">
                         
-                        <img src="https://img1.kchuhai.com/ueditor/image/20210402/6375295666848179952490282.jpg" class="responsive-img" alt="云原生CD项目LizardCD">
                         
-                        <span class="card-title">云原生CD项目LizardCD</span>
+                        <img src="/blog/medias/featureimages/9.jpg" class="responsive-img" alt="使用OpenTelemetry+Quickwit实现应用可观测性">
+                        
+                        <span class="card-title">使用OpenTelemetry+Quickwit实现应用可观测性</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            本文介绍作者最新开源的云原生CD项目LizardCD。
+                            OpenTelemetry 是一个可观测性框架和工具包， 旨在创建和管理遥测数据，如链路、指标和日志。Quickwit 是一个可满足可观测性数据存储的搜索引擎，可用来替代Elasticsearch。
                         
                     </div>
                     <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2024-03-22
-                            </span>
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2024-09-20
+                        </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
                             
-                            <a href="/blog/categories/%E8%87%AA%E5%8A%A8%E5%8C%96%E8%BF%90%E7%BB%B4/" class="post-category">
-                                    自动化运维
+                            <a href="/blog/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/" class="post-category">
+                                    云原生
                                 </a>
                             
-                            <a href="/blog/categories/%E8%87%AA%E5%8A%A8%E5%8C%96%E8%BF%90%E7%BB%B4/DevOps/" class="post-category">
-                                    DevOps
+                            <a href="/blog/categories/%E4%BA%91%E5%8E%9F%E7%94%9F/%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7/" class="post-category">
+                                    可观测性
                                 </a>
                             
                             
                         </span>
                     </div>
                 </div>
-
                 
                 <div class="card-action article-tags">
                     
@@ -946,8 +947,8 @@
                         <span class="chip bg-color">cloud native</span>
                     </a>
                     
-                    <a href="/blog/tags/cicd/">
-                        <span class="chip bg-color">cicd</span>
+                    <a href="/blog/tags/observability/">
+                        <span class="chip bg-color">observability</span>
                     </a>
                     
                 </div>
@@ -1182,7 +1183,7 @@
             <br>
             
                 &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                        class="white-color">51.9k</span>
+                        class="white-color">57k</span>
             
             
             

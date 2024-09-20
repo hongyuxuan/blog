@@ -441,7 +441,7 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p>Kubernetes中，Controller是一个非常重要的组件，它可以根据我们声明的资源期望状态和实际状态来进行调谐（Reconcile），以确保我们的应用程序始终处于所需的状态。本文将介绍Controller的工作原理，并介绍如何编写一个Controoler</p>
+                <p>Kubernetes中，Controller是一个非常重要的组件，它可以根据我们声明的资源期望状态和实际状态来进行调谐（Reconcile），以确保我们的应用程序始终处于所需的状态。本文将介绍Controller的工作原理，并介绍如何编写一个Controller。</p>
 <h2 id="Controller工作原理">Controller工作原理</h2>
 <p>在K8s中，用户通过声明式API定义资源的“预期状态”，Controller则负责监视资源的实际状态，当资源的实际状态和“预期状态”不一致时，Controller则对系统进行必要的更改，以确保两者一致，这个过程被称之为调谐（Reconcile）。</p>
 <p>K8s中有多种类型的Controller，例如Deployment Controller、ReplicaSet Controller和StatefulSet Controller等。每个控制器都有不同的工作原理和适用场景，但它们的基本原理都是相同的。我们也可以根据需要编写Controller来实现自定义的业务逻辑。</p>
@@ -1607,7 +1607,7 @@ Indexer是Informer中的一个本地缓存，该缓存提供了索引功能（�
             <br>
             
                 &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                        class="white-color">51.9k</span>
+                        class="white-color">57k</span>
             
             
             

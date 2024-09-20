@@ -411,7 +411,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.2k
+                    1.3k
                 </div>
                 
 
@@ -500,6 +500,11 @@
 <pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">sealos run registry.cn-shanghai.aliyuncs.com/labring/kubernetes:v1.29.1 registry.cn-shanghai.aliyuncs.com/labring/helm:v3.9.4 registry.cn-shanghai.aliyuncs.com/labring/cilium:v1.14.5 <span class="token parameter variable">--masters</span> <span class="token number">192.168</span>.126.188 <span class="token parameter variable">--nodes</span> <span class="token number">192.168</span>.126.189,192.168.126.190 <span class="token parameter variable">-i</span> /root/.ssh/id_rsa<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <p>本人初始化只安装了2个node，另一个node留作验证添加节点。</p>
 <p>在网络通畅的情况下（非离线）等待一会（大约2min）就能完成安装，还是非常方便的。</p>
+<h2 id="安装nerdctl">安装nerdctl</h2>
+<p>新版本的K8S底层已经不再使用docker作为容器引擎，改为使用containerd，但containerd的ctr命令非常难用，推荐使用nerdctr。nerdctl是一个与docker cli风格兼容的containerd的cli工具，github地址：<a target="_blank" rel="noopener" href="https://github.com/containerd/nerdctl%E3%80%82">https://github.com/containerd/nerdctl。</a></p>
+<p>nerdctr包含完整版和简易版，完整版还包含了containerd，我们用sealos安装K8S已经自带了containerd，所以下载nerdctr简易版即可。解压后将二进制包放到<code>$PATH</code>下。</p>
+<p>因为nerdctr完全兼容docker，所以可以直接用alias将nerdctr别名为docker：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token builtin class-name">echo</span> <span class="token string">"alias docker=/usr/local/bin/nerdctr"</span> <span class="token operator">&gt;&gt;</span> /etc/profile<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 <h2 id="安装Metrics-server">安装Metrics-server</h2>
 <p>安装了<code>metrics-server</code>后才能使用<code>kubectl top</code>命令查看集群资源监控。可以单独安装<code>metrics-server</code>，也可以在安装了<code>Kuboard</code>（下文要安装的图形化界面）之后，由<code>kuboard</code>提供<code>metrics-scraper</code>，也能使用<code>kubectl top</code>命令</p>
 <h2 id="安装MetalLB">安装MetalLB</h2>
@@ -1001,7 +1006,7 @@ No resources found <span class="token keyword">in</span> kuboard namespace.<span
                 <a href="/blog/posts/40075/">
                     <div class="card-image">
                         
-                        <img src="https://www.fujisoft.kr/blog/wp-content/uploads/2020/12/201216_0-1.jpg" class="responsive-img" alt="K8S网络系列之一：Service的基本原理和工作模式">
+                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fnetwork%2Fservice%2Fservice-banner.jpg" class="responsive-img" alt="K8S网络系列之一：Service的基本原理和工作模式">
                         
                         <span class="card-title">K8S网络系列之一：Service的基本原理和工作模式</span>
                     </div>
@@ -1294,7 +1299,7 @@ No resources found <span class="token keyword">in</span> kuboard namespace.<span
             <br>
             
                 &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                        class="white-color">51.9k</span>
+                        class="white-color">57k</span>
             
             
             
