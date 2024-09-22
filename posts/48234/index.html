@@ -378,19 +378,6 @@
                 </div>
                 <div class="col s5 right-align">
                     
-                    <div class="post-cate">
-                        <i class="fas fa-bookmark fa-fw icon-category"></i>
-                        
-                            <a href="/blog/categories/%E8%87%AA%E5%8A%A8%E5%8C%96%E8%BF%90%E7%BB%B4/" class="post-category">
-                                自动化运维
-                            </a>
-                        
-                            <a href="/blog/categories/%E8%87%AA%E5%8A%A8%E5%8C%96%E8%BF%90%E7%BB%B4/%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90/" class="post-category">
-                                日志分析
-                            </a>
-                        
-                    </div>
-                    
                 </div>
             </div>
 
@@ -407,14 +394,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    287
+                    1.4k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    1 分
+                    6 分
                 </div>
                 
 
@@ -437,8 +424,15 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <div class="note primary no-icon"><p>关于 Quickwit 的介绍 参见 <a href="/blog/posts/19384/#Quickwit-%E4%BB%8B%E7%BB%8D">Quickwit 介绍</a></p>
+                <h2 id="前言">前言</h2>
+<p>自前司负责日志分析工作任务开始，我就一直深受日志存储之痛。</p>
+<p>在整个日志分析链条之中，采集工具千千万万，无论是老牌的 <code>flume</code>，中生代的 <code>filebeat</code>，还是云原生新贵 <code>fluentbit</code>、<code>vector</code>，采集性能都相差不大，对原有服务器的性能影响和损耗都能维持在一个很低的水准，因此用谁都一样。</p>
+<p>在日志传输、缓存、削峰、限流领域，Kafka 几乎是唯一的选择。任何日志采集和数据存储平台都得具备对接 Kafka 的能力。</p>
+<p>偏偏在日志存储方面，自七八年前 <code>Elasticsearch</code> 问世以来，几乎形成了垄断地位，至今一直没有什么产品能威胁到它的地位。这么多年来版本不停迭代，功能越做越丰富，产品版图扩的越来越大，什么机器学习、AI 功能做了不少，但最基本的大容量数据存储性能、存储成本却一直拉跨。功能做的越多学习成本直线上升。咱就说不能有个开箱即用、配置简单、上手迅速、性能也不差的日志存储产品吗？</p>
+<p>直到我发现了 <code>Quickwit</code>。</p>
+<div class="note primary no-icon"><p>关于 Quickwit 的介绍 参见 <a href="/blog/posts/19384/#Quickwit-%E4%BB%8B%E7%BB%8D">Quickwit 介绍</a></p>
 </div>
+<p>有了 <code>Quickwit</code>，现在日志分析链条上，前半部分从采集到 <code>Kafka</code> 都不变，后半部分从 <code>Kafka</code> 到 <code>Elasticsearch</code> 就改成了 <code>Kafka</code> 到 <code>Quickwit</code>。</p>
 <h2 id="部署-Kafka">部署 Kafka</h2>
 <p>参见 <a href="/blog/posts/33340/#%E9%83%A8%E7%BD%B2-Kafka">部署 Kafka</a></p>
 <h2 id="部署单节点-Quickwit">部署单节点 Quickwit</h2>
@@ -482,7 +476,178 @@
 <h2 id="部署-Quickwit-集群">部署 Quickwit 集群</h2>
 <h3 id="Kubernetes-部署">Kubernetes 部署</h3>
 <p>参考 <a target="_blank" rel="noopener" href="https://quickwit.io/docs/deployment/kubernetes/helm">Install Quickwit with Helm</a></p>
-<h3 id="虚拟机-物理机部署">虚拟机/物理机部署</h3>
+<h3 id="二进制部署">二进制部署</h3>
+<p>Quickwit 总共有 5 种角色：</p>
+<ul>
+<li><code>Indexers</code> ingest documents from data sources and build indexes.</li>
+<li><code>Searchers</code> execute search queries submitted via the REST API.</li>
+<li>The <code>Metastore</code> stores index metadata in a PostgreSQL-compatible database or cloud-hosted file.</li>
+<li>The <code>Control Plane</code> distributes and coordinates indexing workloads on indexers.</li>
+<li>The <code>Janitor</code> performs periodic maintenance tasks.</li>
+</ul>
+<p>5 种角色启动的时候以 <code>--service</code> 参数指定。结构图如下：<br>
+<img src="https://quickwit.io/img/home-page-architecture-light.svg" alt=""></p>
+<h4 id="环境规划">环境规划</h4>
+<table>
+<thead>
+<tr>
+<th>IP</th>
+<th>角色</th>
+<th>启动命令</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>192.168.126.128</td>
+<td>metastore</td>
+<td>./quickwit run --service metastore</td>
+</tr>
+<tr>
+<td>192.168.126.129</td>
+<td>control-plane</td>
+<td>./quickwit run --service control_plane</td>
+</tr>
+<tr>
+<td>192.168.126.130</td>
+<td>indexer-1, minio-1</td>
+<td>./quickwit run --service indexer</td>
+</tr>
+<tr>
+<td>192.168.126.131</td>
+<td>indexer-2, minio-2</td>
+<td>./quickwit run --service indexer</td>
+</tr>
+<tr>
+<td>192.168.126.132</td>
+<td>searcher, minio-3</td>
+<td>./quickwit run --service searcher</td>
+</tr>
+</tbody>
+</table>
+<h4 id="节点配置">节点配置</h4>
+<p><code>metastore</code> 的配置文件</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">version</span><span class="token punctuation">:</span> <span class="token number">0.7</span>
+<span class="token key atrule">cluster_id</span><span class="token punctuation">:</span> mycluster
+<span class="token key atrule">node_id</span><span class="token punctuation">:</span> quickwit<span class="token punctuation">-</span>metastore
+<span class="token key atrule">listen_address</span><span class="token punctuation">:</span> 0.0.0.0
+<span class="token key atrule">rest</span><span class="token punctuation">:</span>
+  <span class="token key atrule">listen_port</span><span class="token punctuation">:</span> <span class="token number">7280</span>
+<span class="token key atrule">peer_seeds</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> quickwit<span class="token punctuation">-</span>metastore
+  <span class="token punctuation">-</span> quickwit<span class="token punctuation">-</span>control<span class="token punctuation">-</span>plane
+  <span class="token punctuation">-</span> quickwit<span class="token punctuation">-</span>indexer<span class="token punctuation">-</span><span class="token number">1</span>
+<span class="token key atrule">advertise_address</span><span class="token punctuation">:</span> 192.168.126.128
+<span class="token key atrule">data_dir</span><span class="token punctuation">:</span> /data/qwdata
+<span class="token key atrule">storage</span><span class="token punctuation">:</span>
+  <span class="token key atrule">s3</span><span class="token punctuation">:</span>
+    <span class="token key atrule">flavor</span><span class="token punctuation">:</span> minio
+    <span class="token key atrule">access_key_id</span><span class="token punctuation">:</span> exGkixAd72LLudQnC6sY
+    <span class="token key atrule">secret_access_key</span><span class="token punctuation">:</span> pTY49ucK0L8JLl7CZJRONjdYduGMkHIvaIvNcKeU
+    <span class="token key atrule">region</span><span class="token punctuation">:</span> pek
+    <span class="token key atrule">endpoint</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//quickwit<span class="token punctuation">-</span>node<span class="token punctuation">-</span>1<span class="token punctuation">:</span><span class="token number">9000</span>
+    <span class="token key atrule">force_path_style_access</span><span class="token punctuation">:</span> $<span class="token punctuation">{</span>QW_S3_FORCE_PATH_STYLE_ACCESS<span class="token punctuation">:</span><span class="token punctuation">-</span><span class="token boolean important">false</span><span class="token punctuation">}</span>
+    <span class="token key atrule">disable_multi_object_delete</span><span class="token punctuation">:</span> <span class="token boolean important">false</span>
+    <span class="token key atrule">disable_multipart_upload</span><span class="token punctuation">:</span> <span class="token boolean important">false</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><code>peer_seeds</code> 不需要把所有节点都写全，后面扩容时也无需把新节点增加到 <code>peer_seeds</code> 里，quickwit 靠 <code>listen_address</code> 和 <code>advertise_address</code> 自动发现集群里设置了同一个 <code>cluster_id</code> 的节点。</p>
+<p><code>control-plane</code> 的配置文件</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">version</span><span class="token punctuation">:</span> <span class="token number">0.7</span>
+<span class="token key atrule">cluster_id</span><span class="token punctuation">:</span> mycluster
+<span class="token key atrule">node_id</span><span class="token punctuation">:</span> quickwit<span class="token punctuation">-</span>control<span class="token punctuation">-</span>plane
+<span class="token key atrule">listen_address</span><span class="token punctuation">:</span> 0.0.0.0
+<span class="token key atrule">rest</span><span class="token punctuation">:</span>
+  <span class="token key atrule">listen_port</span><span class="token punctuation">:</span> <span class="token number">7280</span>
+<span class="token key atrule">peer_seeds</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> quickwit<span class="token punctuation">-</span>metastore
+  <span class="token punctuation">-</span> quickwit<span class="token punctuation">-</span>control<span class="token punctuation">-</span>plane
+  <span class="token punctuation">-</span> quickwit<span class="token punctuation">-</span>indexer<span class="token punctuation">-</span><span class="token number">1</span>
+<span class="token key atrule">advertise_address</span><span class="token punctuation">:</span> 192.168.126.129
+<span class="token key atrule">data_dir</span><span class="token punctuation">:</span> /data/qwdata
+<span class="token key atrule">storage</span><span class="token punctuation">:</span>
+  <span class="token key atrule">s3</span><span class="token punctuation">:</span>
+    <span class="token key atrule">flavor</span><span class="token punctuation">:</span> minio
+    <span class="token key atrule">access_key_id</span><span class="token punctuation">:</span> exGkixAd72LLudQnC6sY
+    <span class="token key atrule">secret_access_key</span><span class="token punctuation">:</span> pTY49ucK0L8JLl7CZJRONjdYduGMkHIvaIvNcKeU
+    <span class="token key atrule">region</span><span class="token punctuation">:</span> pek
+    <span class="token key atrule">endpoint</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//quickwit<span class="token punctuation">-</span>node<span class="token punctuation">-</span>1<span class="token punctuation">:</span><span class="token number">9000</span>
+    <span class="token key atrule">force_path_style_access</span><span class="token punctuation">:</span> $<span class="token punctuation">{</span>QW_S3_FORCE_PATH_STYLE_ACCESS<span class="token punctuation">:</span><span class="token punctuation">-</span><span class="token boolean important">false</span><span class="token punctuation">}</span>
+    <span class="token key atrule">disable_multi_object_delete</span><span class="token punctuation">:</span> <span class="token boolean important">false</span>
+    <span class="token key atrule">disable_multipart_upload</span><span class="token punctuation">:</span> <span class="token boolean important">false</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><code>indexer-1</code> 的配置文件</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">version</span><span class="token punctuation">:</span> <span class="token number">0.7</span>
+<span class="token key atrule">cluster_id</span><span class="token punctuation">:</span> mycluster
+<span class="token key atrule">node_id</span><span class="token punctuation">:</span> quickwit<span class="token punctuation">-</span>indexer<span class="token punctuation">-</span><span class="token number">1</span>
+<span class="token key atrule">listen_address</span><span class="token punctuation">:</span> 0.0.0.0
+<span class="token key atrule">rest</span><span class="token punctuation">:</span>
+  <span class="token key atrule">listen_port</span><span class="token punctuation">:</span> <span class="token number">7280</span>
+<span class="token key atrule">peer_seeds</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> quickwit<span class="token punctuation">-</span>metastore
+  <span class="token punctuation">-</span> quickwit<span class="token punctuation">-</span>control<span class="token punctuation">-</span>plane
+  <span class="token punctuation">-</span> quickwit<span class="token punctuation">-</span>indexer<span class="token punctuation">-</span><span class="token number">1</span>
+<span class="token key atrule">advertise_address</span><span class="token punctuation">:</span> 192.168.126.130
+<span class="token key atrule">data_dir</span><span class="token punctuation">:</span> /data/qwdata
+<span class="token key atrule">storage</span><span class="token punctuation">:</span>
+  <span class="token key atrule">s3</span><span class="token punctuation">:</span>
+    <span class="token key atrule">flavor</span><span class="token punctuation">:</span> minio
+    <span class="token key atrule">access_key_id</span><span class="token punctuation">:</span> exGkixAd72LLudQnC6sY
+    <span class="token key atrule">secret_access_key</span><span class="token punctuation">:</span> pTY49ucK0L8JLl7CZJRONjdYduGMkHIvaIvNcKeU
+    <span class="token key atrule">region</span><span class="token punctuation">:</span> pek
+    <span class="token key atrule">endpoint</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//quickwit<span class="token punctuation">-</span>node<span class="token punctuation">-</span>1<span class="token punctuation">:</span><span class="token number">9000</span>
+    <span class="token key atrule">force_path_style_access</span><span class="token punctuation">:</span> $<span class="token punctuation">{</span>QW_S3_FORCE_PATH_STYLE_ACCESS<span class="token punctuation">:</span><span class="token punctuation">-</span><span class="token boolean important">false</span><span class="token punctuation">}</span>
+    <span class="token key atrule">disable_multi_object_delete</span><span class="token punctuation">:</span> <span class="token boolean important">false</span>
+    <span class="token key atrule">disable_multipart_upload</span><span class="token punctuation">:</span> <span class="token boolean important">false</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><code>indexer-2</code> 的配置文件</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">version</span><span class="token punctuation">:</span> <span class="token number">0.7</span>
+<span class="token key atrule">cluster_id</span><span class="token punctuation">:</span> mycluster
+<span class="token key atrule">node_id</span><span class="token punctuation">:</span> quickwit<span class="token punctuation">-</span>indexer<span class="token punctuation">-</span><span class="token number">2</span>
+<span class="token key atrule">listen_address</span><span class="token punctuation">:</span> 0.0.0.0
+<span class="token key atrule">rest</span><span class="token punctuation">:</span>
+  <span class="token key atrule">listen_port</span><span class="token punctuation">:</span> <span class="token number">7280</span>
+<span class="token key atrule">peer_seeds</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> quickwit<span class="token punctuation">-</span>metastore
+  <span class="token punctuation">-</span> quickwit<span class="token punctuation">-</span>control<span class="token punctuation">-</span>plane
+  <span class="token punctuation">-</span> quickwit<span class="token punctuation">-</span>indexer<span class="token punctuation">-</span><span class="token number">1</span>
+<span class="token key atrule">advertise_address</span><span class="token punctuation">:</span> 192.168.126.131
+<span class="token key atrule">data_dir</span><span class="token punctuation">:</span> /data/qwdata
+<span class="token key atrule">storage</span><span class="token punctuation">:</span>
+  <span class="token key atrule">s3</span><span class="token punctuation">:</span>
+    <span class="token key atrule">flavor</span><span class="token punctuation">:</span> minio
+    <span class="token key atrule">access_key_id</span><span class="token punctuation">:</span> exGkixAd72LLudQnC6sY
+    <span class="token key atrule">secret_access_key</span><span class="token punctuation">:</span> pTY49ucK0L8JLl7CZJRONjdYduGMkHIvaIvNcKeU
+    <span class="token key atrule">region</span><span class="token punctuation">:</span> pek
+    <span class="token key atrule">endpoint</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//quickwit<span class="token punctuation">-</span>node<span class="token punctuation">-</span>1<span class="token punctuation">:</span><span class="token number">9000</span>
+    <span class="token key atrule">force_path_style_access</span><span class="token punctuation">:</span> $<span class="token punctuation">{</span>QW_S3_FORCE_PATH_STYLE_ACCESS<span class="token punctuation">:</span><span class="token punctuation">-</span><span class="token boolean important">false</span><span class="token punctuation">}</span>
+    <span class="token key atrule">disable_multi_object_delete</span><span class="token punctuation">:</span> <span class="token boolean important">false</span>
+    <span class="token key atrule">disable_multipart_upload</span><span class="token punctuation">:</span> <span class="token boolean important">false</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><code>searcher</code> 的配置文件</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">version</span><span class="token punctuation">:</span> <span class="token number">0.7</span>
+<span class="token key atrule">cluster_id</span><span class="token punctuation">:</span> mycluster
+<span class="token key atrule">node_id</span><span class="token punctuation">:</span> quickwit<span class="token punctuation">-</span>searcher
+<span class="token key atrule">listen_address</span><span class="token punctuation">:</span> 0.0.0.0
+<span class="token key atrule">rest</span><span class="token punctuation">:</span>
+  <span class="token key atrule">listen_port</span><span class="token punctuation">:</span> <span class="token number">7280</span>
+<span class="token key atrule">peer_seeds</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> quickwit<span class="token punctuation">-</span>metastore
+  <span class="token punctuation">-</span> quickwit<span class="token punctuation">-</span>control<span class="token punctuation">-</span>plane
+  <span class="token punctuation">-</span> quickwit<span class="token punctuation">-</span>indexer<span class="token punctuation">-</span><span class="token number">1</span>
+<span class="token key atrule">advertise_address</span><span class="token punctuation">:</span> 192.168.126.132
+<span class="token key atrule">data_dir</span><span class="token punctuation">:</span> /data/qwdata
+<span class="token key atrule">storage</span><span class="token punctuation">:</span>
+  <span class="token key atrule">s3</span><span class="token punctuation">:</span>
+    <span class="token key atrule">flavor</span><span class="token punctuation">:</span> minio
+    <span class="token key atrule">access_key_id</span><span class="token punctuation">:</span> exGkixAd72LLudQnC6sY
+    <span class="token key atrule">secret_access_key</span><span class="token punctuation">:</span> pTY49ucK0L8JLl7CZJRONjdYduGMkHIvaIvNcKeU
+    <span class="token key atrule">region</span><span class="token punctuation">:</span> pek
+    <span class="token key atrule">endpoint</span><span class="token punctuation">:</span> http<span class="token punctuation">:</span>//quickwit<span class="token punctuation">-</span>node<span class="token punctuation">-</span>1<span class="token punctuation">:</span><span class="token number">9000</span>
+    <span class="token key atrule">force_path_style_access</span><span class="token punctuation">:</span> $<span class="token punctuation">{</span>QW_S3_FORCE_PATH_STYLE_ACCESS<span class="token punctuation">:</span><span class="token punctuation">-</span><span class="token boolean important">false</span><span class="token punctuation">}</span>
+    <span class="token key atrule">disable_multi_object_delete</span><span class="token punctuation">:</span> <span class="token boolean important">false</span>
+    <span class="token key atrule">disable_multipart_upload</span><span class="token punctuation">:</span> <span class="token boolean important">false</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="启动集群">启动集群</h4>
+<p>每个节点上启动 Quickwit，命令见上文环境规划，启动后任意节点的 <code>7280</code> 端口均可以打开 <code>ui</code><br>
+<img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fautomation%2Fquickwit-cluster.png" alt=""></p>
+<h3 id="测试">测试</h3>
+<p>在现公司部署的容器版 Quickwit 对接上 <code>Kafka</code> 后，平均吞吐量大约在 <code>3000docs/s</code> 左右，目前运行稳定。</p>
+<p>Quickwit 对原始数据具有很高的压缩比，这一点可以说完爆 Elasticsearch。一个令我没想到的是，按说对象存储上的数据查询性能是比较差的，但 <code>Quickwit</code> 从 <code>Minio</code> 上检索数据量大约在 7 千万条左右，时间能控制在毫秒级，这一点真是惊到我了。后面会再做几次扩容测试观察观察。</p>
+<p>总体来说，Quickwit 目前已经能满足我对日志存储的所有要求了~</p>
 
                 
             </div>
@@ -924,16 +1089,8 @@
                             </span>
                         <span class="publish-author">
                             
-                            <i class="fas fa-bookmark fa-fw icon-category"></i>
-                            
-                            <a href="/blog/categories/%E8%87%AA%E5%8A%A8%E5%8C%96%E8%BF%90%E7%BB%B4/" class="post-category">
-                                    自动化运维
-                                </a>
-                            
-                            <a href="/blog/categories/%E8%87%AA%E5%8A%A8%E5%8C%96%E8%BF%90%E7%BB%B4/%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90/" class="post-category">
-                                    日志分析
-                                </a>
-                            
+                            <i class="fas fa-user fa-fw"></i>
+                            洪宇轩
                             
                         </span>
                     </div>
@@ -981,16 +1138,8 @@
                             </span>
                         <span class="publish-author">
                             
-                            <i class="fas fa-bookmark fa-fw icon-category"></i>
-                            
-                            <a href="/blog/categories/%E8%87%AA%E5%8A%A8%E5%8C%96%E8%BF%90%E7%BB%B4/" class="post-category">
-                                    自动化运维
-                                </a>
-                            
-                            <a href="/blog/categories/%E8%87%AA%E5%8A%A8%E5%8C%96%E8%BF%90%E7%BB%B4/%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90/" class="post-category">
-                                    日志分析
-                                </a>
-                            
+                            <i class="fas fa-user fa-fw"></i>
+                            洪宇轩
                             
                         </span>
                     </div>
@@ -1201,7 +1350,7 @@
             <br>
             
                 &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                        class="white-color">57k</span>
+                        class="white-color">58k</span>
             
             
             
