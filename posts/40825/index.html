@@ -4,8 +4,8 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="K8S存储系列之一：K8S HostPath StorageClass, 洪宇轩的博客">
-    <meta name="description" content="HostPath可提供基于K8SNode节点本地路径的的存储。">
+    <meta name="keywords" content="K8S二次开发系列之八：自定义开发score类型调度器, 洪宇轩的博客">
+    <meta name="description" content="本文详细讲解如何自定义开发一个score类型调度器。">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -17,7 +17,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>K8S存储系列之一：K8S HostPath StorageClass | 洪宇轩的博客</title>
+    <title>K8S二次开发系列之八：自定义开发score类型调度器 | 洪宇轩的博客</title>
     <link rel="icon" type="image/png" href="/blog/favicon.png">
     
 
@@ -336,12 +336,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fstorage%2Fk8s_storage.png')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fcustom%2Fscheduler_banner.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">K8S存储系列之一：K8S HostPath StorageClass</h1>
+                    <h1 class="description center-align post-title">K8S二次开发系列之八：自定义开发score类型调度器</h1>
                 </div>
             </div>
         </div>
@@ -369,8 +369,8 @@
                                 <span class="chip bg-color">Cloud Native</span>
                             </a>
                         
-                            <a href="/blog/tags/Kubernetes/">
-                                <span class="chip bg-color">Kubernetes</span>
+                            <a href="/blog/tags/K8S%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97/">
+                                <span class="chip bg-color">K8S二次开发系列</span>
                             </a>
                         
                     </div>
@@ -394,7 +394,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2022-05-29
+                    2024-11-12
                 </div>
                 
 
@@ -403,14 +403,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    536
+                    0
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    3 分
+                    1 分
                 </div>
                 
 
@@ -433,188 +433,7 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <h2 id="创建provisioner、storageclass">创建provisioner、storageclass</h2>
-<p>我们使用rancher提供的hostpath，地址：<a target="_blank" rel="noopener" href="https://github.com/rancher/local-path-provisioner">https://github.com/rancher/local-path-provisioner</a><br>
-local-path-storage.yaml</p>
-<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
-<span class="token key atrule">kind</span><span class="token punctuation">:</span> Namespace
-<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
-  <span class="token key atrule">name</span><span class="token punctuation">:</span> local<span class="token punctuation">-</span>path<span class="token punctuation">-</span>storage
-
-<span class="token punctuation">---</span>
-<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
-<span class="token key atrule">kind</span><span class="token punctuation">:</span> ServiceAccount
-<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
-  <span class="token key atrule">name</span><span class="token punctuation">:</span> local<span class="token punctuation">-</span>path<span class="token punctuation">-</span>provisioner<span class="token punctuation">-</span>service<span class="token punctuation">-</span>account
-  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> local<span class="token punctuation">-</span>path<span class="token punctuation">-</span>storage
-<span class="token punctuation">---</span>
-<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> rbac.authorization.k8s.io/v1
-<span class="token key atrule">kind</span><span class="token punctuation">:</span> ClusterRole
-<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
-  <span class="token key atrule">name</span><span class="token punctuation">:</span> local<span class="token punctuation">-</span>path<span class="token punctuation">-</span>provisioner<span class="token punctuation">-</span>role
-<span class="token key atrule">rules</span><span class="token punctuation">:</span>
-  <span class="token punctuation">-</span> <span class="token key atrule">apiGroups</span><span class="token punctuation">:</span> <span class="token punctuation">[</span> <span class="token string">""</span> <span class="token punctuation">]</span>
-    <span class="token key atrule">resources</span><span class="token punctuation">:</span> <span class="token punctuation">[</span> <span class="token string">"nodes"</span><span class="token punctuation">,</span> <span class="token string">"persistentvolumeclaims"</span><span class="token punctuation">,</span> <span class="token string">"configmaps"</span> <span class="token punctuation">]</span>
-    <span class="token key atrule">verbs</span><span class="token punctuation">:</span> <span class="token punctuation">[</span> <span class="token string">"get"</span><span class="token punctuation">,</span> <span class="token string">"list"</span><span class="token punctuation">,</span> <span class="token string">"watch"</span> <span class="token punctuation">]</span>
-  <span class="token punctuation">-</span> <span class="token key atrule">apiGroups</span><span class="token punctuation">:</span> <span class="token punctuation">[</span> <span class="token string">""</span> <span class="token punctuation">]</span>
-    <span class="token key atrule">resources</span><span class="token punctuation">:</span> <span class="token punctuation">[</span> <span class="token string">"endpoints"</span><span class="token punctuation">,</span> <span class="token string">"persistentvolumes"</span><span class="token punctuation">,</span> <span class="token string">"pods"</span> <span class="token punctuation">]</span>
-    <span class="token key atrule">verbs</span><span class="token punctuation">:</span> <span class="token punctuation">[</span> <span class="token string">"*"</span> <span class="token punctuation">]</span>
-  <span class="token punctuation">-</span> <span class="token key atrule">apiGroups</span><span class="token punctuation">:</span> <span class="token punctuation">[</span> <span class="token string">""</span> <span class="token punctuation">]</span>
-    <span class="token key atrule">resources</span><span class="token punctuation">:</span> <span class="token punctuation">[</span> <span class="token string">"events"</span> <span class="token punctuation">]</span>
-    <span class="token key atrule">verbs</span><span class="token punctuation">:</span> <span class="token punctuation">[</span> <span class="token string">"create"</span><span class="token punctuation">,</span> <span class="token string">"patch"</span> <span class="token punctuation">]</span>
-  <span class="token punctuation">-</span> <span class="token key atrule">apiGroups</span><span class="token punctuation">:</span> <span class="token punctuation">[</span> <span class="token string">"storage.k8s.io"</span> <span class="token punctuation">]</span>
-    <span class="token key atrule">resources</span><span class="token punctuation">:</span> <span class="token punctuation">[</span> <span class="token string">"storageclasses"</span> <span class="token punctuation">]</span>
-    <span class="token key atrule">verbs</span><span class="token punctuation">:</span> <span class="token punctuation">[</span> <span class="token string">"get"</span><span class="token punctuation">,</span> <span class="token string">"list"</span><span class="token punctuation">,</span> <span class="token string">"watch"</span> <span class="token punctuation">]</span>
-<span class="token punctuation">---</span>
-<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> rbac.authorization.k8s.io/v1
-<span class="token key atrule">kind</span><span class="token punctuation">:</span> ClusterRoleBinding
-<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
-  <span class="token key atrule">name</span><span class="token punctuation">:</span> local<span class="token punctuation">-</span>path<span class="token punctuation">-</span>provisioner<span class="token punctuation">-</span>bind
-<span class="token key atrule">roleRef</span><span class="token punctuation">:</span>
-  <span class="token key atrule">apiGroup</span><span class="token punctuation">:</span> rbac.authorization.k8s.io
-  <span class="token key atrule">kind</span><span class="token punctuation">:</span> ClusterRole
-  <span class="token key atrule">name</span><span class="token punctuation">:</span> local<span class="token punctuation">-</span>path<span class="token punctuation">-</span>provisioner<span class="token punctuation">-</span>role
-<span class="token key atrule">subjects</span><span class="token punctuation">:</span>
-  <span class="token punctuation">-</span> <span class="token key atrule">kind</span><span class="token punctuation">:</span> ServiceAccount
-    <span class="token key atrule">name</span><span class="token punctuation">:</span> local<span class="token punctuation">-</span>path<span class="token punctuation">-</span>provisioner<span class="token punctuation">-</span>service<span class="token punctuation">-</span>account
-    <span class="token key atrule">namespace</span><span class="token punctuation">:</span> local<span class="token punctuation">-</span>path<span class="token punctuation">-</span>storage
-<span class="token punctuation">---</span>
-<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> apps/v1
-<span class="token key atrule">kind</span><span class="token punctuation">:</span> Deployment
-<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
-  <span class="token key atrule">name</span><span class="token punctuation">:</span> local<span class="token punctuation">-</span>path<span class="token punctuation">-</span>provisioner
-  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> local<span class="token punctuation">-</span>path<span class="token punctuation">-</span>storage
-<span class="token key atrule">spec</span><span class="token punctuation">:</span>
-  <span class="token key atrule">replicas</span><span class="token punctuation">:</span> <span class="token number">1</span>
-  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
-    <span class="token key atrule">matchLabels</span><span class="token punctuation">:</span>
-      <span class="token key atrule">app</span><span class="token punctuation">:</span> local<span class="token punctuation">-</span>path<span class="token punctuation">-</span>provisioner
-  <span class="token key atrule">template</span><span class="token punctuation">:</span>
-    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
-      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
-        <span class="token key atrule">app</span><span class="token punctuation">:</span> local<span class="token punctuation">-</span>path<span class="token punctuation">-</span>provisioner
-    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
-      <span class="token key atrule">serviceAccountName</span><span class="token punctuation">:</span> local<span class="token punctuation">-</span>path<span class="token punctuation">-</span>provisioner<span class="token punctuation">-</span>service<span class="token punctuation">-</span>account
-      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
-        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> local<span class="token punctuation">-</span>path<span class="token punctuation">-</span>provisioner
-          <span class="token key atrule">image</span><span class="token punctuation">:</span> rancher/local<span class="token punctuation">-</span>path<span class="token punctuation">-</span>provisioner<span class="token punctuation">:</span>v0.0.22
-          <span class="token key atrule">imagePullPolicy</span><span class="token punctuation">:</span> IfNotPresent
-          <span class="token key atrule">command</span><span class="token punctuation">:</span>
-            <span class="token punctuation">-</span> local<span class="token punctuation">-</span>path<span class="token punctuation">-</span>provisioner
-            <span class="token punctuation">-</span> <span class="token punctuation">-</span><span class="token punctuation">-</span>debug
-            <span class="token punctuation">-</span> start
-            <span class="token punctuation">-</span> <span class="token punctuation">-</span><span class="token punctuation">-</span>config
-            <span class="token punctuation">-</span> /etc/config/config.json
-          <span class="token key atrule">volumeMounts</span><span class="token punctuation">:</span>
-            <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> config<span class="token punctuation">-</span>volume
-              <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /etc/config/
-          <span class="token key atrule">env</span><span class="token punctuation">:</span>
-            <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> POD_NAMESPACE
-              <span class="token key atrule">valueFrom</span><span class="token punctuation">:</span>
-                <span class="token key atrule">fieldRef</span><span class="token punctuation">:</span>
-                  <span class="token key atrule">fieldPath</span><span class="token punctuation">:</span> metadata.namespace
-      <span class="token key atrule">volumes</span><span class="token punctuation">:</span>
-        <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> config<span class="token punctuation">-</span>volume
-          <span class="token key atrule">configMap</span><span class="token punctuation">:</span>
-            <span class="token key atrule">name</span><span class="token punctuation">:</span> local<span class="token punctuation">-</span>path<span class="token punctuation">-</span>config
-<span class="token punctuation">---</span>
-<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> storage.k8s.io/v1
-<span class="token key atrule">kind</span><span class="token punctuation">:</span> StorageClass
-<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
-  <span class="token key atrule">name</span><span class="token punctuation">:</span> local<span class="token punctuation">-</span>path
-<span class="token key atrule">provisioner</span><span class="token punctuation">:</span> rancher.io/local<span class="token punctuation">-</span>path
-<span class="token key atrule">volumeBindingMode</span><span class="token punctuation">:</span> WaitForFirstConsumer
-<span class="token key atrule">reclaimPolicy</span><span class="token punctuation">:</span> Delete
-<span class="token punctuation">---</span>
-<span class="token key atrule">kind</span><span class="token punctuation">:</span> ConfigMap
-<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
-<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
-  <span class="token key atrule">name</span><span class="token punctuation">:</span> local<span class="token punctuation">-</span>path<span class="token punctuation">-</span>config
-  <span class="token key atrule">namespace</span><span class="token punctuation">:</span> local<span class="token punctuation">-</span>path<span class="token punctuation">-</span>storage
-<span class="token key atrule">data</span><span class="token punctuation">:</span>
-  <span class="token key atrule">config.json</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token punctuation">-</span>
-    <span class="token punctuation">{</span>
-            "nodePathMap"<span class="token punctuation">:</span><span class="token punctuation">[</span>
-            <span class="token punctuation">{</span>
-                    "node"<span class="token punctuation">:</span><span class="token string">"DEFAULT_PATH_FOR_NON_LISTED_NODES"</span><span class="token punctuation">,</span>
-                    "paths"<span class="token punctuation">:</span><span class="token punctuation">[</span><span class="token string">"/opt/local-path-provisioner"</span><span class="token punctuation">]</span>
-            <span class="token punctuation">}</span>
-            <span class="token punctuation">]</span>
-    <span class="token punctuation">}</span>
-  <span class="token key atrule">setup</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token punctuation">-</span>
-    <span class="token comment">#!/bin/sh</span>
-    set <span class="token punctuation">-</span>eu
-    mkdir <span class="token punctuation">-</span>m 0777 <span class="token punctuation">-</span>p "$VOL_DIR"
-  <span class="token key atrule">teardown</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token punctuation">-</span>
-    <span class="token comment">#!/bin/sh</span>
-    set <span class="token punctuation">-</span>eu
-    rm <span class="token punctuation">-</span>rf "$VOL_DIR"
-  <span class="token key atrule">helperPod.yaml</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token punctuation">-</span>
-    <span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
-    <span class="token key atrule">kind</span><span class="token punctuation">:</span> Pod
-    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
-      <span class="token key atrule">name</span><span class="token punctuation">:</span> helper<span class="token punctuation">-</span>pod
-    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
-      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
-      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> helper<span class="token punctuation">-</span>pod
-        <span class="token key atrule">image</span><span class="token punctuation">:</span> busybox
-        <span class="token key atrule">imagePullPolicy</span><span class="token punctuation">:</span> IfNotPresent<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>执行该yaml，并验证是否创建成功</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl apply <span class="token parameter variable">-f</span> local-path-storage.yaml
-kubectl get pods <span class="token parameter variable">-n</span> local-path-storage
-NAME                                      READY   STATUS    RESTARTS   AGE
-local-path-provisioner-64d5bc6b74-htqqg   <span class="token number">1</span>/1     Running   <span class="token number">0</span>          13s
-
-kubectl get storageclasses.storage.k8s.io
-NAME                    PROVISIONER                     RECLAIMPOLICY   VOLUMEBINDINGMODE      ALLOWVOLUMEEXPANSION   AGE
-local-path              rancher.io/local-path           Delete          WaitForFirstConsumer   <span class="token boolean">false</span>                  24s
-rook-cephfs             rook-ceph.cephfs.csi.ceph.com   Delete          Immediate              <span class="token boolean">false</span>                  19h<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<h2 id="创建pvc">创建pvc</h2>
-<p>pvc.yaml</p>
-<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
-<span class="token key atrule">kind</span><span class="token punctuation">:</span> PersistentVolumeClaim
-<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
-  <span class="token key atrule">name</span><span class="token punctuation">:</span> local<span class="token punctuation">-</span>path<span class="token punctuation">-</span>pvc
-<span class="token key atrule">spec</span><span class="token punctuation">:</span>
-  <span class="token key atrule">accessModes</span><span class="token punctuation">:</span>
-    <span class="token punctuation">-</span> ReadWriteOnce
-  <span class="token key atrule">storageClassName</span><span class="token punctuation">:</span> local<span class="token punctuation">-</span>path
-  <span class="token key atrule">resources</span><span class="token punctuation">:</span>
-    <span class="token key atrule">requests</span><span class="token punctuation">:</span>
-      <span class="token key atrule">storage</span><span class="token punctuation">:</span> 128Mi<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl get pvc
-NAME             STATUS    VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
-local-path-pvc   Pending    <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-<p>此处Pending是因为设置的BINDINGMODE是WaitForFirstConsumer，是正常现象</p>
-<p>现在来发布一个pod验证一下是否能成功bind</p>
-<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
-<span class="token key atrule">kind</span><span class="token punctuation">:</span> Pod
-<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
-  <span class="token key atrule">name</span><span class="token punctuation">:</span> volume<span class="token punctuation">-</span>test
-<span class="token key atrule">spec</span><span class="token punctuation">:</span>
-  <span class="token key atrule">containers</span><span class="token punctuation">:</span>
-  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> volume<span class="token punctuation">-</span>test
-    <span class="token key atrule">image</span><span class="token punctuation">:</span> nginx<span class="token punctuation">:</span>stable<span class="token punctuation">-</span>alpine
-    <span class="token key atrule">imagePullPolicy</span><span class="token punctuation">:</span> IfNotPresent
-    <span class="token key atrule">volumeMounts</span><span class="token punctuation">:</span>
-    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> volv
-      <span class="token key atrule">mountPath</span><span class="token punctuation">:</span> /data
-    <span class="token key atrule">ports</span><span class="token punctuation">:</span>
-    <span class="token punctuation">-</span> <span class="token key atrule">containerPort</span><span class="token punctuation">:</span> <span class="token number">80</span>
-  <span class="token key atrule">volumes</span><span class="token punctuation">:</span>
-  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> volv
-    <span class="token key atrule">persistentVolumeClaim</span><span class="token punctuation">:</span>
-      <span class="token key atrule">claimName</span><span class="token punctuation">:</span> local<span class="token punctuation">-</span>path<span class="token punctuation">-</span>pvc<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl apply <span class="token parameter variable">-f</span> pod.yaml
-kubectl get pods
-NAME          READY   STATUS    RESTARTS   AGE
-volume-test   <span class="token number">1</span>/1     Running   <span class="token number">0</span>          51s
-
-kubectl get pvc
-NAME             STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
-local-path-pvc   Bound    pvc-73c6f5b4-c22d-4654-bc1c-967aacd5d2f8   128Mi      RWO            local-path     15m<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-<p>pvc已经是Bound了</p>
-
+                
                 
             </div>
             <hr/>
@@ -640,7 +459,7 @@ local-path-pvc   Bound    pvc-73c6f5b4-c22d-4654-bc1c-967aacd5d2f8   128Mi      
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://hongyuxuan2138.gitee.io/blog/blog/posts/1059359803/">https://hongyuxuan2138.gitee.io/blog/blog/posts/1059359803/</a>
+                    <a href="https://hongyuxuan2138.gitee.io/blog/blog/posts/40825/">https://hongyuxuan2138.gitee.io/blog/blog/posts/40825/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -682,8 +501,8 @@ local-path-pvc   Bound    pvc-73c6f5b4-c22d-4654-bc1c-967aacd5d2f8   128Mi      
                                     <span class="chip bg-color">Cloud Native</span>
                                 </a>
                             
-                                <a href="/blog/tags/Kubernetes/">
-                                    <span class="chip bg-color">Kubernetes</span>
+                                <a href="/blog/tags/K8S%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97/">
+                                    <span class="chip bg-color">K8S二次开发系列</span>
                                 </a>
                             
                         </div>
@@ -1029,28 +848,29 @@ local-path-pvc   Bound    pvc-73c6f5b4-c22d-4654-bc1c-967aacd5d2f8   128Mi      
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/blog/posts/4198581200/">
+                <a href="/blog/posts/40825/">
                     <div class="card-image">
                         
-                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fstorage%2Fk8s_storage.png" class="responsive-img" alt="K8S存储系列之三：K8S Rook Ceph StorageClass">
+                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fcustom%2Fscheduler_banner.jpg" class="responsive-img" alt="K8S二次开发系列之八：自定义开发score类型调度器">
                         
-                        <span class="card-title">K8S存储系列之三：K8S Rook Ceph StorageClass</span>
+                        <span class="card-title">K8S二次开发系列之八：自定义开发score类型调度器</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            Ceph是红帽家的分布式块存储。Rook可提供基于Ceph的云原生存储。
+                            本文详细讲解如何自定义开发一个score类型调度器。
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2022-05-29
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2024-11-12
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -1063,6 +883,7 @@ local-path-pvc   Bound    pvc-73c6f5b4-c22d-4654-bc1c-967aacd5d2f8   128Mi      
                         </span>
                     </div>
                 </div>
+
                 
                 <div class="card-action article-tags">
                     
@@ -1070,8 +891,8 @@ local-path-pvc   Bound    pvc-73c6f5b4-c22d-4654-bc1c-967aacd5d2f8   128Mi      
                         <span class="chip bg-color">Cloud Native</span>
                     </a>
                     
-                    <a href="/blog/tags/Kubernetes/">
-                        <span class="chip bg-color">Kubernetes</span>
+                    <a href="/blog/tags/K8S%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97/">
+                        <span class="chip bg-color">K8S二次开发系列</span>
                     </a>
                     
                 </div>
@@ -1085,23 +906,23 @@ local-path-pvc   Bound    pvc-73c6f5b4-c22d-4654-bc1c-967aacd5d2f8   128Mi      
                 下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
-                <a href="/blog/posts/1908189687/">
+                <a href="/blog/posts/42202/">
                     <div class="card-image">
                         
-                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fstorage%2Fk8s_storage.png" class="responsive-img" alt="K8S存储系列之二：K8S NFS StorageClass">
+                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fcustom%2Fscheduler_banner.jpg" class="responsive-img" alt="K8S二次开发系列之七：自定义开发filter类型调度器">
                         
-                        <span class="card-title">K8S存储系列之二：K8S NFS StorageClass</span>
+                        <span class="card-title">K8S二次开发系列之七：自定义开发filter类型调度器</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            NFS是最常规、最简单的提供云存储的方式。本文将讲解如何使用NFS提供StorageClass
+                            本文详细讲解如何自定义开发一个filter类型调度器。
                         
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2022-05-29
+                                <i class="far fa-clock fa-fw icon-date"></i>2024-11-12
                             </span>
                         <span class="publish-author">
                             
@@ -1122,8 +943,8 @@ local-path-pvc   Bound    pvc-73c6f5b4-c22d-4654-bc1c-967aacd5d2f8   128Mi      
                         <span class="chip bg-color">Cloud Native</span>
                     </a>
                     
-                    <a href="/blog/tags/Kubernetes/">
-                        <span class="chip bg-color">Kubernetes</span>
+                    <a href="/blog/tags/K8S%E4%BA%8C%E6%AC%A1%E5%BC%80%E5%8F%91%E7%B3%BB%E5%88%97/">
+                        <span class="chip bg-color">K8S二次开发系列</span>
                     </a>
                     
                 </div>
