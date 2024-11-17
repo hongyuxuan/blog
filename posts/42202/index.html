@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="K8S二次开发系列之七：自定义开发filter类型调度器, 洪宇轩的博客">
+    <meta name="keywords" content="K8S二次开发调度器系列之三：自定义开发filter调度器, 洪宇轩的博客">
     <meta name="description" content="本文详细讲解如何自定义开发一个filter类型调度器。">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -17,7 +17,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>K8S二次开发系列之七：自定义开发filter类型调度器 | 洪宇轩的博客</title>
+    <title>K8S二次开发调度器系列之三：自定义开发filter调度器 | 洪宇轩的博客</title>
     <link rel="icon" type="image/png" href="/blog/favicon.png">
     
 
@@ -341,7 +341,7 @@
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">K8S二次开发系列之七：自定义开发filter类型调度器</h1>
+                    <h1 class="description center-align post-title">K8S二次开发调度器系列之三：自定义开发filter调度器</h1>
                 </div>
             </div>
         </div>
@@ -403,14 +403,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    0
+                    1.5k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    1 分
+                    7 分
                 </div>
                 
 
@@ -433,7 +433,187 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                
+                <p>根据是否编写代码，我们可以把自定义调度器的方式分为两种：</p>
+<ul>
+<li>不写代码，调整组合已有的默认插件，从而定义新的调度器</li>
+<li><span style="color:red">实现接口代码，自定义开发调度器</span></li>
+</ul>
+<p>本文将会描述第二种方式，编写一个 filter 类型的调度器。</p>
+<p>在 <a href="/blog/posts/59790/">深度解析scheduler原理</a> 这篇文章中已经讲解过，要实现一个 filter 类型的调度器，主要是实现 <code>FilterPlugin</code> 和 <code>Plugin</code> 这两个接口：</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token comment">// https://github.com/kubernetes/kubernetes/blob/v1.28.4/pkg/scheduler/framework/interface.go#L349C1-L367C2</span>
+
+<span class="token comment">// FilterPlugin is an interface for Filter plugins. These plugins are called at the</span>
+<span class="token comment">// filter extension point for filtering out hosts that cannot run a pod.</span>
+<span class="token comment">// This concept used to be called 'predicate' in the original scheduler.</span>
+<span class="token comment">// These plugins should return "Success", "Unschedulable" or "Error" in Status.code.</span>
+<span class="token comment">// However, the scheduler accepts other valid codes as well.</span>
+<span class="token comment">// Anything other than "Success" will lead to exclusion of the given host from running the pod.</span>
+<span class="token keyword">type</span> FilterPlugin <span class="token keyword">interface</span> <span class="token punctuation">{</span>
+    Plugin
+    <span class="token comment">// Filter is called by the scheduling framework.</span>
+    <span class="token comment">// All FilterPlugins should return "Success" to declare that</span>
+    <span class="token comment">// the given node fits the pod. If Filter doesn't return "Success",</span>
+    <span class="token comment">// it will return "Unschedulable", "UnschedulableAndUnresolvable" or "Error".</span>
+    <span class="token comment">// For the node being evaluated, Filter plugins should look at the passed</span>
+    <span class="token comment">// nodeInfo reference for this particular node's information (e.g., pods</span>
+    <span class="token comment">// considered to be running on the node) instead of looking it up in the</span>
+    <span class="token comment">// NodeInfoSnapshot because we don't guarantee that they will be the same.</span>
+    <span class="token comment">// For example, during preemption, we may pass a copy of the original</span>
+    <span class="token comment">// nodeInfo object that has some pods removed from it to evaluate the</span>
+    <span class="token comment">// possibility of preempting them to schedule the target pod.</span>
+    <span class="token function">Filter</span><span class="token punctuation">(</span>ctx <span class="token punctuation">,</span> state <span class="token operator">*</span>CycleState<span class="token punctuation">,</span> pod <span class="token operator">*</span>v1<span class="token punctuation">.</span>Pod<span class="token punctuation">,</span> nodeInfo <span class="token operator">*</span>NodeInfo<span class="token punctuation">)</span> <span class="token operator">*</span>Status
+<span class="token punctuation">}</span>
+<span class="token keyword">type</span> Plugin <span class="token keyword">interface</span> <span class="token punctuation">{</span>
+  <span class="token function">Name</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">string</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>也就是要实现 <code>Filter</code>、<code>Name</code> 这两个方法。</p>
+<p>下来我们编写一个简单的调度器，过滤掉 label 含有 hello 字样的 Node。</p>
+<h2 id="编写自定义调度器">编写自定义调度器</h2>
+<p>创建一个空白目录 scheduler/node-filter-label 并初始化：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">mkdir</span> <span class="token parameter variable">-p</span> scheduler/node-filter-labe
+<span class="token builtin class-name">cd</span> scheduler <span class="token operator">&amp;&amp;</span> go mod init myscheduler<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>创建目录 manifests 用于存放 <code>KubeSchedulerConfiguration</code> ，创建目录 plugins 存放插件代码，最终目录结构如下：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">tree scheduler/
+scheduler/
+├── go.mod
+├── go.sum
+├── node-filter-label
+│   ├── main.go
+│   ├── manifests
+│   │   └── nodelabelfilter.yaml
+│   └── plugins
+│       └── node_filter_label.go<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="编写-node-filter-label-go">编写 <code>node_filter_label.go</code></h3>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> plugins
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+	<span class="token string">"context"</span>
+
+	v1 <span class="token string">"k8s.io/api/core/v1"</span>
+	<span class="token string">"k8s.io/apimachinery/pkg/runtime"</span>
+	<span class="token string">"k8s.io/klog/v2"</span>
+	<span class="token string">"k8s.io/kubernetes/pkg/scheduler/framework"</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">const</span> SchedulerName <span class="token operator">=</span> <span class="token string">"NodeFilterLabel"</span>
+
+<span class="token keyword">type</span> NodeFilterLabel <span class="token keyword">struct</span><span class="token punctuation">{</span><span class="token punctuation">}</span>
+
+<span class="token keyword">func</span> <span class="token punctuation">(</span>pl <span class="token operator">*</span>NodeFilterLabel<span class="token punctuation">)</span> <span class="token function">Name</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">string</span> <span class="token punctuation">{</span>
+	<span class="token keyword">return</span> SchedulerName
+<span class="token punctuation">}</span>
+
+<span class="token keyword">func</span> <span class="token punctuation">(</span>pl <span class="token operator">*</span>NodeFilterLabel<span class="token punctuation">)</span> <span class="token function">Filter</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">,</span> <span class="token boolean">_</span> <span class="token operator">*</span>framework<span class="token punctuation">.</span>CycleState<span class="token punctuation">,</span> pod <span class="token operator">*</span>v1<span class="token punctuation">.</span>Pod<span class="token punctuation">,</span> nodeInfo <span class="token operator">*</span>framework<span class="token punctuation">.</span>NodeInfo<span class="token punctuation">)</span> <span class="token operator">*</span>framework<span class="token punctuation">.</span>Status <span class="token punctuation">{</span>
+	<span class="token keyword">for</span> k<span class="token punctuation">,</span> v <span class="token operator">:=</span> <span class="token keyword">range</span> nodeInfo<span class="token punctuation">.</span><span class="token function">Node</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>ObjectMeta<span class="token punctuation">.</span>Labels <span class="token punctuation">{</span>
+		<span class="token keyword">if</span> k <span class="token operator">==</span> <span class="token string">"node"</span> <span class="token operator">&amp;&amp;</span> v <span class="token operator">==</span> <span class="token string">"hello"</span> <span class="token punctuation">{</span>
+			klog<span class="token punctuation">.</span><span class="token function">InfoS</span><span class="token punctuation">(</span><span class="token string">"node failed to pass NodeFilterLabel filter"</span><span class="token punctuation">,</span> <span class="token string">"pod_name"</span><span class="token punctuation">,</span> pod<span class="token punctuation">.</span>Name<span class="token punctuation">,</span> <span class="token string">"current node"</span><span class="token punctuation">,</span> nodeInfo<span class="token punctuation">.</span><span class="token function">Node</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>Name<span class="token punctuation">)</span>
+			<span class="token keyword">return</span> framework<span class="token punctuation">.</span><span class="token function">NewStatus</span><span class="token punctuation">(</span>framework<span class="token punctuation">.</span>UnschedulableAndUnresolvable<span class="token punctuation">,</span> <span class="token string">"node has label node=hello"</span><span class="token punctuation">)</span>
+		<span class="token punctuation">}</span>
+	<span class="token punctuation">}</span>
+	klog<span class="token punctuation">.</span><span class="token function">InfoS</span><span class="token punctuation">(</span><span class="token string">"node pass NodeFilterLabel filter"</span><span class="token punctuation">,</span> <span class="token string">"pod_name"</span><span class="token punctuation">,</span> pod<span class="token punctuation">.</span>Name<span class="token punctuation">,</span> <span class="token string">"current node"</span><span class="token punctuation">,</span> nodeInfo<span class="token punctuation">.</span><span class="token function">Node</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>Name<span class="token punctuation">)</span>
+	<span class="token keyword">return</span> <span class="token boolean">nil</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">func</span> <span class="token function">New</span><span class="token punctuation">(</span><span class="token boolean">_</span> context<span class="token punctuation">.</span>Context<span class="token punctuation">,</span> <span class="token boolean">_</span> runtime<span class="token punctuation">.</span>Object<span class="token punctuation">,</span> <span class="token boolean">_</span> framework<span class="token punctuation">.</span>Handle<span class="token punctuation">)</span> <span class="token punctuation">(</span>framework<span class="token punctuation">.</span>Plugin<span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token keyword">return</span> <span class="token operator">&amp;</span>NodeFilterLabel<span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token boolean">nil</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="编写-main-go">编写 main.go</h3>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+	<span class="token string">"os"</span>
+
+	<span class="token string">"myscheduler/plugins"</span>
+
+	<span class="token string">"k8s.io/component-base/cli"</span>
+	<span class="token string">"k8s.io/component-base/logs"</span>
+	<span class="token boolean">_</span> <span class="token string">"k8s.io/component-base/metrics/prometheus/clientgo"</span>
+	<span class="token boolean">_</span> <span class="token string">"k8s.io/component-base/metrics/prometheus/version"</span> <span class="token comment">// for version metric registration</span>
+	<span class="token string">"k8s.io/kubernetes/cmd/kube-scheduler/app"</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	command <span class="token operator">:=</span> app<span class="token punctuation">.</span><span class="token function">NewSchedulerCommand</span><span class="token punctuation">(</span>app<span class="token punctuation">.</span><span class="token function">WithPlugin</span><span class="token punctuation">(</span>plugins<span class="token punctuation">.</span>SchedulerName<span class="token punctuation">,</span> plugins<span class="token punctuation">.</span>New<span class="token punctuation">)</span><span class="token punctuation">)</span>
+	logs<span class="token punctuation">.</span><span class="token function">InitLogs</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">defer</span> logs<span class="token punctuation">.</span><span class="token function">FlushLogs</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+	code <span class="token operator">:=</span> cli<span class="token punctuation">.</span><span class="token function">Run</span><span class="token punctuation">(</span>command<span class="token punctuation">)</span>
+	os<span class="token punctuation">.</span><span class="token function">Exit</span><span class="token punctuation">(</span>code<span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="编写-KubeSchedulerConfiguration">编写 KubeSchedulerConfiguration</h3>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> kubescheduler.config.k8s.io/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> KubeSchedulerConfiguration
+<span class="token key atrule">clientConnection</span><span class="token punctuation">:</span>
+  <span class="token key atrule">kubeconfig</span><span class="token punctuation">:</span> <span class="token string">"/etc/kubernetes/scheduler.conf"</span>
+<span class="token key atrule">profiles</span><span class="token punctuation">:</span>
+<span class="token punctuation">-</span> <span class="token key atrule">schedulerName</span><span class="token punctuation">:</span> nodelabelfilter
+  <span class="token key atrule">plugins</span><span class="token punctuation">:</span>
+    <span class="token key atrule">filter</span><span class="token punctuation">:</span>
+      <span class="token key atrule">enabled</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> NodeFilterLabel
+      <span class="token key atrule">disabled</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> <span class="token string">"*"</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="编译">编译</h3>
+<p>注意，通过 <code>go mod tidy</code> 生成的 go.mod 和 go.sum 无法直接使用，会报如下错误：</p>
+<div class="note danger no-icon"><p>unknown revision v0.0.0’ errors, seemingly due to 'require <a target="_blank" rel="noopener" href="http://k8s.io/foo">k8s.io/foo</a> v0.0.0</p>
+</div>
+<p>我们需要从 <a target="_blank" rel="noopener" href="https://github.com/kubernetes-sigs/scheduler-plugins/blob/release-1.29/go.mod">kubernetes-sigs/scheduler-plugins</a> 找到对应的 k8s 版本（比如1.29）并复制该分支的 go.mod 过来。</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">go build <span class="token parameter variable">-o</span> nodelabelfilter main.go<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="本地调试运行">本地调试运行</h3>
+<p>编写好以后，本地调试可以直接找台机器启动，无需做成工作负载或者 Pod 放到 k8s 中运行，只要这台机器有 <code>scheduler.conf</code>（可以从 kube-master 机器获取） 且能访问到 k8s 集群。</p>
+<div class="note warning no-icon"><p>注意，如果将代码放到 kube-master 节点，可能会和上面默认的 scheduler 端口冲突</p>
+</div>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">./nodelabelfilter --leader-elect<span class="token operator">=</span>false <span class="token parameter variable">--config</span> nodelabelfilter.yaml
+I1117 09:03:19.700978   <span class="token number">25785</span> serving.go:380<span class="token punctuation">]</span> Generated self-signed cert in-memory
+W1117 09:03:20.057352   <span class="token number">25785</span> authentication.go:339<span class="token punctuation">]</span> No authentication-kubeconfig provided <span class="token keyword">in</span> order to lookup client-ca-file <span class="token keyword">in</span> configmap/extension-apiserver-authentication <span class="token keyword">in</span> kube-system, so client certificate authentication won<span class="token string">'t work.
+W1117 09:03:20.057402   25785 authentication.go:363] No authentication-kubeconfig provided in order to lookup requestheader-client-ca-file in configmap/extension-apiserver-authentication in kube-system, so request-header client certificate authentication won'</span>t work.
+W1117 09:03:20.057418   <span class="token number">25785</span> authorization.go:193<span class="token punctuation">]</span> No authorization-kubeconfig provided, so SubjectAccessReview of authorization tokens won't work.
+I1117 09:03:20.073613   <span class="token number">25785</span> server.go:154<span class="token punctuation">]</span> <span class="token string">"Starting Kubernetes Scheduler"</span> <span class="token assign-left variable">version</span><span class="token operator">=</span><span class="token string">"v0.0.0-master+<span class="token variable">$Format</span>:%H$"</span>
+I1117 09:03:20.073977   <span class="token number">25785</span> server.go:156<span class="token punctuation">]</span> <span class="token string">"Golang settings"</span> <span class="token assign-left variable">GOGC</span><span class="token operator">=</span><span class="token string">""</span> <span class="token assign-left variable">GOMAXPROCS</span><span class="token operator">=</span><span class="token string">""</span> <span class="token assign-left variable">GOTRACEBACK</span><span class="token operator">=</span><span class="token string">""</span>
+I1117 09:03:20.079517   <span class="token number">25785</span> secure_serving.go:213<span class="token punctuation">]</span> Serving securely on <span class="token punctuation">[</span>::<span class="token punctuation">]</span>:10259
+I1117 09:03:20.081147   <span class="token number">25785</span> tlsconfig.go:240<span class="token punctuation">]</span> <span class="token string">"Starting DynamicServingCertificateController"</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="测试">测试</h3>
+<p>假设集群中有 1 个 master，2 个 node，给 master 和 node1 添加 label <code>node=hello</code>，</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">kubectl label nodes k8s-master <span class="token assign-left variable">node</span><span class="token operator">=</span>hello
+kubectl label nodes k8s-node2 <span class="token assign-left variable">node</span><span class="token operator">=</span>hello<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>创建一个 Pod，观察调度情况：</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Pod
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> nginx<span class="token punctuation">-</span>labelfilter
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">schedulerName</span><span class="token punctuation">:</span> nodelabelfilter
+  <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">image</span><span class="token punctuation">:</span> registry.cn<span class="token punctuation">-</span>beijing.aliyuncs.com/fpf_devops/nginx<span class="token punctuation">:</span><span class="token number">1.24</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> nginx<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>查看自定义插件的日志：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">I1117 09:08:32.807891   <span class="token number">25785</span> node_filter_label.go:27<span class="token punctuation">]</span> <span class="token string">"node pass NodeFilterLabel filter"</span> <span class="token assign-left variable">pod_name</span><span class="token operator">=</span><span class="token string">"nginx-labelfilter"</span> current <span class="token assign-left variable">node</span><span class="token operator">=</span><span class="token string">"k8s-node1"</span>
+I1117 09:08:32.807932   <span class="token number">25785</span> node_filter_label.go:23<span class="token punctuation">]</span> <span class="token string">"node failed to pass NodeFilterLabel filter"</span> <span class="token assign-left variable">pod_name</span><span class="token operator">=</span><span class="token string">"nginx-labelfilter"</span> current <span class="token assign-left variable">node</span><span class="token operator">=</span><span class="token string">"k8s-node2"</span>
+I1117 09:08:32.807888   <span class="token number">25785</span> node_filter_label.go:23<span class="token punctuation">]</span> <span class="token string">"node failed to pass NodeFilterLabel filter"</span> <span class="token assign-left variable">pod_name</span><span class="token operator">=</span><span class="token string">"nginx-labelfilter"</span> current <span class="token assign-left variable">node</span><span class="token operator">=</span><span class="token string">"k8s-master"</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>可以看到 master 和 node2 两个 node 被过滤掉了，不能调度，只能调度到 node1 上。</p>
+<h2 id="部署自定义调度器">部署自定义调度器</h2>
+<h3 id="构建镜像">构建镜像</h3>
+<p>v1.24 版以后的 k8s 底层从 <code>docker</code> 换成了 <code>containerd</code>，自然也就没有了以前的 <code>docker build</code> 命令了。需要用 <code>containerd</code> 对应的构建命令。</p>
+<p><code>containerd</code> 有一个子项目 <code>nerdctl</code>，用来兼容 <code>docker cli</code>，可以像 docker 命令一样来管理本地的镜像和容器。</p>
+<p><code>nerdctl</code> 包含精简版和完整版：</p>
+<ul>
+<li>精简版仅有 <code>nerdctl</code> 命令，无法使用 <code>nerdctl build</code> 命令，执行 nerdctl build 会报错</li>
+<li>完整版不仅有 <code>netdctl</code> 命令，还包含了 <code>buildkitd</code>、 <code>buildctl</code>、<code>ctr</code>、<code>runc</code> 等 <code>containerd</code> 相关的命令，以及 <code>cni</code> 插件的二进制文件</li>
+</ul>
+<div class="note success no-icon"><p>下载地址：<a target="_blank" rel="noopener" href="https://github.com/containerd/nerdctl/releases">https://github.com/containerd/nerdctl/releases</a></p>
+</div>
+<p>下载后解压，将 bin 下的 <code>nerdctl</code> 和 <code>buildkitd</code> 拷贝或软链到 <code>/usr/local/bin/</code>，将 lib 下的 <code>systemd/system/buildkit.service</code> 拷贝到 <code>/etc/systemd/system/</code> 下，启动 buildkitd：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">systemctl <span class="token builtin class-name">enable</span> buildkit.service <span class="token parameter variable">--now</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>编写 <code>Dockerfile</code>：</p>
+<pre class="line-numbers language-docker" data-language="docker"><code class="language-docker"><span class="token instruction"><span class="token keyword">FROM</span> registry.cn-beijing.aliyuncs.com/fpf_devops/golang:1.23.0</span>
+<span class="token instruction"><span class="token keyword">WORKDIR</span> /opt</span>
+<span class="token instruction"><span class="token keyword">ADD</span> nodelabelfilter /opt</span>
+<span class="token instruction"><span class="token keyword">ENTRYPOINT</span> [<span class="token string">"/opt/nodelabelfilter"</span>, <span class="token string">"--leader-elect=false"</span>, <span class="token string">"--config=/opt/nodelabelfilter.yaml"</span>]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>构建镜像：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">nerdctl build <span class="token parameter variable">-t</span> nodelabelfilter:v1.0.0 <span class="token builtin class-name">.</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="部署">部署</h3>
+<p>用一个工作负载部署该镜像，参见<a href="/blog/posts/43703/#%E7%94%A8-Deployment-%E9%83%A8%E7%BD%B2%E8%87%AA%E5%AE%9A%E4%B9%89%E8%B0%83%E5%BA%A6%E5%99%A8">用 Deployment 部署自定义调度器</a></p>
+
                 
             </div>
             <hr/>
@@ -855,9 +1035,9 @@
                 <a href="/blog/posts/40825/">
                     <div class="card-image">
                         
-                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fcustom%2Fscheduler_banner.jpg" class="responsive-img" alt="K8S二次开发系列之八：自定义开发score类型调度器">
+                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fcustom%2Fscheduler_banner.jpg" class="responsive-img" alt="K8S二次开发调度器系列之四：自定义开发score调度器">
                         
-                        <span class="card-title">K8S二次开发系列之八：自定义开发score类型调度器</span>
+                        <span class="card-title">K8S二次开发调度器系列之四：自定义开发score调度器</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -907,9 +1087,9 @@
                 <a href="/blog/posts/43703/">
                     <div class="card-image">
                         
-                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fcustom%2Fscheduler_banner.jpg" class="responsive-img" alt="K8S二次开发系列之六：自定义调度器">
+                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fcustom%2Fscheduler_banner.jpg" class="responsive-img" alt="K8S二次开发调度器系列之二：自定义调度器">
                         
-                        <span class="card-title">K8S二次开发系列之六：自定义调度器</span>
+                        <span class="card-title">K8S二次开发调度器系列之二：自定义调度器</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1140,7 +1320,7 @@
             <br>
             
                 &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                        class="white-color">63.1k</span>
+                        class="white-color">66.2k</span>
             
             
             

@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="K8S二次开发系列之五：深度解析scheduler原理, 洪宇轩的博客">
+    <meta name="keywords" content="K8S二次开发调度器系列之一：深度解析scheduler原理, 洪宇轩的博客">
     <meta name="description" content="本文详细讲解kube-scheduler的工作原理，只有搞清楚了原理，才能知道从哪些扩展点入手定制自己的scheduler。">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -17,7 +17,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>K8S二次开发系列之五：深度解析scheduler原理 | 洪宇轩的博客</title>
+    <title>K8S二次开发调度器系列之一：深度解析scheduler原理 | 洪宇轩的博客</title>
     <link rel="icon" type="image/png" href="/blog/favicon.png">
     
 
@@ -341,7 +341,7 @@
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">K8S二次开发系列之五：深度解析scheduler原理</h1>
+                    <h1 class="description center-align post-title">K8S二次开发调度器系列之一：深度解析scheduler原理</h1>
                 </div>
             </div>
         </div>
@@ -403,14 +403,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    3.2k
+                    3.5k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    14 分
+                    15 分
                 </div>
                 
 
@@ -709,7 +709,20 @@ volumezone/<span aria-hidden="true" class="line-numbers-rows"><span></span><span
     <span class="token comment">// bound, PostBind is the extension point that it should register.</span>
     <span class="token function">PostBind</span><span class="token punctuation">(</span>ctx <span class="token punctuation">,</span> state <span class="token operator">*</span>CycleState<span class="token punctuation">,</span> p <span class="token operator">*</span>v1<span class="token punctuation">.</span>Pod<span class="token punctuation">,</span> nodeName <span class="token builtin">string</span><span class="token punctuation">)</span>
 <span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="插件执行顺序">插件执行顺序</h2>
+<p>一般地，自定义插件和默认插件的执行顺序，根据下面规则：</p>
+<ul>
+<li>如果某个扩展点没有配置对应的扩展，调度框架将使用默认插件中的扩展</li>
+<li>如果为某个扩展点配置且激活了扩展，则调度框架将先调用默认插件的扩展，再调用配置中的扩展</li>
+<li>默认插件的扩展始终被最先调用，然后按照 KubeSchedulerConfiguration 中扩展的激活 enabled 顺序逐个调用扩展点的扩展</li>
+<li>可以先禁用默认插件的扩展，然后在 enabled 列表中的某个位置激活默认插件的扩展，这种做法可以改变默认插件的扩展被调用时的顺序</li>
+</ul>
 <p>以上就是 kube-scheduler 的基本原理。</p>
+<h2 id="参考文章">参考文章</h2>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/mREfzlZSmub8P0IImppD1Q">kube-scheduler深度剖析与开发（四）</a><br>
+<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/N1Y0X7cml8ExfafiBzhQNw">kube-scheduler深度剖析与开发（五）</a><br>
+<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/-XkWQwhAEcJOByvqm8uv9A">kube-scheduler深度剖析与开发（六）</a><br>
+<a target="_blank" rel="noopener" href="https://arthurchiao.art/blog/k8s-scheduling-plugins-zh/">K8s 调度框架设计与 scheduler plugins 开发部署示例（2024）</a></p>
 
                 
             </div>
@@ -1409,7 +1422,7 @@ volumezone/<span aria-hidden="true" class="line-numbers-rows"><span></span><span
             <br>
             
                 &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                        class="white-color">63.1k</span>
+                        class="white-color">66.2k</span>
             
             
             

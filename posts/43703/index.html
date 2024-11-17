@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="K8S二次开发系列之六：自定义调度器, 洪宇轩的博客">
+    <meta name="keywords" content="K8S二次开发调度器系列之二：自定义调度器, 洪宇轩的博客">
     <meta name="description" content="本文详细讲解如何在不写代码的情况下重新调整组合已有的默认插件。">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -17,7 +17,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>K8S二次开发系列之六：自定义调度器 | 洪宇轩的博客</title>
+    <title>K8S二次开发调度器系列之二：自定义调度器 | 洪宇轩的博客</title>
     <link rel="icon" type="image/png" href="/blog/favicon.png">
     
 
@@ -341,7 +341,7 @@
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">K8S二次开发系列之六：自定义调度器</h1>
+                    <h1 class="description center-align post-title">K8S二次开发调度器系列之二：自定义调度器</h1>
                 </div>
             </div>
         </div>
@@ -410,7 +410,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    4 分
+                    5 分
                 </div>
                 
 
@@ -435,7 +435,7 @@
             <div id="articleContent">
                 <p>根据是否编写代码，我们可以把自定义调度器的方式分为两种：</p>
 <ul>
-<li>不写代码，调整组合已有的默认插件，从而定义新的调度器</li>
+<li><span style="color:red">不写代码，调整组合已有的默认插件，从而定义新的调度器</span></li>
 <li>实现接口代码，自定义开发调度器</li>
 </ul>
 <p>本文将会描述第一种方式，通过调整默认插件的方式快速定义一个新的调度器。</p>
@@ -592,8 +592,8 @@ kubectl create clusterrolebinding my-scheduler <span class="token parameter vari
 <ol>
 <li>基本上是从现有的 scheduler 的 yaml 抄过来的</li>
 <li>不知道为何启动参数 <code>--kubeconfig=/etc/kubernetes/scheduler.conf</code> 没起作用，看日志报 <code>Neither --kubeconfig nor --master was specified.  Using the inClusterConfig.</code>，因此干脆创建了新的服务账户 <code>my-scheduler</code> （见上一步），然后在 Deployment 中用 <code>serviceAccountName: my-scheduler</code> 指定</li>
-<li>需要将 CongfigMap <code>my-scheduler-config</code> 挂载到 工作负载的 <code>/etc/kubernetes/my-scheduler-config.yaml</code>，然后启动时加上参数 <code>--config=/etc/kubernetes/my-scheduler-config.yaml</code></li>
-<li>默认的 scheduler 使用的是 <code>hostNetwork: true</code>，但这个自定义的 scheduler 不能再用 hostNetwork 了，否则会报端口冲突</li>
+<li>需要将 ConfigMap <code>my-scheduler-config</code> 挂载到工作负载的 <code>/etc/kubernetes/my-scheduler-config.yaml</code>，然后启动时加上参数 <code>--config=/etc/kubernetes/my-scheduler-config.yaml</code></li>
+<li>默认的 scheduler 使用的是 <code>hostNetwork: true</code>，但这个自定义的 scheduler 不能再用 hostNetwork 了，否则会报端口冲突。但不用 hostNetwork 又会报错 <code>dial tcp: lookup apiserver.cluster.local on 10.96.0.10:53: no such host</code>，宿主机才能解析 <code>apiserver.cluster.local</code>，要让工作负载也能解析，需要增加 <code>hostAliases</code> 配置</li>
 </ol>
 <p>现在可以启动自定义 scheduler 了。</p>
 <p>到这里你一定会问：自己部署的自定义调度器与已经存在的默认调度器会有冲突吗？答案是不会。只要 schedulerName 不同就不会有冲突，两个调度器各跑各的。通过自己部署的方式也避免了对默认调度器的任何干预。</p>
@@ -1043,9 +1043,9 @@ kubectl create clusterrolebinding my-scheduler <span class="token parameter vari
                 <a href="/blog/posts/42202/">
                     <div class="card-image">
                         
-                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fcustom%2Fscheduler_banner.jpg" class="responsive-img" alt="K8S二次开发系列之七：自定义开发filter类型调度器">
+                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fcustom%2Fscheduler_banner.jpg" class="responsive-img" alt="K8S二次开发调度器系列之三：自定义开发filter调度器">
                         
-                        <span class="card-title">K8S二次开发系列之七：自定义开发filter类型调度器</span>
+                        <span class="card-title">K8S二次开发调度器系列之三：自定义开发filter调度器</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1324,7 +1324,7 @@ kubectl create clusterrolebinding my-scheduler <span class="token parameter vari
             <br>
             
                 &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                        class="white-color">63.1k</span>
+                        class="white-color">66.2k</span>
             
             
             

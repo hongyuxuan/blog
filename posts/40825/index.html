@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="K8S二次开发系列之八：自定义开发score类型调度器, 洪宇轩的博客">
+    <meta name="keywords" content="K8S二次开发调度器系列之四：自定义开发score调度器, 洪宇轩的博客">
     <meta name="description" content="本文详细讲解如何自定义开发一个score类型调度器。">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -17,7 +17,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>K8S二次开发系列之八：自定义开发score类型调度器 | 洪宇轩的博客</title>
+    <title>K8S二次开发调度器系列之四：自定义开发score调度器 | 洪宇轩的博客</title>
     <link rel="icon" type="image/png" href="/blog/favicon.png">
     
 
@@ -341,7 +341,7 @@
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">K8S二次开发系列之八：自定义开发score类型调度器</h1>
+                    <h1 class="description center-align post-title">K8S二次开发调度器系列之四：自定义开发score调度器</h1>
                 </div>
             </div>
         </div>
@@ -403,14 +403,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    0
+                    1.3k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    1 分
+                    6 分
                 </div>
                 
 
@@ -433,7 +433,171 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                
+                <p>根据是否编写代码，我们可以把自定义调度器的方式分为两种：</p>
+<ul>
+<li>不写代码，调整组合已有的默认插件，从而定义新的调度器</li>
+<li><span style="color:red">实现接口代码，自定义开发调度器</span></li>
+</ul>
+<p>本文将会描述第二种方式，编写一个 score 类型的调度器。</p>
+<p>在 Score 类型插件运行时，每个节点经过所有 Score 插件后获得得分会累加，最后总得分就是该节点得分。</p>
+<p>我们看下 Score 类型插件的定义：</p>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">type</span> ScorePlugin <span class="token keyword">interface</span> <span class="token punctuation">{</span>
+    Plugin
+    <span class="token function">Score</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">,</span> state <span class="token operator">*</span>CycleState<span class="token punctuation">,</span> p <span class="token operator">*</span>v1<span class="token punctuation">.</span>Pod<span class="token punctuation">,</span> nodeName <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token builtin">int64</span><span class="token punctuation">,</span> <span class="token operator">*</span>Status<span class="token punctuation">)</span>
+    <span class="token function">ScoreExtensions</span><span class="token punctuation">(</span><span class="token punctuation">)</span> ScoreExtensions
+<span class="token punctuation">}</span>
+
+<span class="token keyword">type</span> Plugin <span class="token keyword">interface</span> <span class="token punctuation">{</span>
+    <span class="token function">Name</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">string</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>所以只要实现了 <code>Name</code>、<code>Score</code>、<code>ScoreExtensions</code> 这三个方法的类型就是一个 Score 类型的插件。</p>
+<p>其中 Score 方法是关键，这个方法会对传入的 Pod 和 Node 计算这个 Node 在这个插件的得分，所以我们开发一个 Score 类型的插件主要就是实现 Score 方法。</p>
+<p>Score 方法有两个返回值，第一个是一个 int64 类型的值，表示这个节点在这个插件的得分，如果插件运行失败，返回值为 0；第二个值为 Status 类型的值，如果插件运行成功这个返回值为 nil，否则返回非 nil Status 值，这个值里面包含了插件失败原因。</p>
+<p>另外每个插件都会有一个权重（weight）的配置，但是权重这个配置对于像 PreFilter、Filter 等插件没有作用，所以就不会去配置，它对 Score 类型的插件起作用，如果你开发的插件没指定权重，那么 scheduler 框架会默认设置为1，而且如果你把权重设置为0，scheduler 框架也会把它修正到1（如果是 0 意味着这个插件被关闭不起作用）。</p>
+<p>那么这个权重有什么作用呢？</p>
+<p>比如在我们开发的插件中，满足某个条件可以得一分，如果加了这个权重，那么可以将得分乘以权重来提升得分（如果权重大于一，默认为1），这将意味着如果节点满足这个插件的条件将得到更多的分。</p>
+<p>下面我们编写一个评分器，如果节点含有 label <code>node=hello</code> 则不得分，否则得 1 分。</p>
+<h2 id="编写自定义调度器">编写自定义调度器</h2>
+<p>创建一个空白目录 scheduler/node-score-label：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">mkdir</span> scheduler/node-score-label<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>创建目录 manifests 用于存放 <code>KubeSchedulerConfiguration</code> ，创建目录 plugins 存放插件代码，最终目录结构如下：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">tree scheduler/
+scheduler/
+├── go.mod
+├── go.sum
+├── node-filter-label
+│   ├── main.go
+│   ├── manifests
+│   │   └── nodelabelfilter.yaml
+│   └── plugins
+│       └── node_filter_label.go
+└── node-score-label
+    ├── main.go
+    ├── manifests
+    │   └── nodelabelfilter.yaml
+    └── plugins
+        └── node_score_label.go<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="编写-node-score-label-go">编写 <code>node_score_label.go</code></h3>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> plugins
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+	<span class="token string">"context"</span>
+	<span class="token string">"fmt"</span>
+
+	v1 <span class="token string">"k8s.io/api/core/v1"</span>
+	<span class="token string">"k8s.io/apimachinery/pkg/runtime"</span>
+	<span class="token string">"k8s.io/klog/v2"</span>
+	<span class="token string">"k8s.io/kubernetes/pkg/scheduler/framework"</span>
+	<span class="token string">"k8s.io/kubernetes/pkg/scheduler/framework/plugins/helper"</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">const</span> SchedulerName <span class="token operator">=</span> <span class="token string">"NodeScoreLabel"</span>
+
+<span class="token keyword">type</span> NodeAge <span class="token keyword">struct</span> <span class="token punctuation">{</span>
+	handle framework<span class="token punctuation">.</span>Handle
+<span class="token punctuation">}</span>
+
+<span class="token keyword">func</span> <span class="token punctuation">(</span>pl <span class="token operator">*</span>NodeAge<span class="token punctuation">)</span> <span class="token function">Name</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">string</span> <span class="token punctuation">{</span>
+	<span class="token keyword">return</span> SchedulerName
+<span class="token punctuation">}</span>
+
+<span class="token keyword">func</span> <span class="token punctuation">(</span>pl <span class="token operator">*</span>NodeAge<span class="token punctuation">)</span> <span class="token function">Score</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">,</span> state <span class="token operator">*</span>framework<span class="token punctuation">.</span>CycleState<span class="token punctuation">,</span> pod <span class="token operator">*</span>v1<span class="token punctuation">.</span>Pod<span class="token punctuation">,</span> nodeName <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token builtin">int64</span><span class="token punctuation">,</span> <span class="token operator">*</span>framework<span class="token punctuation">.</span>Status<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	nodeInfo<span class="token punctuation">,</span> err <span class="token operator">:=</span> pl<span class="token punctuation">.</span>handle<span class="token punctuation">.</span><span class="token function">SnapshotSharedLister</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">NodeInfos</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Get</span><span class="token punctuation">(</span>nodeName<span class="token punctuation">)</span>
+	<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+		<span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">,</span> framework<span class="token punctuation">.</span><span class="token function">AsStatus</span><span class="token punctuation">(</span>fmt<span class="token punctuation">.</span><span class="token function">Errorf</span><span class="token punctuation">(</span><span class="token string">"getting node %s from Snapshot error: %w"</span><span class="token punctuation">,</span> nodeName<span class="token punctuation">,</span> err<span class="token punctuation">)</span><span class="token punctuation">)</span>
+	<span class="token punctuation">}</span>
+	score <span class="token operator">:=</span> <span class="token number">0</span>
+	found <span class="token operator">:=</span> <span class="token boolean">false</span>
+	<span class="token keyword">for</span> k<span class="token punctuation">,</span> v <span class="token operator">:=</span> <span class="token keyword">range</span> nodeInfo<span class="token punctuation">.</span><span class="token function">Node</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>ObjectMeta<span class="token punctuation">.</span>Labels <span class="token punctuation">{</span>
+		<span class="token keyword">if</span> k <span class="token operator">==</span> <span class="token string">"node"</span> <span class="token operator">&amp;&amp;</span> v <span class="token operator">==</span> <span class="token string">"hello"</span> <span class="token punctuation">{</span>
+			found <span class="token operator">=</span> <span class="token boolean">true</span>
+			<span class="token keyword">break</span>
+		<span class="token punctuation">}</span>
+	<span class="token punctuation">}</span>
+	<span class="token keyword">if</span> found <span class="token punctuation">{</span>
+		klog<span class="token punctuation">.</span><span class="token function">Infof</span><span class="token punctuation">(</span><span class="token string">"node=%s has label node=hello so it can't get score, pod_name=%s"</span><span class="token punctuation">,</span> nodeInfo<span class="token punctuation">.</span><span class="token function">Node</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>Name<span class="token punctuation">,</span> pod<span class="token punctuation">.</span>Name<span class="token punctuation">)</span>
+	<span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+		klog<span class="token punctuation">.</span><span class="token function">Infof</span><span class="token punctuation">(</span><span class="token string">"node=%s does'nt has label node=hello so it get score, pod_name=%s"</span><span class="token punctuation">,</span> nodeInfo<span class="token punctuation">.</span><span class="token function">Node</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>Name<span class="token punctuation">,</span> pod<span class="token punctuation">.</span>Name<span class="token punctuation">)</span>
+		score <span class="token operator">+=</span> <span class="token number">1</span>
+	<span class="token punctuation">}</span>
+	<span class="token keyword">return</span> <span class="token function">int64</span><span class="token punctuation">(</span>score<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token boolean">nil</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">func</span> <span class="token punctuation">(</span>pl <span class="token operator">*</span>NodeAge<span class="token punctuation">)</span> <span class="token function">ScoreExtensions</span><span class="token punctuation">(</span><span class="token punctuation">)</span> framework<span class="token punctuation">.</span>ScoreExtensions <span class="token punctuation">{</span>
+	<span class="token keyword">return</span> pl
+<span class="token punctuation">}</span>
+
+<span class="token keyword">func</span> <span class="token punctuation">(</span>pl <span class="token operator">*</span>NodeAge<span class="token punctuation">)</span> <span class="token function">NormalizeScore</span><span class="token punctuation">(</span>ctx context<span class="token punctuation">.</span>Context<span class="token punctuation">,</span> state <span class="token operator">*</span>framework<span class="token punctuation">.</span>CycleState<span class="token punctuation">,</span> pod <span class="token operator">*</span>v1<span class="token punctuation">.</span>Pod<span class="token punctuation">,</span> scores framework<span class="token punctuation">.</span>NodeScoreList<span class="token punctuation">)</span> <span class="token operator">*</span>framework<span class="token punctuation">.</span>Status <span class="token punctuation">{</span>
+	<span class="token keyword">return</span> helper<span class="token punctuation">.</span><span class="token function">DefaultNormalizeScore</span><span class="token punctuation">(</span>framework<span class="token punctuation">.</span>MaxNodeScore<span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">,</span> scores<span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">func</span> <span class="token function">New</span><span class="token punctuation">(</span><span class="token boolean">_</span> context<span class="token punctuation">.</span>Context<span class="token punctuation">,</span> <span class="token boolean">_</span> runtime<span class="token punctuation">.</span>Object<span class="token punctuation">,</span> h framework<span class="token punctuation">.</span>Handle<span class="token punctuation">)</span> <span class="token punctuation">(</span>framework<span class="token punctuation">.</span>Plugin<span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	<span class="token keyword">return</span> <span class="token operator">&amp;</span>NodeAge<span class="token punctuation">{</span>
+		handle<span class="token punctuation">:</span> h<span class="token punctuation">,</span>
+	<span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token boolean">nil</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="编写-main-go">编写 main.go</h3>
+<pre class="line-numbers language-go" data-language="go"><code class="language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+	<span class="token string">"os"</span>
+
+	<span class="token string">"myscheduler/node-score-label/plugins"</span>
+
+	<span class="token string">"k8s.io/component-base/cli"</span>
+	<span class="token string">"k8s.io/component-base/logs"</span>
+	<span class="token boolean">_</span> <span class="token string">"k8s.io/component-base/metrics/prometheus/clientgo"</span>
+	<span class="token boolean">_</span> <span class="token string">"k8s.io/component-base/metrics/prometheus/version"</span> <span class="token comment">// for version metric registration</span>
+	<span class="token string">"k8s.io/kubernetes/cmd/kube-scheduler/app"</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+	command <span class="token operator">:=</span> app<span class="token punctuation">.</span><span class="token function">NewSchedulerCommand</span><span class="token punctuation">(</span>app<span class="token punctuation">.</span><span class="token function">WithPlugin</span><span class="token punctuation">(</span>plugins<span class="token punctuation">.</span>SchedulerName<span class="token punctuation">,</span> plugins<span class="token punctuation">.</span>New<span class="token punctuation">)</span><span class="token punctuation">)</span>
+	logs<span class="token punctuation">.</span><span class="token function">InitLogs</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+	<span class="token keyword">defer</span> logs<span class="token punctuation">.</span><span class="token function">FlushLogs</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+	code <span class="token operator">:=</span> cli<span class="token punctuation">.</span><span class="token function">Run</span><span class="token punctuation">(</span>command<span class="token punctuation">)</span>
+	os<span class="token punctuation">.</span><span class="token function">Exit</span><span class="token punctuation">(</span>code<span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="编写-KubeSchedulerConfiguration">编写 KubeSchedulerConfiguration</h3>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> kubescheduler.config.k8s.io/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> KubeSchedulerConfiguration
+<span class="token key atrule">clientConnection</span><span class="token punctuation">:</span>
+  <span class="token key atrule">kubeconfig</span><span class="token punctuation">:</span> <span class="token string">"/etc/kubernetes/scheduler.conf"</span>
+<span class="token key atrule">profiles</span><span class="token punctuation">:</span>
+<span class="token punctuation">-</span> <span class="token key atrule">schedulerName</span><span class="token punctuation">:</span> nodelabelscore
+  <span class="token key atrule">plugins</span><span class="token punctuation">:</span>
+    <span class="token key atrule">score</span><span class="token punctuation">:</span>
+      <span class="token key atrule">enabled</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> NodeScoreLabel
+      <span class="token key atrule">disabled</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> <span class="token string">"*"</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="编译运行">编译运行</h3>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">go build <span class="token parameter variable">-o</span> nodelabelscore main.go
+./nodelabelscore --leader-elect<span class="token operator">=</span>false <span class="token parameter variable">--config</span> nodelabelscore.yaml 
+I1117 <span class="token number">12</span>:09:37.156920   <span class="token number">67619</span> serving.go:380<span class="token punctuation">]</span> Generated self-signed cert in-memory
+W1117 <span class="token number">12</span>:09:37.348447   <span class="token number">67619</span> authentication.go:339<span class="token punctuation">]</span> No authentication-kubeconfig provided <span class="token keyword">in</span> order to lookup client-ca-file <span class="token keyword">in</span> configmap/extension-apiserver-authentication <span class="token keyword">in</span> kube-system, so client certificate authentication won<span class="token string">'t work.
+W1117 12:09:37.349091   67619 authentication.go:363] No authentication-kubeconfig provided in order to lookup requestheader-client-ca-file in configmap/extension-apiserver-authentication in kube-system, so request-header client certificate authentication won'</span>t work.
+W1117 <span class="token number">12</span>:09:37.349439   <span class="token number">67619</span> authorization.go:193<span class="token punctuation">]</span> No authorization-kubeconfig provided, so SubjectAccessReview of authorization tokens won't work.
+I1117 <span class="token number">12</span>:09:37.369622   <span class="token number">67619</span> server.go:154<span class="token punctuation">]</span> <span class="token string">"Starting Kubernetes Scheduler"</span> <span class="token assign-left variable">version</span><span class="token operator">=</span><span class="token string">"v0.0.0-master+<span class="token variable">$Format</span>:%H$"</span>
+I1117 <span class="token number">12</span>:09:37.370145   <span class="token number">67619</span> server.go:156<span class="token punctuation">]</span> <span class="token string">"Golang settings"</span> <span class="token assign-left variable">GOGC</span><span class="token operator">=</span><span class="token string">""</span> <span class="token assign-left variable">GOMAXPROCS</span><span class="token operator">=</span><span class="token string">""</span> <span class="token assign-left variable">GOTRACEBACK</span><span class="token operator">=</span><span class="token string">""</span>
+I1117 <span class="token number">12</span>:09:37.371931   <span class="token number">67619</span> secure_serving.go:213<span class="token punctuation">]</span> Serving securely on <span class="token punctuation">[</span>::<span class="token punctuation">]</span>:10259
+I1117 <span class="token number">12</span>:09:37.372061   <span class="token number">67619</span> tlsconfig.go:240<span class="token punctuation">]</span> <span class="token string">"Starting DynamicServingCertificateController"</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="测试">测试</h3>
+<p>创建一个 Pod，观察调度情况：</p>
+<pre class="line-numbers language-yaml" data-language="yaml"><code class="language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Pod
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> nginx<span class="token punctuation">-</span>labelscore
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">schedulerName</span><span class="token punctuation">:</span> nodelabelscore
+  <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">image</span><span class="token punctuation">:</span> registry.cn<span class="token punctuation">-</span>beijing.aliyuncs.com/fpf_devops/nginx<span class="token punctuation">:</span><span class="token number">1.24</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> nginx<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>查看自定义插件的日志：</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">I1117 <span class="token number">12</span>:58:27.982897   <span class="token number">78682</span> node_score_label.go:40<span class="token punctuation">]</span> <span class="token assign-left variable">node</span><span class="token operator">=</span>k8s-node1 does<span class="token string">'nt has label node=hello so it get score, pod_name=nginx-labelscore
+I1117 12:58:27.982909   78682 node_score_label.go:38] node=k8s-node2 has label node=hello so it can'</span>t get score, <span class="token assign-left variable">pod_name</span><span class="token operator">=</span>nginx-labelscore<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
                 
             </div>
             <hr/>
@@ -856,9 +1020,9 @@
                 <a href="/blog/posts/40825/">
                     <div class="card-image">
                         
-                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fcustom%2Fscheduler_banner.jpg" class="responsive-img" alt="K8S二次开发系列之八：自定义开发score类型调度器">
+                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fcustom%2Fscheduler_banner.jpg" class="responsive-img" alt="K8S二次开发调度器系列之四：自定义开发score调度器">
                         
-                        <span class="card-title">K8S二次开发系列之八：自定义开发score类型调度器</span>
+                        <span class="card-title">K8S二次开发调度器系列之四：自定义开发score调度器</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -909,9 +1073,9 @@
                 <a href="/blog/posts/42202/">
                     <div class="card-image">
                         
-                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fcustom%2Fscheduler_banner.jpg" class="responsive-img" alt="K8S二次开发系列之七：自定义开发filter类型调度器">
+                        <img src="https://blog-1255547500.cos.ap-beijing.myqcloud.com/images%2Fcncf%2Fk8s%2Fcustom%2Fscheduler_banner.jpg" class="responsive-img" alt="K8S二次开发调度器系列之三：自定义开发filter调度器">
                         
-                        <span class="card-title">K8S二次开发系列之七：自定义开发filter类型调度器</span>
+                        <span class="card-title">K8S二次开发调度器系列之三：自定义开发filter调度器</span>
                     </div>
                 </a>
                 <div class="card-content article-content">
@@ -1142,7 +1306,7 @@
             <br>
             
                 &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                        class="white-color">63.1k</span>
+                        class="white-color">66.2k</span>
             
             
             

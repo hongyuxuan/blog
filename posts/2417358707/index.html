@@ -403,7 +403,7 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    757
+                    783
                 </div>
                 
 
@@ -433,33 +433,28 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p>今天给大家介绍几种K8S的扩展点，以满足进阶玩家自定义扩展、二次开发自己的K8S集群。</p>
+                <p>今天给大家介绍几种 K8S 的扩展点，以满足进阶玩家自定义扩展、二次开发自己的 K8S 集群。</p>
 <h2 id="常见K8S扩展点">常见K8S扩展点</h2>
-<p>下面是一些常见的Kubernetes扩展点：</p>
+<p>下面是一些常见的 Kubernetes 扩展点：</p>
 <ol>
-<li>自定义资源定义（CRD）：CRD允许用户定义自己的Kubernetes资源类型，以便于在Kubernetes集群中管理它们。</li>
-<li>自定义控制器（Controller）：和CRD搭配扩展，自定义控制器允许用户编写自己的控制器（Operator）来管理自定义资源类型。这样可以根据特定需求进行定制化开发。还可以基于K8S的watch/informer机制监听K8S资源发生的事件，并做相应的资源变更。</li>
-<li>准入控制器（admission webhook）：Kubernetes的三大门神之一（认证、授权、准入），为了集群安全性而引入的一个HTTP回调函数，用来控制一个客户端请求被发送到apiserver前后对其进行处理，以决定是否通过这次请求（验证准入控制器）/或对提交的资源进行变更（变更准入控制器）。</li>
-<li>自定义调度器：Kubernetes的调度器负责将工作负载POD调度到可用的节点上。你可以扩展或替换默认的调度器，以实现特定的调度策略、调度算法或调度规则。</li>
-<li>容器运行时接口（Container Runtime Interface，CRI）：CRI是Kubernetes与容器运行时之间的接口。用户可以通过CRI扩展Kubernetes对容器运行时的支持，例如自定义容器运行时、容器存储等。</li>
-<li>自定义存储插件：Kubernetes支持各种存储插件，如CSI（Container Storage Interface）插件。你可以编写自己的存储插件，以与特定的存储后端集成，或者实现自定义的存储功能。</li>
-<li>自定义网络插件：Kubernetes的网络插件，如CNI（Container Network Interface）负责为容器提供网络功能，如跨节点通信和服务发现。你可以开发自己的网络插件，以满足特定的网络需求，或者与特定的网络解决方案集成。现有的网络插件如flannel和calico。</li>
-<li>Kubectl插件：K8S允许用户自定义编写kubectl插件，以扩展kubectl的命令。</li>
+<li>自定义资源定义（CRD）：CRD允许用户定义自己的Kubernetes资源类型，以便于在 Kubernetes 集群中管理它们。</li>
+<li>自定义控制器（Controller）：和 CRD 搭配扩展，自定义控制器允许用户编写自己的控制器（Operator）来管理自定义资源类型。这样可以根据特定需求进行定制化开发。还可以基于 K8S 的 <code>watch/informer</code> 机制监听 K8S 资源发生的事件，并做相应的资源变更。</li>
+<li>准入控制器（admission webhook）：Kubernetes 的三大门神之一（认证、授权、准入），为了集群安全性而引入的一个 HTTP 回调函数，用来控制一个客户端请求被发送到 apiserver 前后对其进行处理，以决定是否通过这次请求（验证准入控制器）/或对提交的资源进行变更（变更准入控制器）。</li>
+<li>自定义调度器：Kubernetes 的调度器负责将工作负载 POD 调度到可用的节点上。你可以扩展或替换默认的调度器，以实现特定的调度策略、调度算法或调度规则。</li>
+<li>容器运行时接口（Container Runtime Interface，CRI）：CRI 是 Kubernetes 与容器运行时之间的接口。用户可以通过 CRI 扩展 Kubernetes 对容器运行时的支持，例如自定义容器运行时、容器存储等。</li>
+<li>自定义存储插件：Kubernetes 支持各种存储插件，如 CSI（Container Storage Interface）插件。你可以编写自己的存储插件，以与特定的存储后端集成，或者实现自定义的存储功能。</li>
+<li>自定义网络插件：Kubernetes 的网络插件，如 CNI（Container Network Interface）负责为容器提供网络功能，如跨节点通信和服务发现。你可以开发自己的网络插件，以满足特定的网络需求，或者与特定的网络解决方案集成。现有的网络插件如 <code>flannel</code> 和 <code>calico</code>。</li>
+<li>Kubectl 插件：K8S 允许用户自定义编写 kubectl 插件，以扩展 kubectl 的命令。</li>
 </ol>
-<p>Kubernetes的扩展点为用户提供了很多定制化的机会，以适应不同的需求和场景。我们可以根据实际需求来选择适合自己的扩展点，并进行相应的定制化开发。</p>
-<p>本系列文章将首先从CRD+Operator、Controller、Admission Webhook三个扩展点教你如何二次开发以扩展你的K8S。请关注如下文章：</p>
+<p>Kubernetes 的扩展点为用户提供了很多定制化的机会，以适应不同的需求和场景。我们可以根据实际需求来选择适合自己的扩展点，并进行相应的定制化开发。</p>
+<p>本系列文章将从 CRD+Operator、Controller、Admission Webhook、Scheduler 四个扩展点教你如何二次开发以扩展你的 K8S。请关注如下文章：</p>
 <ul>
-<li>
-<p><a href="/blog/posts/1440977903/">K8S二次开发系列之二：自定义开发CRD+Operator</a></p>
-</li>
-<li>
-<p><a href="/blog/posts/1902483454/">K8S二次开发系列之三：自定义开发Admission Webhook</a></p>
-</li>
-<li>
-<p><a href="/blog/posts/65360882/">K8S二次开发系列之四：自定义开发Controller</a></p>
-</li>
+<li><a href="/blog/posts/1440977903/">K8S二次开发系列之二：自定义开发CRD+Operator</a></li>
+<li><a href="/blog/posts/1902483454/">K8S二次开发系列之三：自定义开发Admission Webhook</a></li>
+<li><a href="/blog/posts/65360882/">K8S二次开发系列之四：自定义开发Controller</a></li>
+<li><a href="/blog/posts/43703/">K8S二次开发调度器系列之二：自定义调度器</a></li>
 </ul>
-<p>后续会陆续分享如何开发自定义调度器、kubectl插件（CSI和CNI需要更多的网络和存储知识，以及更多的配套资源，本系列暂不做此研究）</p>
+<p>后续会陆续分享如何开发自定义调度器、kubectl 插件（CSI 和 CNI 需要更多的网络和存储知识，以及更多的配套资源，本系列暂不做此研究）</p>
 
                 
             </div>
@@ -1167,7 +1162,7 @@
             <br>
             
                 &nbsp;<i class="fas fa-chart-area"></i>&nbsp;站点总字数:&nbsp;<span
-                        class="white-color">63.1k</span>
+                        class="white-color">66.2k</span>
             
             
             
